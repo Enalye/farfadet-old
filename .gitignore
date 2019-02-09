@@ -1,0 +1,15 @@
+syntax: glob
+
+pzdv-win
+pzdv-linux
+build
+bin
+.dub
+.hg
+docs.json
+__dummy.html
+*.a
+*.o
+*.obj
+*.exe
+*.sublime-workspace

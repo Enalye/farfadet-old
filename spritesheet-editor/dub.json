@@ -1,0 +1,34 @@
+{
+	"name": "spritesheet-editor",
+	"authors": [
+		"Enalye"
+	],
+	"description": "Sprite sheet editor for Atelier",
+	"copyright": "Copyright © 2018, Enalye",
+	"dependencies": {
+		"atelier": {
+			"version": "~master",
+			"path": "../atelier"
+		}
+	},
+	"targetType": "executable",
+	"workingDirectory": "..",
+	"configurations": [
+		{
+			"name": "linux-build",
+			"platforms": ["linux"],
+			"targetPath": "../bin",
+			"postBuildCommands": [
+				"cp ../lib/*.dll ../bin"
+			]
+		},
+		{
+			"name": "windows-build",
+			"platforms": ["windows"],
+			"targetPath": "../bin",
+			"postBuildCommands": [
+				"copy ..\\lib\\*.dll ..\\bin"
+			]
+		}
+	]
+}

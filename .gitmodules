@@ -1,0 +1,3 @@
+[submodule "atelier"]
+	path = atelier
+	url = https://github.com/Enalye/atelier
