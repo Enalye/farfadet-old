@@ -16,7 +16,6 @@ void setupApplication() {
 	createApplication(Vec2u(1280, 720), "Image Editor");
 
     setWindowIcon("media/logo.png");
-
     import derelict.sdl2.sdl;
     bindKey("select", SDL_SCANCODE_1);
     bindKey("move", SDL_SCANCODE_2);
@@ -26,6 +25,7 @@ void setupApplication() {
     bindKey("down", SDL_SCANCODE_DOWN);
 
     loadAssets();
+    setDefaultFont(fetch!Font("VeraMono"));
 
 	//Run
     onMainMenu();

@@ -14,22 +14,24 @@ class SaveJsonGui: GuiElement {
         size(Vec2f(400f, 150f));
         setAlign(GuiAlignX.Center, GuiAlignY.Center);
 
+        Font font = getDefaultFont();
+
         {
             auto box = new HContainer;
             box.setAlign(GuiAlignX.Center, GuiAlignY.Center);
             addChildGui(box);
 
-            box.addChildGui(new Label("data/images/"));
+            box.addChildGui(new Label(font, "data/images/"));
 
             _inputField = new InputField(Vec2f(200f, 25f), "", true);
             _inputField.setCallback(this, "apply");
             box.addChildGui(_inputField);
 
-            box.addChildGui(new Label(".json"));
+            box.addChildGui(new Label(font, ".json"));
         }
 
         {
-            auto title = new Label("Save Json");
+            auto title = new Label(font, "Save Json");
             title.setAlign(GuiAlignX.Left, GuiAlignY.Top);
             title.position = Vec2f(20f, 10f);
             addChildGui(title);
@@ -41,12 +43,12 @@ class SaveJsonGui: GuiElement {
             box.spacing = Vec2f(25f, 15f);
             addChildGui(box);
 
-            auto applyBtn = new TextButton("Save");
+            auto applyBtn = new TextButton(font, "Save");
             applyBtn.size = Vec2f(80f, 35f);
             applyBtn.setCallback(this, "apply");
             box.addChildGui(applyBtn);
 
-            auto cancelBtn = new TextButton("Cancel");
+            auto cancelBtn = new TextButton(font, "Cancel");
             cancelBtn.size = Vec2f(80f, 35f);
             cancelBtn.setCallback(this, "cancel");
             box.addChildGui(cancelBtn);
@@ -123,6 +125,8 @@ class LoadJsonGui: GuiElement {
         size(Vec2f(300f, 450f));
         setAlign(GuiAlignX.Center, GuiAlignY.Center);
 
+        Font font = getDefaultFont();
+
         {
             _list = new VList(Vec2f(200f, 300f));
             _list.setAlign(GuiAlignX.Center, GuiAlignY.Center);
@@ -130,13 +134,13 @@ class LoadJsonGui: GuiElement {
             foreach(file; files) {
                 filesList ~= file;
                 auto filePath = stripExtension(relativePath(absolutePath(file), absolutePath("data/images/")));
-                _list.addChildGui(new TextButton(filePath));
+                _list.addChildGui(new TextButton(font, filePath));
             }
             addChildGui(_list);
         }
 
         {
-            auto title = new Label("Load Json");
+            auto title = new Label(font, "Load Json");
             title.setAlign(GuiAlignX.Left, GuiAlignY.Top);
             title.position = Vec2f(20f, 10f);
             addChildGui(title);
@@ -148,12 +152,12 @@ class LoadJsonGui: GuiElement {
             box.spacing = Vec2f(25f, 15f);
             addChildGui(box);
 
-            auto applyBtn = new TextButton("Load");
+            auto applyBtn = new TextButton(font, "Load");
             applyBtn.size = Vec2f(80f, 35f);
             applyBtn.setCallback(this, "apply");
             box.addChildGui(applyBtn);
 
-            auto cancelBtn = new TextButton("Cancel");
+            auto cancelBtn = new TextButton(font, "Cancel");
             cancelBtn.size = Vec2f(80f, 35f);
             cancelBtn.setCallback(this, "cancel");
             box.addChildGui(cancelBtn);
