@@ -4,6 +4,8 @@ pzdv-win
 pzdv-linux
 build
 bin
+binx86
+binx86_64
 .dub
 .hg
 docs.json

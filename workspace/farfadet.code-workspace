@@ -1,0 +1,13 @@
+{
+    "folders": [
+        {
+            "name": "Farfadet",
+            "path": "../farfadet"
+        },
+        {
+            "name": "Atelier",
+            "path": "../atelier"
+        }
+    ],
+    "settings": {}
+}

@@ -1,9 +1,9 @@
 {
-	"name": "spritesheet-editor",
+	"name": "farfadet",
 	"authors": [
 		"Enalye"
 	],
-	"description": "Sprite sheet editor for Atelier",
+	"description": "Image Editor",
 	"copyright": "Copyright © 2018, Enalye",
 	"dependencies": {
 		"atelier": {
@@ -17,17 +17,17 @@
 		{
 			"name": "linux-build",
 			"platforms": ["linux"],
-			"targetPath": "../bin",
+			"targetPath": "../bin$ARCH",
 			"postBuildCommands": [
-				"cp ../lib/*.dll ../bin"
+				"cp ../lib$ARCH/*.dll ../bin$ARCH"
 			]
 		},
 		{
 			"name": "windows-build",
 			"platforms": ["windows"],
-			"targetPath": "../bin",
+			"targetPath": "../bin$ARCH",
 			"postBuildCommands": [
-				"copy ..\\lib\\*.dll ..\\bin"
+				"copy ..\\lib$ARCH\\*.dll ..\\bin$ARCH"
 			]
 		}
 	]
