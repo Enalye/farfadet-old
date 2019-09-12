@@ -351,9 +351,8 @@ final class ElementsListGui: VList {
         const auto elements = cast(const ImgElementGui[])getList();
 
         JSONValue json;
-
         json["DOCTYPE"] = JSONValue("IMAGE");
-        json["texture"] = JSONValue(srcImage);
+        json["texture"] = JSONValue(convertPathToExport(srcImage));
         JSONValue[] elementsNode;
 
         foreach(element; elements) {

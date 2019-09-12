@@ -52,9 +52,9 @@ final class GraphicEditorGui: GuiElement {
     PreviewerGui previewerGui;
     BrushGui brushSelectGui, brushMoveGui, brushResizeGui;
 
-    string jsonPath, srcPath;
+    string jsonPath, srcPath, _projectRootPath;
 
-    this() {
+    this(string[] args) {
         setAlign(GuiAlignX.Left, GuiAlignY.Top);
         size = screenSize;
 
@@ -194,6 +194,13 @@ final class GraphicEditorGui: GuiElement {
             }
             addChildGui(box);
         }
+
+        if(args.length > 1) {
+            _projectRootPath = buildNormalizedPath(args[1]);
+        }
+        else {
+            _projectRootPath = buildNormalizedPath("..");
+        }
     }
 
     override void update(float deltaTime) {
@@ -259,7 +266,7 @@ final class GraphicEditorGui: GuiElement {
     override void onCallback(string id) {
         switch(id) {
         case "project":
-            auto gui = new SetProjectGui;
+            auto gui = new SetProjectGui(_projectRootPath);
             gui.setCallback(this, "project.modal");
             setModalGui(gui);
             break;
@@ -284,7 +291,7 @@ final class GraphicEditorGui: GuiElement {
             stopModalGui();
             auto saveGui = getModalGui!SaveJsonGui;
             if(saveGui.hasPath()) {
-                jsonPath = stripExtension(relativePath(absolutePath(saveGui.getPath()), absolutePath("data/images/")));                
+                jsonPath = stripExtension(relativePath(absolutePath(saveGui.getPath()), absolutePath(buildNormalizedPath(_projectRootPath, "/data/images/"))));
                 listGui.save(saveGui.getPath(), srcPath);
                 setWindowTitle("Sprite Sheet Editor - " ~ jsonPath);
             }
@@ -389,7 +396,7 @@ final class GraphicEditorGui: GuiElement {
     Texture texture;
     void load(string path) {
         jsonPath = "";
-        srcPath = path;
+        srcPath = buildNormalizedPath(path);
         texture = new Texture(srcPath);
         viewerGui.setTexture(texture);
         previewerGui.setTexture(texture);
@@ -421,7 +428,7 @@ final class GraphicEditorGui: GuiElement {
     
     void loadJson(string path) {
         jsonPath = stripExtension(relativePath(absolutePath(path), absolutePath("data/images/")));
-        srcPath = listGui.load(path);
+        srcPath = buildNormalizedPath(listGui.load(path));
         texture = new Texture(srcPath);
         viewerGui.setTexture(texture);
         previewerGui.setTexture(texture);
@@ -463,7 +470,7 @@ final class GraphicEditorGui: GuiElement {
             return;
 
         auto path = buildPath("data/images/", setExtension(jsonPath, ".json"));
-        srcPath = listGui.load(path);
+        srcPath = buildNormalizedPath(listGui.load(path));
         texture = new Texture(srcPath);
         viewerGui.setTexture(texture);
         previewerGui.setTexture(texture);
@@ -548,9 +555,53 @@ private final class RemoveLayerGui: GuiElement {
     }
 }
 
-
 private final class SetProjectGui: GuiElement {
-    this() {
+    final class DirListGui: VList {
+        private {
+            string[] _subDirs;
+        }
+
+        this() {
+            super(Vec2f(400f, 300f));
+        }
+
+        override void onCallback(string id) {
+            super.onCallback(id);
+            if(id == "list") {
+                triggerCallback();
+            }
+        }
+
+        override void draw() {
+            drawFilledRect(origin, size, Color(.08f, .09f, .11f));
+        }
+
+        void add(string subDir) {
+            addChildGui(new TextButton(getDefaultFont(), subDir));
+            _subDirs ~= subDir;
+        }
+
+        string getSubDir() {
+            if(selected() >= _subDirs.length)
+                throw new Exception("Subdirectory index out of range");
+            return _subDirs[selected()];
+        }
+
+        void reset() {
+            removeChildrenGuis();
+            _subDirs.length = 0;
+        }
+    }
+
+    private {
+        Label _pathLabel;
+        DirListGui _list;
+        string _projectRootPath;
+    }
+
+    this(string path) {
+        _projectRootPath = path;
+
         size(Vec2f(500f, 500f));
         setAlign(GuiAlignX.Center, GuiAlignY.Center);
 
@@ -586,15 +637,26 @@ private final class SetProjectGui: GuiElement {
             addChildGui(vbox);
 
             {
-                auto label = new Label("test");
-                vbox.addChildGui(label);
+                _pathLabel = new Label(_projectRootPath);
+                vbox.addChildGui(_pathLabel);
             }
-
             {
-                auto list = new VList(Vec2f(400f, 300f));
-                vbox.addChildGui(list);
+                auto hbox = new HContainer;
+                vbox.addChildGui(hbox);
+
+                auto parentBtn = new TextButton(getDefaultFont(), "Parent");
+                parentBtn.setCallback(this, "parent_folder");
+                hbox.addChildGui(parentBtn);
+            }
+            {
+                _list = new DirListGui;
+                _list.setCallback(this, "sub_folder");
+                vbox.addChildGui(_list);
             }
         }
+
+        _projectRootPath = dirName(thisExePath());
+        reloadList();
 
         //States
         GuiState hiddenState = {
@@ -615,6 +677,14 @@ private final class SetProjectGui: GuiElement {
 
     override void onCallback(string id) {
         switch(id) {
+        case "sub_folder":
+            _projectRootPath = buildNormalizedPath(_projectRootPath, _list.getSubDir());
+            reloadList();
+            break;
+        case "parent_folder":
+            _projectRootPath = dirName(_projectRootPath);
+            reloadList();
+            break;
         case "apply":
             triggerCallback();
             break;
@@ -623,6 +693,17 @@ private final class SetProjectGui: GuiElement {
             break;
         default:
             break;
+        }
+    }
+
+    void reloadList() {
+        _pathLabel.text = _projectRootPath;
+        _list.reset();
+        auto files = dirEntries(_projectRootPath, SpanMode.shallow);
+        foreach(file; files) {
+            if(!file.isDir())
+                continue;
+            _list.add(baseName(file));
         }
     }
 

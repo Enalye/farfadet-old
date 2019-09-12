@@ -2,16 +2,16 @@ import std.stdio: writeln;
 import atelier;
 import editor, loader;
 
-void main() {
+void main(string[] args) {
     try {
-        setupApplication();
+        setupApplication(args);
     }
     catch(Exception e) {
         writeln(e.msg);
     }
 }
 
-void setupApplication() {
+void setupApplication(string[] args) {
 	//Initialization
 	createApplication(Vec2u(1280, 720), "Image Editor");
 
@@ -28,12 +28,12 @@ void setupApplication() {
     setDefaultFont(fetch!Font("VeraMono"));
 
 	//Run
-    onMainMenu();
+    onMainMenu(args);
 	runApplication();
     destroyApplication();
 }
 
-void onMainMenu() {
+void onMainMenu(string[] args) {
 	removeRootGuis();
-    addRootGui(new GraphicEditorGui);
+    addRootGui(new GraphicEditorGui(args));
 }

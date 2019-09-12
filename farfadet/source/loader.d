@@ -26,7 +26,7 @@ void loadTextures() {
         if(getJsonStr(json, "DOCTYPE") != "IMAGE")
             continue;
 
-        auto srcImage = getJsonStr(json, "texture");
+        auto srcImage = convertPathToImport(getJsonStr(json, "texture"));
         auto texture = new Texture(srcImage);
         textureCache.set(texture, srcImage);
 

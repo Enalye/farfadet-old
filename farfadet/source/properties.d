@@ -1,6 +1,6 @@
 module properties;
 
-import std.conv: to;
+import std.conv: to, ConvException;
 import atelier;
 import editor, imgelement;
 
@@ -192,11 +192,16 @@ final class PropertiesGui: VContainer {
     }
 
     Vec4i getClip() {
-        return Vec4i(
-            _fieldX.text.length ? to!int(_fieldX.text) : 0,
-            _fieldY.text.length ? to!int(_fieldY.text) : 0,
-            _fieldW.text.length ? to!int(_fieldW.text) : 0,
-            _fieldH.text.length ? to!int(_fieldH.text) : 0);
+        try {
+            return Vec4i(
+                _fieldX.text.length ? to!int(_fieldX.text) : 0,
+                _fieldY.text.length ? to!int(_fieldY.text) : 0,
+                _fieldW.text.length ? to!int(_fieldW.text) : 0,
+                _fieldH.text.length ? to!int(_fieldH.text) : 0);
+        }
+        catch(ConvException e) {
+            return Vec4i.zero;
+        }
     }
 
     ImgType getImgType() {
@@ -216,23 +221,44 @@ final class PropertiesGui: VContainer {
     }
 
     int getColumns() {
-        return _fieldColumns.text.length ? to!int(_fieldColumns.text) : 0;
+        try {
+            const int cols = _fieldColumns.text.length ? to!int(_fieldColumns.text) : 1;
+            return cols <= 0 ? 1 : cols;
+        }
+        catch(ConvException e) {
+            return 1;
+        }
     }
     
     void setColumns(int value) {
+        if(value < 1)
+            value = 1;
         _fieldColumns.text = to!string(value);
     }
 
     int getLines() {
-        return _fieldLines.text.length ? to!int(_fieldLines.text) : 0;
+        try {
+            const int lines = _fieldLines.text.length ? to!int(_fieldLines.text) : 1;
+            return lines <= 0 ? 1 : lines;
+        }
+        catch(ConvException e) {
+            return 1;
+        }
     }
     
     void setLines(int value) {
+        if(value < 1)
+            value = 1;
         _fieldLines.text = to!string(value);
     }
 
     int getMaxTiles() {
-        return _fieldMaxTiles.text.length ? to!int(_fieldMaxTiles.text) : 0;
+        try {
+            return _fieldMaxTiles.text.length ? to!int(_fieldMaxTiles.text) : 0;
+        }
+        catch(ConvException e) {
+            return 0;
+        }
     }
     
     void setMaxTiles(int value) {
@@ -240,7 +266,12 @@ final class PropertiesGui: VContainer {
     }
 
     int getTop() {
-        return _fieldTop.text.length ? to!int(_fieldTop.text) : 0;
+        try {
+            return _fieldTop.text.length ? to!int(_fieldTop.text) : 0;
+        }
+        catch(ConvException e) {
+            return 0;
+        }
     }
     
     void setTop(int value) {
@@ -248,7 +279,12 @@ final class PropertiesGui: VContainer {
     }
 
     int getBottom() {
-        return _fieldBottom.text.length ? to!int(_fieldBottom.text) : 0;
+        try {
+            return _fieldBottom.text.length ? to!int(_fieldBottom.text) : 0;
+        }
+        catch(ConvException e) {
+            return 0;
+        }
     }
     
     void setBottom(int value) {
@@ -256,7 +292,12 @@ final class PropertiesGui: VContainer {
     }
 
     int getLeft() {
-        return _fieldLeft.text.length ? to!int(_fieldLeft.text) : 0;
+        try {
+            return _fieldLeft.text.length ? to!int(_fieldLeft.text) : 0;
+        }
+        catch(ConvException e) {
+            return 0;
+        }
     }
     
     void setLeft(int value) {
@@ -264,7 +305,12 @@ final class PropertiesGui: VContainer {
     }
 
     int getRight() {
-        return _fieldRight.text.length ? to!int(_fieldRight.text) : 0;
+        try {
+            return _fieldRight.text.length ? to!int(_fieldRight.text) : 0;
+        }
+        catch(ConvException e) {
+            return 0;
+        }
     }
     
     void setRight(int value) {
