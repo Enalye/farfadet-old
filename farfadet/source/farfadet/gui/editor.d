@@ -1,8 +1,9 @@
-module editor;
+module farfadet.gui.editor;
 
 import std.path, std.file;
 import atelier;
-import viewer, elements, properties, previewer, imgelement, save;
+import farfadet.common, farfadet.gui.file;
+import farfadet.gui.viewer, farfadet.gui.elements, farfadet.gui.properties, farfadet.gui.previewer;
 
 private final class BrushGui: GuiElement {
     Sprite offSprite, onSprite;
@@ -273,7 +274,6 @@ final class GraphicEditorGui: GuiElement {
         case "project.modal":
             auto gui = getModalGui!SetProjectGui;
             stopModalGui();
-            
             break;
         case "save":
             save();
@@ -293,7 +293,7 @@ final class GraphicEditorGui: GuiElement {
             if(saveGui.hasPath()) {
                 jsonPath = stripExtension(relativePath(absolutePath(saveGui.getPath()), absolutePath(buildNormalizedPath(_projectRootPath, "/data/images/"))));
                 listGui.save(saveGui.getPath(), srcPath);
-                setWindowTitle("Sprite Sheet Editor - " ~ jsonPath);
+                setWindowTitle("Farfadet - " ~ jsonPath);
             }
             break;
         case "load_gui":
@@ -423,7 +423,7 @@ final class GraphicEditorGui: GuiElement {
 
         propertiesGui.load();
 
-        setWindowTitle("Sprite Sheet Editor - *");
+        setWindowTitle("Farfadet - *");
     }
     
     void loadJson(string path) {
@@ -433,7 +433,7 @@ final class GraphicEditorGui: GuiElement {
         viewerGui.setTexture(texture);
         previewerGui.setTexture(texture);
 
-        setWindowTitle("Sprite Sheet Editor - " ~ jsonPath);
+        setWindowTitle("Farfadet - " ~ jsonPath);
     }
 
     void save() {
@@ -453,7 +453,7 @@ final class GraphicEditorGui: GuiElement {
             return;
         }
         listGui.save(path, srcPath);
-        setWindowTitle("Sprite Sheet Editor - " ~ jsonPath);
+        setWindowTitle("Farfadet - " ~ jsonPath);
     }
 
     void saveAs() {
@@ -461,7 +461,6 @@ final class GraphicEditorGui: GuiElement {
             return;
         auto saveGui = new SaveJsonGui;
         saveGui.setCallback(this, "save_gui");
-        saveGui.setPath(jsonPath);
         setModalGui(saveGui);
     }
 
@@ -475,7 +474,7 @@ final class GraphicEditorGui: GuiElement {
         viewerGui.setTexture(texture);
         previewerGui.setTexture(texture);
 
-        setWindowTitle("Sprite Sheet Editor - " ~ jsonPath);
+        setWindowTitle("Farfadet - " ~ jsonPath);
     }
 
     void load() {

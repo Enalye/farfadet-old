@@ -1,9 +1,10 @@
-module viewer;
+module farfadet.gui.viewer;
 
 import std.path;
 import std.conv: to;
 import atelier;
-import editor, imgelement, previewer;
+import farfadet.common;
+import farfadet.gui.editor, farfadet.gui.previewer;
 
 enum BrushType {
     NoType, SelectionType, MovingType, ResizeType

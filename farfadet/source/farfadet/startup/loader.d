@@ -1,4 +1,4 @@
-module loader;
+module farfadet.startup.loader;
 
 import std.file, std.path, std.conv;
 import atelier;

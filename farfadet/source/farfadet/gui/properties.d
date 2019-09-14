@@ -1,8 +1,8 @@
-module properties;
+module farfadet.gui.properties;
 
 import std.conv: to, ConvException;
 import atelier;
-import editor, imgelement;
+import farfadet.gui.editor, farfadet.common;
 
 final class PropertiesGui: VContainer {
     private {

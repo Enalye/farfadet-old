@@ -1,8 +1,8 @@
-module elements;
+module farfadet.gui.elements;
 
 import std.file;
 import atelier;
-import imgelement;
+import farfadet.common;
 
 private final class ImgElementGui: GuiElement {
     Label label;

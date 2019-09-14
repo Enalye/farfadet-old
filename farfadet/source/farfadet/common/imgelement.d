@@ -1,4 +1,4 @@
-module imgelement;
+module farfadet.common.imgelement;
 
 import atelier;
 
@@ -6,7 +6,7 @@ enum ImgType {
     SpriteType, TilesetType, BorderedBrushType, BorderlessBrushType, NinePatchType
 }
 
-class ImgElementData {
+final class ImgElementData {
     //General data
     ImgType type;
 

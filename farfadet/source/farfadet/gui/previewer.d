@@ -1,8 +1,8 @@
-module previewer;
+module farfadet.gui.previewer;
 
 import std.conv: to;
 import atelier;
-import imgelement;
+import farfadet.common;
 
 class PreviewerGui: GuiElement {
     private {
