@@ -47,7 +47,6 @@ final class SaveJsonGui: GuiElement {
         EditablePathGui _pathLabel;
         DirListGui _list;
 		string _path;
-        bool _hasPath;
     }
 
 	this() {
@@ -69,6 +68,7 @@ final class SaveJsonGui: GuiElement {
             _pathLabel = new EditablePathGui(_path);
             _pathLabel.setAlign(GuiAlignX.Left, GuiAlignY.Top);
             _pathLabel.position = Vec2f(20f, 50f);
+            _pathLabel.setCallback(this, "path");
             addChildGui(_pathLabel);
         }
 
@@ -78,8 +78,7 @@ final class SaveJsonGui: GuiElement {
             box.position = Vec2f(0f, 60f);
             addChildGui(box);
 
-            _inputField = new InputField(Vec2f(300f, 25f), "", true);
-            _inputField.setCallback(this, "apply");
+            _inputField = new InputField(Vec2f(300f, 25f), "untitled");
             box.addChildGui(_inputField);
 
             box.addChildGui(new Label(font, ".json"));
@@ -142,15 +141,20 @@ final class SaveJsonGui: GuiElement {
 	}
 
     string getPath() {
-        return _path;
+        return buildNormalizedPath(_path, setExtension(_inputField.text, ".json"));
     }
-
-    bool hasPath() {
-        return _hasPath;
-    }
-
+    
     override void onCallback(string id) {
         switch(id) {
+        case "path":
+            if(exists(_pathLabel.text) && isDir(_pathLabel.text)) {
+                _path = _pathLabel.text;
+                reloadList();
+            }
+            else {
+                _pathLabel.text = _path;
+            }
+            break;
         case "sub_folder":
             _path = buildNormalizedPath(_path, _list.getSubDir());
             reloadList();
@@ -160,17 +164,10 @@ final class SaveJsonGui: GuiElement {
             reloadList();
             break;
         case "apply":
-            _path = buildNormalizedPath(_path, setExtension(_inputField.text, ".json"));
-            if(!isValidPath(_path))
-                break;
-            if(!exists(dirName(_path)))
-                break;
-            _hasPath = true;
             triggerCallback();
             break;
         case "cancel":
-            _hasPath = false;
-            triggerCallback();
+            stopModalGui();
             break;
         default:
             break;

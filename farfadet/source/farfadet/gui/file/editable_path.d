@@ -30,10 +30,10 @@ final class EditablePathGui: GuiElement {
     }
 
     override void update(float deltaTime) {
-        if(!isSelected && isEditingName) {
+        if(!hasFocus && isEditingName) {
             applyEditedName();
         }
-        else if(!isSelected) {
+        else if(!hasFocus) {
             isFirstClick = true;
         }
     }
@@ -47,18 +47,34 @@ final class EditablePathGui: GuiElement {
         label.text = inputField.text;
         removeChildrenGuis();
         addChildGui(label);
+        setAlign(GuiAlignX.Left, GuiAlignY.Top);
+        triggerCallback();
+    }
+
+    override void onFocus() {
+        if(!hasCanvas) {
+            isEditingName = false;
+            isFirstClick = true;
+
+            label.text = inputField.text;
+            removeChildrenGuis();
+            addChildGui(label);
+            setAlign(GuiAlignX.Left, GuiAlignY.Top);
+        }
     }
 
     override void onSubmit() {
-        if(isSelected && !isEditingName) {
+        if(!isEditingName) {
             if(!isFirstClick) {
                 isEditingName = true;
                 removeChildrenGuis();
                 inputField = new InputField(size, label.text != "untitled" ? label.text : "");
                 inputField.setAlign(GuiAlignX.Center, GuiAlignY.Center);
                 inputField.setCallback(this, "editname");
+                inputField.size = Vec2f(400f, 25f);
                 inputField.hasFocus = true;
                 addChildGui(inputField);
+                setAlign(GuiAlignX.Center, GuiAlignY.Top);
             }
             isFirstClick = false;
         }

@@ -290,11 +290,9 @@ final class GraphicEditorGui: GuiElement {
         case "save_gui":
             stopModalGui();
             auto saveGui = getModalGui!SaveJsonGui;
-            if(saveGui.hasPath()) {
-                jsonPath = stripExtension(relativePath(absolutePath(saveGui.getPath()), absolutePath(buildNormalizedPath(_projectRootPath, "/data/images/"))));
-                listGui.save(saveGui.getPath(), srcPath);
-                setWindowTitle("Farfadet - " ~ jsonPath);
-            }
+            jsonPath = stripExtension(relativePath(absolutePath(saveGui.getPath()), absolutePath(buildNormalizedPath(_projectRootPath, "/data/images/"))));
+            listGui.save(saveGui.getPath(), srcPath);
+            setWindowTitle("Farfadet - " ~ jsonPath);
             break;
         case "load_gui":
             stopModalGui();
