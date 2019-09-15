@@ -1,10 +1,10 @@
-module farfadet.gui.file.save;
+module farfadet.gui.file.open_modal;
 
-import std.file, std.path;
+import std.file, std.path, std.string;
 import atelier;
-import farfadet.gui.file.editable_path;
+import farfadet.gui.file.editable_path_gui;
 
-final class SaveJsonGui: GuiElement {
+final class LoadJsonGui: GuiElement {
     final class DirListGui: VList {
         private {
             string[] _subDirs;
@@ -25,8 +25,10 @@ final class SaveJsonGui: GuiElement {
             drawFilledRect(origin, size, Color(.08f, .09f, .11f));
         }
 
-        void add(string subDir) {
-            addChildGui(new TextButton(getDefaultFont(), subDir));
+        void add(string subDir, Color color) {
+            auto btn = new TextButton(getDefaultFont(), subDir);
+            btn.label.color = color;
+            addChildGui(btn);
             _subDirs ~= subDir;
         }
 
@@ -43,10 +45,11 @@ final class SaveJsonGui: GuiElement {
     }
 
 	private {
-		InputField _inputField;
         EditablePathGui _pathLabel;
         DirListGui _list;
-		string _path;
+		string _path, _fileName;
+        Label _filePathLabel;
+        GuiElement _applyBtn;
     }
 
 	this() {
@@ -58,7 +61,7 @@ final class SaveJsonGui: GuiElement {
         Font font = getDefaultFont();
 
         { //Title
-            auto title = new Label(font, "Save to Json:");
+            auto title = new Label(font, "File to open:");
             title.setAlign(GuiAlignX.Left, GuiAlignY.Top);
             title.position = Vec2f(20f, 10f);
             addChildGui(title);
@@ -72,16 +75,11 @@ final class SaveJsonGui: GuiElement {
             addChildGui(_pathLabel);
         }
 
-        { //Text Field
-            auto box = new HContainer;
-            box.setAlign(GuiAlignX.Center, GuiAlignY.Bottom);
-            box.position = Vec2f(0f, 60f);
-            addChildGui(box);
-
-            _inputField = new InputField(Vec2f(300f, 25f), "untitled");
-            box.addChildGui(_inputField);
-
-            box.addChildGui(new Label(font, ".json"));
+        {
+            _filePathLabel = new Label(font, "File: ---");
+            _filePathLabel.setAlign(GuiAlignX.Left, GuiAlignY.Bottom);
+            _filePathLabel.position = Vec2f(20f, 30f);
+            addChildGui(_filePathLabel);
         }
 
         { //Validation
@@ -90,10 +88,12 @@ final class SaveJsonGui: GuiElement {
             box.spacing = Vec2f(25f, 15f);
             addChildGui(box);
 
-            auto applyBtn = new TextButton(font, "Save");
+            auto applyBtn = new TextButton(font, "Open");
             applyBtn.size = Vec2f(80f, 35f);
             applyBtn.setCallback(this, "apply");
+            applyBtn.isLocked = true;
             box.addChildGui(applyBtn);
+            _applyBtn = applyBtn;
 
             auto cancelBtn = new TextButton(font, "Cancel");
             cancelBtn.size = Vec2f(80f, 35f);
@@ -117,7 +117,7 @@ final class SaveJsonGui: GuiElement {
             }
             {
                 _list = new DirListGui;
-                _list.setCallback(this, "sub_folder");
+                _list.setCallback(this, "file");
                 vbox.addChildGui(_list);
             }
         }
@@ -139,25 +139,39 @@ final class SaveJsonGui: GuiElement {
         setState("hidden");
         doTransitionState("default");
 	}
-
+    
     string getPath() {
-        return buildNormalizedPath(_path, setExtension(_inputField.text, ".json"));
+        return buildPath(_path, _fileName);
     }
     
     override void onCallback(string id) {
         switch(id) {
         case "path":
-            if(exists(_pathLabel.text) && isDir(_pathLabel.text)) {
+            if(!exists(_pathLabel.text)) {
+                _pathLabel.text = _path;
+            }
+            else if(isDir(_pathLabel.text)) {
                 _path = _pathLabel.text;
                 reloadList();
             }
             else {
-                _pathLabel.text = _path;
+                _path = dirName(_pathLabel.text);
+                _fileName = baseName(_pathLabel.text);
+                _filePathLabel.text = "File: " ~ _fileName;
+                _applyBtn.isLocked = false;
             }
             break;
-        case "sub_folder":
-            _path = buildNormalizedPath(_path, _list.getSubDir());
-            reloadList();
+        case "file":
+            string path = buildPath(_path, _list.getSubDir());
+            if(isDir(path)) {
+                _path = path;
+                reloadList();
+            }
+            else {
+                _fileName = _list.getSubDir();
+                _filePathLabel.text = "File: " ~ _fileName;
+                _applyBtn.isLocked = false;
+            }
             break;
         case "parent_folder":
             _path = dirName(_path);
@@ -174,14 +188,56 @@ final class SaveJsonGui: GuiElement {
         }
     }
 
-    void reloadList() {
+    private enum PathType {
+        DirectoryType, JsonFileType, ImageFileType, InvalidType
+    }
+    
+    private void reloadList() {
+        _fileName = "";
+        _filePathLabel.text = "File: ---";
+        _applyBtn.isLocked = true;
         _pathLabel.text = _path;
         _list.reset();
         auto files = dirEntries(_path, SpanMode.shallow);
         foreach(file; files) {
-            if(!file.isDir())
+            const auto type = getPathType(file);
+            final switch(type) with(PathType) {
+            case DirectoryType:
+                _list.add(baseName(file), Color.gray);
                 continue;
-            _list.add(baseName(file));
+            case JsonFileType:
+                _list.add(baseName(file), Color.green);
+                continue;
+            case ImageFileType:
+                _list.add(baseName(file), Color.blue);
+                continue;
+            case InvalidType:
+                continue;
+            }
+        }
+    }
+
+    private PathType getPathType(string filePath) {
+        try {
+            if(filePath.isDir())
+                return PathType.DirectoryType;
+            switch(extension(filePath).toLower()) {
+            case ".json":
+                return PathType.JsonFileType;
+            case ".png":
+            case ".jpg":
+            case ".jpeg":
+            case ".gif":
+                return PathType.ImageFileType;
+            default:
+                return PathType.InvalidType;
+            }
+        }
+        catch(Exception e) {
+            //Functions like isDir can return an exception
+            //when reading a file it can't open.
+            //So we don't care about those file.
+            return PathType.InvalidType;
         }
     }
 

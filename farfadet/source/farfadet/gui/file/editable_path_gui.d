@@ -1,4 +1,4 @@
-module farfadet.gui.file.editable_path;
+module farfadet.gui.file.editable_path_gui;
 
 import atelier;
 
@@ -11,14 +11,14 @@ final class EditablePathGui: GuiElement {
         string text() const { return label.text; }
         string text(string t) {
             label.text = t;
-            size = label.size;
+            size = Vec2f(400f, label.size.y);
             return label.text;
         }
     }
 
     this(string path = "untitled") {
         label = new Label(path);
-        label.setAlign(GuiAlignX.Center, GuiAlignY.Center);
+        label.setAlign(GuiAlignX.Left, GuiAlignY.Center);
         addChildGui(label);
         size = label.size;
     }
@@ -47,7 +47,6 @@ final class EditablePathGui: GuiElement {
         label.text = inputField.text;
         removeChildrenGuis();
         addChildGui(label);
-        setAlign(GuiAlignX.Left, GuiAlignY.Top);
         triggerCallback();
     }
 
@@ -59,7 +58,6 @@ final class EditablePathGui: GuiElement {
             label.text = inputField.text;
             removeChildrenGuis();
             addChildGui(label);
-            setAlign(GuiAlignX.Left, GuiAlignY.Top);
         }
     }
 
@@ -71,13 +69,16 @@ final class EditablePathGui: GuiElement {
                 inputField = new InputField(size, label.text != "untitled" ? label.text : "");
                 inputField.setAlign(GuiAlignX.Center, GuiAlignY.Center);
                 inputField.setCallback(this, "editname");
-                inputField.size = Vec2f(400f, 25f);
+                inputField.size = Vec2f(400f, label.size.y);
                 inputField.hasFocus = true;
                 addChildGui(inputField);
-                setAlign(GuiAlignX.Center, GuiAlignY.Top);
             }
             isFirstClick = false;
         }
         triggerCallback();
+    }
+
+    override void draw() {
+        drawFilledRect(origin, size, Color.gray);
     }
 }

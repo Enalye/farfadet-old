@@ -112,7 +112,7 @@ final class GraphicEditorGui: GuiElement {
                 saveAsBtn.setCallback(this, "save_as");
                 btns.addChildGui(saveAsBtn);
 
-                auto loadBtn = new TaskbarButtonGui("Load");
+                auto loadBtn = new TaskbarButtonGui("Open");
                 loadBtn.setCallback(this, "load");
                 btns.addChildGui(loadBtn);
 
@@ -297,9 +297,7 @@ final class GraphicEditorGui: GuiElement {
         case "load_gui":
             stopModalGui();
             auto loadGui = getModalGui!LoadJsonGui;
-            if(loadGui.hasPath()) {
-                loadJson(loadGui.getPath());
-            }
+            loadJson(loadGui.getPath());
             break;
         case "add":
             listGui.addElement();
