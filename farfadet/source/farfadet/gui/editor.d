@@ -54,6 +54,7 @@ final class GraphicEditorGui: GuiElement {
     BrushGui brushSelectGui, brushMoveGui, brushResizeGui;
 
     string jsonPath, srcPath, _projectRootPath;
+    Texture texture;
 
     this(string[] args) {
         setAlign(GuiAlignX.Left, GuiAlignY.Top);
@@ -113,7 +114,7 @@ final class GraphicEditorGui: GuiElement {
                 btns.addChildGui(saveAsBtn);
 
                 auto loadBtn = new TaskbarButtonGui("Open");
-                loadBtn.setCallback(this, "load");
+                loadBtn.setCallback(this, "open");
                 btns.addChildGui(loadBtn);
 
                 auto reloadBtn = new TaskbarButtonGui("Reload");
@@ -248,14 +249,7 @@ final class GraphicEditorGui: GuiElement {
     override void onEvent(Event event) {
         super.onEvent(event);
         if(event.type == EventType.DropFile) {
-            string path = relativePath(event.str);
-            auto ext = extension(path);
-            if(ext == ".png") {
-                load(path);
-            }
-            else if(ext == ".json") {
-                loadJson(path);
-            }
+            open(relativePath(event.str));
         }
     }
 
@@ -284,20 +278,20 @@ final class GraphicEditorGui: GuiElement {
         case "reload":
             reload();
             break;
-        case "load":
-            load();
+        case "open":
+            openModal();
             break;
-        case "save_gui":
+        case "save_modal":
             stopModalGui();
-            auto saveGui = getModalGui!SaveJsonGui;
-            jsonPath = stripExtension(relativePath(absolutePath(saveGui.getPath()), absolutePath(buildNormalizedPath(_projectRootPath, "/data/images/"))));
-            listGui.save(saveGui.getPath(), srcPath);
+            auto saveModal = getModalGui!SaveModal;
+            jsonPath = stripExtension(relativePath(absolutePath(saveModal.getPath()), absolutePath(buildNormalizedPath(_projectRootPath, "/data/images/"))));
+            listGui.save(saveModal.getPath(), srcPath);
             setWindowTitle("Farfadet - " ~ jsonPath);
             break;
-        case "load_gui":
+        case "open_modal":
             stopModalGui();
-            auto loadGui = getModalGui!LoadJsonGui;
-            loadJson(loadGui.getPath());
+            auto loadGui = getModalGui!OpenModal;
+            open(loadGui.getPath());
             break;
         case "add":
             listGui.addElement();
@@ -389,10 +383,17 @@ final class GraphicEditorGui: GuiElement {
         }
     }
 
-    Texture texture;
-    void load(string path) {
+    /// Open either an image or a json file format.
+    void open(string filePath) {
+        if(isValidImageFileType(filePath))
+            openImage(filePath);
+        else if(isValidDataFileType(filePath))
+            openData(filePath);
+    }
+
+    void openImage(string filePath) {
         jsonPath = "";
-        srcPath = buildNormalizedPath(path);
+        srcPath = buildNormalizedPath(filePath);
         texture = new Texture(srcPath);
         viewerGui.setTexture(texture);
         previewerGui.setTexture(texture);
@@ -422,9 +423,9 @@ final class GraphicEditorGui: GuiElement {
         setWindowTitle("Farfadet - *");
     }
     
-    void loadJson(string path) {
-        jsonPath = stripExtension(relativePath(absolutePath(path), absolutePath("data/images/")));
-        srcPath = buildNormalizedPath(listGui.load(path));
+    void openData(string filePath) {
+        jsonPath = stripExtension(relativePath(absolutePath(filePath), absolutePath("data/images/")));
+        srcPath = buildNormalizedPath(listGui.load(filePath));
         texture = new Texture(srcPath);
         viewerGui.setTexture(texture);
         previewerGui.setTexture(texture);
@@ -455,9 +456,9 @@ final class GraphicEditorGui: GuiElement {
     void saveAs() {
         if(!srcPath.length)
             return;
-        auto saveGui = new SaveJsonGui;
-        saveGui.setCallback(this, "save_gui");
-        setModalGui(saveGui);
+        auto saveModal = new SaveModal;
+        saveModal.setCallback(this, "save_modal");
+        setModalGui(saveModal);
     }
 
     void reload() {
@@ -473,10 +474,10 @@ final class GraphicEditorGui: GuiElement {
         setWindowTitle("Farfadet - " ~ jsonPath);
     }
 
-    void load() {
-        auto loadGui = new LoadJsonGui;
-        loadGui.setCallback(this, "load_gui");
-        setModalGui(loadGui);
+    void openModal() {
+        auto openModal = new OpenModal;
+        openModal.setCallback(this, "open_modal");
+        setModalGui(openModal);
     }
 }
 

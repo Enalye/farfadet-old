@@ -4,7 +4,7 @@ import std.file, std.path;
 import atelier;
 import farfadet.gui.file.editable_path_gui;
 
-final class SaveJsonGui: GuiElement {
+final class SaveModal: GuiElement {
     final class DirListGui: VList {
         private {
             string[] _subDirs;

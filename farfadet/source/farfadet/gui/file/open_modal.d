@@ -2,9 +2,10 @@ module farfadet.gui.file.open_modal;
 
 import std.file, std.path, std.string;
 import atelier;
+import farfadet.common;
 import farfadet.gui.file.editable_path_gui;
 
-final class LoadJsonGui: GuiElement {
+final class OpenModal: GuiElement {
     final class DirListGui: VList {
         private {
             string[] _subDirs;
@@ -188,9 +189,7 @@ final class LoadJsonGui: GuiElement {
         }
     }
 
-    private enum PathType {
-        DirectoryType, JsonFileType, ImageFileType, InvalidType
-    }
+    
     
     private void reloadList() {
         _fileName = "";
@@ -200,8 +199,8 @@ final class LoadJsonGui: GuiElement {
         _list.reset();
         auto files = dirEntries(_path, SpanMode.shallow);
         foreach(file; files) {
-            const auto type = getPathType(file);
-            final switch(type) with(PathType) {
+            const auto type = getFileType(file);
+            final switch(type) with(FileType) {
             case DirectoryType:
                 _list.add(baseName(file), Color.gray);
                 continue;
@@ -214,30 +213,6 @@ final class LoadJsonGui: GuiElement {
             case InvalidType:
                 continue;
             }
-        }
-    }
-
-    private PathType getPathType(string filePath) {
-        try {
-            if(filePath.isDir())
-                return PathType.DirectoryType;
-            switch(extension(filePath).toLower()) {
-            case ".json":
-                return PathType.JsonFileType;
-            case ".png":
-            case ".jpg":
-            case ".jpeg":
-            case ".gif":
-                return PathType.ImageFileType;
-            default:
-                return PathType.InvalidType;
-            }
-        }
-        catch(Exception e) {
-            //Functions like isDir can return an exception
-            //when reading a file it can't open.
-            //So we don't care about those file.
-            return PathType.InvalidType;
         }
     }
 
