@@ -12,8 +12,8 @@ void setupApplication(string[] args) {
     import derelict.sdl2.sdl;
     bindKey("select", SDL_SCANCODE_1);
     bindKey("move", SDL_SCANCODE_2);
-    bindKey("resize", SDL_SCANCODE_3);
-    bindKey("resize2", SDL_SCANCODE_4);
+    bindKey("resize-corner", SDL_SCANCODE_3);
+    bindKey("resize-border", SDL_SCANCODE_4);
     bindKey("up", SDL_SCANCODE_UP);
     bindKey("down", SDL_SCANCODE_DOWN);
     bindKey("left", SDL_SCANCODE_LEFT);

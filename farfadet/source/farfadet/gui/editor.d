@@ -51,7 +51,7 @@ final class GraphicEditorGui: GuiElement {
     ElementsListGui listGui;
     PropertiesGui propertiesGui;
     PreviewerGui previewerGui;
-    BrushGui brushSelectGui, brushMoveGui, brushResizeGui;
+    BrushGui brushSelectGui, brushMoveGui, brushResizeCornerGui, brushResizeBorderGui;
 
     string jsonPath, srcPath, _projectRootPath;
     Texture texture;
@@ -77,7 +77,7 @@ final class GraphicEditorGui: GuiElement {
         cursor.size *= 2f;
         setWindowCursor(cursor);
 
-        {
+        { // Previewer
             auto box = new VContainer;
             box.setAlign(GuiAlignX.Left, GuiAlignY.Bottom);
             box.setChildAlign(GuiAlignX.Center);
@@ -94,7 +94,7 @@ final class GraphicEditorGui: GuiElement {
             addChildGui(box);
         }
 
-        {
+        { // Taskbar
             auto box = new VContainer;
             box.setAlign(GuiAlignX.Center, GuiAlignY.Top);
             box.setChildAlign(GuiAlignX.Right);
@@ -127,7 +127,7 @@ final class GraphicEditorGui: GuiElement {
             addChildGui(box);
         }
 
-        {
+        { // Elements list
             auto box = new VContainer;
             box.setAlign(GuiAlignX.Left, GuiAlignY.Top);
             {
@@ -154,44 +154,55 @@ final class GraphicEditorGui: GuiElement {
             addChildGui(box);
         }
 
-        {
+        { // Tools
             auto box = new HContainer;
             box.setAlign(GuiAlignX.Right, GuiAlignY.Bottom);
-            box.position = Vec2f(75f, 40f);
+            box.position = Vec2f(5f, 40f);
             box.spacing = Vec2f(15f, 10f);
 
-            {
+            { // Select tool
                 auto vbox = new VContainer;
                 vbox.addChildGui(new Label("1"));
                 brushSelectGui = new BrushGui;
                 brushSelectGui.offSprite = fetch!Sprite("editor.select-off");
                 brushSelectGui.onSprite = fetch!Sprite("editor.select-on");
-                brushSelectGui.setCallback(viewerGui, "brush_select");
+                brushSelectGui.setCallback(viewerGui, "brush.select");
                 brushSelectGui.isOn = true;
                 viewerGui.brushSelectGui = brushSelectGui;
                 vbox.addChildGui(brushSelectGui);
                 box.addChildGui(vbox);
             }
-            {
+            { // Move tool
                 auto vbox = new VContainer;
                 vbox.addChildGui(new Label("2"));
                 brushMoveGui = new BrushGui;
                 brushMoveGui.offSprite = fetch!Sprite("editor.move-off");
                 brushMoveGui.onSprite = fetch!Sprite("editor.move-on");
-                brushMoveGui.setCallback(viewerGui, "brush_move");
+                brushMoveGui.setCallback(viewerGui, "brush.move");
                 viewerGui.brushMoveGui = brushMoveGui;
                 vbox.addChildGui(brushMoveGui);
                 box.addChildGui(vbox);
             }
-            {
+            { // Resize corner tool
                 auto vbox = new VContainer;
                 vbox.addChildGui(new Label("3"));
-                brushResizeGui = new BrushGui;
-                brushResizeGui.offSprite = fetch!Sprite("editor.resize-off");
-                brushResizeGui.onSprite = fetch!Sprite("editor.resize-on");
-                brushResizeGui.setCallback(viewerGui, "brush_resize");
-                viewerGui.brushResizeGui = brushResizeGui;
-                vbox.addChildGui(brushResizeGui);
+                brushResizeCornerGui = new BrushGui;
+                brushResizeCornerGui.offSprite = fetch!Sprite("editor.resize-off");
+                brushResizeCornerGui.onSprite = fetch!Sprite("editor.resize-on");
+                brushResizeCornerGui.setCallback(viewerGui, "brush.resize-corner");
+                viewerGui.brushResizeCornerGui = brushResizeCornerGui;
+                vbox.addChildGui(brushResizeCornerGui);
+                box.addChildGui(vbox);
+            }
+            { // Resize border tool @TODO
+                auto vbox = new VContainer;
+                vbox.addChildGui(new Label("4"));
+                brushResizeBorderGui = new BrushGui;
+                brushResizeBorderGui.offSprite = fetch!Sprite("editor.resize-off");
+                brushResizeBorderGui.onSprite = fetch!Sprite("editor.resize-on");
+                brushResizeBorderGui.setCallback(viewerGui, "brush.resize-border");
+                viewerGui.brushResizeBorderGui = brushResizeBorderGui;
+                vbox.addChildGui(brushResizeBorderGui);
                 box.addChildGui(vbox);
             }
             addChildGui(box);
@@ -281,14 +292,14 @@ final class GraphicEditorGui: GuiElement {
         case "open":
             openModal();
             break;
-        case "save_modal":
+        case "save.modal":
             stopModalGui();
             auto saveModal = getModalGui!SaveModal;
             jsonPath = stripExtension(relativePath(absolutePath(saveModal.getPath()), absolutePath(buildNormalizedPath(_projectRootPath, "/data/images/"))));
             listGui.save(saveModal.getPath(), srcPath);
             setWindowTitle("Farfadet - " ~ jsonPath);
             break;
-        case "open_modal":
+        case "open.modal":
             stopModalGui();
             auto loadGui = getModalGui!OpenModal;
             open(loadGui.getPath());
@@ -457,7 +468,7 @@ final class GraphicEditorGui: GuiElement {
         if(!srcPath.length)
             return;
         auto saveModal = new SaveModal;
-        saveModal.setCallback(this, "save_modal");
+        saveModal.setCallback(this, "save.modal");
         setModalGui(saveModal);
     }
 
@@ -476,7 +487,7 @@ final class GraphicEditorGui: GuiElement {
 
     void openModal() {
         auto openModal = new OpenModal;
-        openModal.setCallback(this, "open_modal");
+        openModal.setCallback(this, "open.modal");
         setModalGui(openModal);
     }
 }

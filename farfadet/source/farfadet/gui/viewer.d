@@ -7,7 +7,7 @@ import farfadet.common;
 import farfadet.gui.editor, farfadet.gui.previewer;
 
 enum BrushType {
-    NoType, SelectionType, MovingType, ResizeType
+    NoType, SelectionType, MovingType, ResizeCornerType, ResizeBorderType
 }
 
 final class ViewerGui: GuiElementCanvas {
@@ -28,7 +28,7 @@ final class ViewerGui: GuiElementCanvas {
     }
 
     PreviewerGui previewerGui;
-    BrushGui brushSelectGui, brushMoveGui, brushResizeGui;    
+    BrushGui brushSelectGui, brushMoveGui, brushResizeCornerGui, brushResizeBorderGui;    
 
     ImgType imgType;
     bool isActive;
@@ -53,14 +53,17 @@ final class ViewerGui: GuiElementCanvas {
 
     override void onCallback(string id) {
         switch(id) {
-        case "brush_select":
+        case "brush.select":
             toggleBrushSelect();
             break;
-        case "brush_move":
+        case "brush.move":
             toggleBrushMove();
             break;
-        case "brush_resize":
-            toggleBrushResize();
+        case "brush.resize-corner":
+            toggleBrushResizeCorner();
+            break;
+        case "brush.resize-border":
+            toggleBrushResizeBorder();
             break;
         default:
             break;
@@ -72,7 +75,8 @@ final class ViewerGui: GuiElementCanvas {
             _brushType = BrushType.NoType;
             brushSelectGui.isOn = false;
             brushMoveGui.isOn = false;
-            brushResizeGui.isOn = false;
+            brushResizeCornerGui.isOn = false;
+            brushResizeBorderGui.isOn = false;
 
             auto cursor = fetch!Sprite("editor.cursor");
             cursor.size *= 2f;
@@ -82,7 +86,8 @@ final class ViewerGui: GuiElementCanvas {
             _brushType = BrushType.SelectionType;
             brushSelectGui.isOn = true;
             brushMoveGui.isOn = false;
-            brushResizeGui.isOn = false;
+            brushResizeCornerGui.isOn = false;
+            brushResizeBorderGui.isOn = false;
 
             auto cursor = fetch!Sprite("editor.cursor");
             cursor.size *= 2f;
@@ -95,7 +100,8 @@ final class ViewerGui: GuiElementCanvas {
             _brushType = BrushType.NoType;
             brushSelectGui.isOn = false;
             brushMoveGui.isOn = false;
-            brushResizeGui.isOn = false;
+            brushResizeCornerGui.isOn = false;
+            brushResizeBorderGui.isOn = false;
 
             auto cursor = fetch!Sprite("editor.cursor");
             cursor.size *= 2f;
@@ -105,7 +111,8 @@ final class ViewerGui: GuiElementCanvas {
             _brushType = BrushType.MovingType;
             brushSelectGui.isOn = false;
             brushMoveGui.isOn = true;
-            brushResizeGui.isOn = false;
+            brushResizeCornerGui.isOn = false;
+            brushResizeBorderGui.isOn = false;
 
             auto cursor = fetch!Sprite("editor.cursor-move");
             cursor.size *= 2f;
@@ -113,22 +120,47 @@ final class ViewerGui: GuiElementCanvas {
         }
     }
 
-    void toggleBrushResize() {
-        if(_brushType == BrushType.ResizeType) {
+    void toggleBrushResizeCorner() {
+        if(_brushType == BrushType.ResizeCornerType) {
             _brushType = BrushType.NoType;
             brushSelectGui.isOn = false;
             brushMoveGui.isOn = false;
-            brushResizeGui.isOn = false;
+            brushResizeCornerGui.isOn = false;
+            brushResizeBorderGui.isOn = false;
 
             auto cursor = fetch!Sprite("editor.cursor");
             cursor.size *= 2f;
             setWindowCursor(cursor);
         }
         else {
-            _brushType = BrushType.ResizeType;
+            _brushType = BrushType.ResizeCornerType;
             brushSelectGui.isOn = false;
             brushMoveGui.isOn = false;
-            brushResizeGui.isOn = true;
+            brushResizeCornerGui.isOn = true;
+            brushResizeBorderGui.isOn = false;
+
+            setResizeCursor();
+        }
+    }
+
+    void toggleBrushResizeBorder() {
+        if(_brushType == BrushType.ResizeBorderType) {
+            _brushType = BrushType.NoType;
+            brushSelectGui.isOn = false;
+            brushMoveGui.isOn = false;
+            brushResizeCornerGui.isOn = false;
+            brushResizeBorderGui.isOn = false;
+
+            auto cursor = fetch!Sprite("editor.cursor");
+            cursor.size *= 2f;
+            setWindowCursor(cursor);
+        }
+        else {
+            _brushType = BrushType.ResizeBorderType;
+            brushSelectGui.isOn = false;
+            brushMoveGui.isOn = false;
+            brushResizeCornerGui.isOn = false;
+            brushResizeBorderGui.isOn = true;
 
             setResizeCursor();
         }
@@ -216,8 +248,12 @@ final class ViewerGui: GuiElementCanvas {
             resizeSelection(cursorPosition);
             triggerCallback();
             break;
-        case ResizeType:
+        case ResizeCornerType:
             resize2Selection(cursorPosition);
+            triggerCallback();
+            break;
+        case ResizeBorderType:
+            resize3Selection(cursorPosition);
             triggerCallback();
             break;
         case MovingType:
@@ -246,13 +282,21 @@ final class ViewerGui: GuiElementCanvas {
             _selectionOldOrigin = _selectionOrigin;
             triggerCallback();
             break;
-        case ResizeType:
+        case ResizeCornerType:
             _isResizingRectRight = (cursorPosition.x >= (_selectionOrigin.x + (_selectionSize.x >> 1)));
             _isResizingRectBottom = (cursorPosition.y >= (_selectionOrigin.y + (_selectionSize.y >> 1)));
 
             _selectionStart = Vec2i(_selectionOrigin.x + (_isResizingRectRight ? 0 : _selectionSize.x),
                 _selectionOrigin.y + (_isResizingRectBottom ? 0 : _selectionSize.y));
             resize2Selection(cursorPosition);
+            break;
+        case ResizeBorderType:
+            _isResizingRectRight = (cursorPosition.x >= (_selectionOrigin.x + (_selectionSize.x >> 1)));
+            _isResizingRectBottom = (cursorPosition.y >= (_selectionOrigin.y + (_selectionSize.y >> 1)));
+
+            _selectionStart = Vec2i(_selectionOrigin.x + (_isResizingRectRight ? 0 : _selectionSize.x),
+                _selectionOrigin.y + (_isResizingRectBottom ? 0 : _selectionSize.y));
+            resize3Selection(cursorPosition);
             break;
         }
     }
@@ -265,8 +309,12 @@ final class ViewerGui: GuiElementCanvas {
             resizeSelection(cursorPosition);
             triggerCallback();
             break;
-        case ResizeType:
+        case ResizeCornerType:
             resize2Selection(cursorPosition);
+            triggerCallback();
+            break;
+        case ResizeBorderType:
+            resize3Selection(cursorPosition);
             triggerCallback();
             break;
         case MovingType:
@@ -277,7 +325,7 @@ final class ViewerGui: GuiElementCanvas {
     }
 
     void setResizeCursor() {
-        if(_brushType == BrushType.ResizeType) {
+        if(_brushType == BrushType.ResizeCornerType) {
             if(_isResizingRectRight && _isResizingRectBottom) {
                 setWindowCursor(_resizeCursors[0]);
             }
@@ -317,8 +365,10 @@ final class ViewerGui: GuiElementCanvas {
             toggleBrushSelect();
         if(getKeyDown("move"))
             toggleBrushMove();
-        if(getKeyDown("resize"))
-            toggleBrushResize();
+        if(getKeyDown("resize-corner"))
+            toggleBrushResizeCorner();
+        if(getKeyDown("resize-border"))
+            toggleBrushResizeBorder();
     }
 
     Vec4i getClip() {
@@ -351,6 +401,44 @@ final class ViewerGui: GuiElementCanvas {
     }
 
     void resize2Selection(Vec2i cursorPosition) {
+        if(_isResizingRectRight) {
+            _selectionSize.x = cursorPosition.x - _selectionStart.x;
+            if(cursorPosition.x < _selectionStart.x) {
+                _selectionSize.x = _selectionStart.x - cursorPosition.x;
+                _selectionOrigin.x = cursorPosition.x;
+                _isResizingRectRight = false;
+            }
+        }
+        else {
+            _selectionOrigin.x = cursorPosition.x;
+            _selectionSize.x = _selectionStart.x - _selectionOrigin.x;
+            if(cursorPosition.x > _selectionStart.x) {
+                _selectionSize.x = cursorPosition.x - _selectionStart.x;
+                _selectionOrigin.x = _selectionStart.x;
+                _isResizingRectRight = true;
+            }
+        }
+        if(_isResizingRectBottom) {
+            _selectionSize.y = cursorPosition.y - _selectionStart.y;
+            if(cursorPosition.y < _selectionStart.y) {
+                _selectionSize.y = _selectionStart.y - cursorPosition.y;
+                _selectionOrigin.y = cursorPosition.y;
+                _isResizingRectBottom = false;
+            }
+        }
+        else {
+            _selectionOrigin.y = cursorPosition.y;
+            _selectionSize.y = _selectionStart.y - _selectionOrigin.y;
+            if(cursorPosition.y > _selectionStart.y) {
+                _selectionSize.y = cursorPosition.y - _selectionStart.y;
+                _selectionOrigin.y = _selectionStart.y;
+                _isResizingRectBottom = true;
+            }
+        }
+        setResizeCursor();
+    }
+
+    void resize3Selection(Vec2i cursorPosition) {
         if(_isResizingRectRight) {
             _selectionSize.x = cursorPosition.x - _selectionStart.x;
             if(cursorPosition.x < _selectionStart.x) {
