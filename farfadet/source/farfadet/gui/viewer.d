@@ -15,7 +15,7 @@ final class ViewerGui: GuiElementCanvas {
         Texture _texture;
         Sprite _sprite;
         Sprite _rect;
-        Sprite[4] _resizeCursors;
+        Sprite[8] _resizeCursors;
         Vec2i _selectionStart, _selectionOrigin, _selectionSize, _selectionOldOrigin;
         bool _isSelecting;
         BrushType _brushType = BrushType.SelectionType;
@@ -24,7 +24,7 @@ final class ViewerGui: GuiElementCanvas {
 		Vec2f _startMovingCursorPosition, _cursorPosition = Vec2f.zero;
 		bool _isGrabbed;
         float _scale = 1f;
-        bool _isResizingRectRight, _isResizingRectBottom;
+        bool _isResizingRectRight, _isResizingRectBottom, _isResizingHorizontally;
     }
 
     PreviewerGui previewerGui;
@@ -41,14 +41,19 @@ final class ViewerGui: GuiElementCanvas {
         size(Vec2f(screenHeight, screenHeight - 50));
         _rect = fetch!Sprite("editor.rect");
 
-        _resizeCursors[0] = fetch!Sprite("editor.cursor-resize1");
-        _resizeCursors[1] = fetch!Sprite("editor.cursor-resize2");
-        _resizeCursors[2] = fetch!Sprite("editor.cursor-resize3");
-        _resizeCursors[3] = fetch!Sprite("editor.cursor-resize4");
-        _resizeCursors[0].size *= 2f;
-        _resizeCursors[1].size *= 2f;
-        _resizeCursors[2].size *= 2f;
-        _resizeCursors[3].size *= 2f;
+        _resizeCursors[0] = fetch!Sprite("editor.cursor-corner1");
+        _resizeCursors[1] = fetch!Sprite("editor.cursor-corner2");
+        _resizeCursors[2] = fetch!Sprite("editor.cursor-corner3");
+        _resizeCursors[3] = fetch!Sprite("editor.cursor-corner4");
+        _resizeCursors[4] = fetch!Sprite("editor.cursor-border1");
+        _resizeCursors[5] = fetch!Sprite("editor.cursor-border2");
+        _resizeCursors[6] = fetch!Sprite("editor.cursor-border3");
+        _resizeCursors[7] = fetch!Sprite("editor.cursor-border4");
+
+        int i = 8;
+        while(i --) {
+            _resizeCursors[i].size *= 2f;
+        }
     }
 
     override void onCallback(string id) {
@@ -181,6 +186,8 @@ final class ViewerGui: GuiElementCanvas {
             else {
                 _isResizingRectRight = (_cursorPosition.x >= (_selectionOrigin.x + (_selectionSize.x >> 1)));
                 _isResizingRectBottom = (_cursorPosition.y >= (_selectionOrigin.y + (_selectionSize.y >> 1)));
+                _isResizingHorizontally = abs(_cursorPosition.x - (_selectionOrigin.x + (_selectionSize.x >> 1))) >= 
+                    abs(_cursorPosition.y - (_selectionOrigin.y + (_selectionSize.y >> 1)));
                 setResizeCursor();
             }
             if(_isGrabbed) {
@@ -294,6 +301,9 @@ final class ViewerGui: GuiElementCanvas {
             _isResizingRectRight = (cursorPosition.x >= (_selectionOrigin.x + (_selectionSize.x >> 1)));
             _isResizingRectBottom = (cursorPosition.y >= (_selectionOrigin.y + (_selectionSize.y >> 1)));
 
+            _isResizingHorizontally = abs(_cursorPosition.x - (_selectionOrigin.x + (_selectionSize.x >> 1))) >= 
+                    abs(_cursorPosition.y - (_selectionOrigin.y + (_selectionSize.y >> 1)));
+
             _selectionStart = Vec2i(_selectionOrigin.x + (_isResizingRectRight ? 0 : _selectionSize.x),
                 _selectionOrigin.y + (_isResizingRectBottom ? 0 : _selectionSize.y));
             resize3Selection(cursorPosition);
@@ -337,6 +347,24 @@ final class ViewerGui: GuiElementCanvas {
             }
             else {
                 setWindowCursor(_resizeCursors[3]);
+            }
+        }
+        else if(_brushType == BrushType.ResizeBorderType) {
+            if(_isResizingHorizontally) {
+                if(_isResizingRectRight) {
+                    setWindowCursor(_resizeCursors[4]);
+                }
+                else {
+                    setWindowCursor(_resizeCursors[5]);
+                }
+            }
+            else {
+                if(_isResizingRectBottom) {
+                    setWindowCursor(_resizeCursors[6]);
+                }
+                else {
+                    setWindowCursor(_resizeCursors[7]);
+                }
             }
         }
     }
@@ -439,38 +467,42 @@ final class ViewerGui: GuiElementCanvas {
     }
 
     void resize3Selection(Vec2i cursorPosition) {
-        if(_isResizingRectRight) {
-            _selectionSize.x = cursorPosition.x - _selectionStart.x;
-            if(cursorPosition.x < _selectionStart.x) {
-                _selectionSize.x = _selectionStart.x - cursorPosition.x;
-                _selectionOrigin.x = cursorPosition.x;
-                _isResizingRectRight = false;
-            }
-        }
-        else {
-            _selectionOrigin.x = cursorPosition.x;
-            _selectionSize.x = _selectionStart.x - _selectionOrigin.x;
-            if(cursorPosition.x > _selectionStart.x) {
+        if(_isResizingHorizontally) {
+            if(_isResizingRectRight) {
                 _selectionSize.x = cursorPosition.x - _selectionStart.x;
-                _selectionOrigin.x = _selectionStart.x;
-                _isResizingRectRight = true;
+                if(cursorPosition.x < _selectionStart.x) {
+                    _selectionSize.x = _selectionStart.x - cursorPosition.x;
+                    _selectionOrigin.x = cursorPosition.x;
+                    _isResizingRectRight = false;
+                }
             }
-        }
-        if(_isResizingRectBottom) {
-            _selectionSize.y = cursorPosition.y - _selectionStart.y;
-            if(cursorPosition.y < _selectionStart.y) {
-                _selectionSize.y = _selectionStart.y - cursorPosition.y;
-                _selectionOrigin.y = cursorPosition.y;
-                _isResizingRectBottom = false;
+            else {
+                _selectionOrigin.x = cursorPosition.x;
+                _selectionSize.x = _selectionStart.x - _selectionOrigin.x;
+                if(cursorPosition.x > _selectionStart.x) {
+                    _selectionSize.x = cursorPosition.x - _selectionStart.x;
+                    _selectionOrigin.x = _selectionStart.x;
+                    _isResizingRectRight = true;
+                }
             }
         }
         else {
-            _selectionOrigin.y = cursorPosition.y;
-            _selectionSize.y = _selectionStart.y - _selectionOrigin.y;
-            if(cursorPosition.y > _selectionStart.y) {
+            if(_isResizingRectBottom) {
                 _selectionSize.y = cursorPosition.y - _selectionStart.y;
-                _selectionOrigin.y = _selectionStart.y;
-                _isResizingRectBottom = true;
+                if(cursorPosition.y < _selectionStart.y) {
+                    _selectionSize.y = _selectionStart.y - cursorPosition.y;
+                    _selectionOrigin.y = cursorPosition.y;
+                    _isResizingRectBottom = false;
+                }
+            }
+            else {
+                _selectionOrigin.y = cursorPosition.y;
+                _selectionSize.y = _selectionStart.y - _selectionOrigin.y;
+                if(cursorPosition.y > _selectionStart.y) {
+                    _selectionSize.y = cursorPosition.y - _selectionStart.y;
+                    _selectionOrigin.y = _selectionStart.y;
+                    _isResizingRectBottom = true;
+                }
             }
         }
         setResizeCursor();

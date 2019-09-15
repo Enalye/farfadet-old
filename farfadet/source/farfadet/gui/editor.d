@@ -187,8 +187,8 @@ final class GraphicEditorGui: GuiElement {
                 auto vbox = new VContainer;
                 vbox.addChildGui(new Label("3"));
                 brushResizeCornerGui = new BrushGui;
-                brushResizeCornerGui.offSprite = fetch!Sprite("editor.resize-off");
-                brushResizeCornerGui.onSprite = fetch!Sprite("editor.resize-on");
+                brushResizeCornerGui.offSprite = fetch!Sprite("editor.resize-corner-off");
+                brushResizeCornerGui.onSprite = fetch!Sprite("editor.resize-corner-on");
                 brushResizeCornerGui.setCallback(viewerGui, "brush.resize-corner");
                 viewerGui.brushResizeCornerGui = brushResizeCornerGui;
                 vbox.addChildGui(brushResizeCornerGui);
@@ -198,8 +198,8 @@ final class GraphicEditorGui: GuiElement {
                 auto vbox = new VContainer;
                 vbox.addChildGui(new Label("4"));
                 brushResizeBorderGui = new BrushGui;
-                brushResizeBorderGui.offSprite = fetch!Sprite("editor.resize-off");
-                brushResizeBorderGui.onSprite = fetch!Sprite("editor.resize-on");
+                brushResizeBorderGui.offSprite = fetch!Sprite("editor.resize-border-off");
+                brushResizeBorderGui.onSprite = fetch!Sprite("editor.resize-border-on");
                 brushResizeBorderGui.setCallback(viewerGui, "brush.resize-border");
                 viewerGui.brushResizeBorderGui = brushResizeBorderGui;
                 vbox.addChildGui(brushResizeBorderGui);

@@ -407,6 +407,6 @@ final class ElementsListGui: VList {
             elementsNode ~= elementNode;
         }
         json["elements"] = elementsNode;
-        std.file.write(path, toJSON(json));
+        std.file.write(path, toJSON(json, true));
     }
 }
