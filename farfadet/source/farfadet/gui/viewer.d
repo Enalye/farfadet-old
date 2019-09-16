@@ -38,7 +38,7 @@ final class ViewerGui: GuiElementCanvas {
     int top, bottom, left, right;
 
     this() {
-        size(Vec2f(screenHeight, screenHeight - 50));
+        size(Vec2f(screenHeight, screenHeight - 85));
         _rect = fetch!Sprite("editor.rect");
 
         _resizeCursors[0] = fetch!Sprite("editor.cursor-corner1");

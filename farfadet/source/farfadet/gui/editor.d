@@ -4,6 +4,7 @@ import std.path, std.file;
 import atelier;
 import farfadet.common, farfadet.gui.file;
 import farfadet.gui.viewer, farfadet.gui.elements, farfadet.gui.properties, farfadet.gui.previewer;
+import farfadet.gui.tabs;
 
 private final class BrushGui: GuiElement {
     Sprite offSprite, onSprite;
@@ -51,6 +52,7 @@ final class GraphicEditorGui: GuiElement {
     ElementsListGui listGui;
     PropertiesGui propertiesGui;
     PreviewerGui previewerGui;
+    TabsGui tabsGui;
     BrushGui brushSelectGui, brushMoveGui, brushResizeCornerGui, brushResizeBorderGui;
 
     string jsonPath, srcPath, _projectRootPath;
@@ -68,6 +70,8 @@ final class GraphicEditorGui: GuiElement {
         listGui = new ElementsListGui;
         previewerGui = new PreviewerGui;
         viewerGui.previewerGui = previewerGui;
+
+        tabsGui = new TabsGui;
 
         viewerGui.setCallback(this, "selection");
         propertiesGui.setCallback(this, "properties");
@@ -101,8 +105,8 @@ final class GraphicEditorGui: GuiElement {
             {
                 auto btns = new HContainer;
 
-                auto prjBtn = new TaskbarButtonGui("Set Project");
-                prjBtn.setCallback(this, "project");
+                auto prjBtn = new TaskbarButtonGui("New");
+                prjBtn.setCallback(this, "new");
                 btns.addChildGui(prjBtn);
 
                 auto saveBtn = new TaskbarButtonGui("Save");
@@ -122,6 +126,7 @@ final class GraphicEditorGui: GuiElement {
                 btns.addChildGui(reloadBtn);
 
                 box.addChildGui(btns);
+                box.addChildGui(tabsGui);
                 box.addChildGui(viewerGui);
             }
             addChildGui(box);
@@ -271,14 +276,7 @@ final class GraphicEditorGui: GuiElement {
 
     override void onCallback(string id) {
         switch(id) {
-        case "project":
-            auto gui = new SetProjectGui(_projectRootPath);
-            gui.setCallback(this, "project.modal");
-            setModalGui(gui);
-            break;
-        case "project.modal":
-            auto gui = getModalGui!SetProjectGui;
-            stopModalGui();
+        case "new":
             break;
         case "save":
             save();
@@ -550,167 +548,6 @@ private final class RemoveLayerGui: GuiElement {
             break;
         default:
             break;
-        }
-    }
-
-    override void draw() {
-        drawFilledRect(origin, size, Color(.11f, .08f, .15f));
-    }
-
-    override void drawOverlay() {
-        drawRect(origin, size, Color.gray);
-    }
-}
-
-private final class SetProjectGui: GuiElement {
-    final class DirListGui: VList {
-        private {
-            string[] _subDirs;
-        }
-
-        this() {
-            super(Vec2f(400f, 300f));
-        }
-
-        override void onCallback(string id) {
-            super.onCallback(id);
-            if(id == "list") {
-                triggerCallback();
-            }
-        }
-
-        override void draw() {
-            drawFilledRect(origin, size, Color(.08f, .09f, .11f));
-        }
-
-        void add(string subDir) {
-            addChildGui(new TextButton(getDefaultFont(), subDir));
-            _subDirs ~= subDir;
-        }
-
-        string getSubDir() {
-            if(selected() >= _subDirs.length)
-                throw new Exception("Subdirectory index out of range");
-            return _subDirs[selected()];
-        }
-
-        void reset() {
-            removeChildrenGuis();
-            _subDirs.length = 0;
-        }
-    }
-
-    private {
-        Label _pathLabel;
-        DirListGui _list;
-        string _projectRootPath;
-    }
-
-    this(string path) {
-        _projectRootPath = path;
-
-        size(Vec2f(500f, 500f));
-        setAlign(GuiAlignX.Center, GuiAlignY.Center);
-
-        Font font = getDefaultFont();
-
-        { //Title
-            auto title = new Label(font, "Set the project root");
-            title.setAlign(GuiAlignX.Left, GuiAlignY.Top);
-            title.position = Vec2f(20f, 10f);
-            addChildGui(title);
-        }
-
-        { //Validation
-            auto box = new HContainer;
-            box.setAlign(GuiAlignX.Right, GuiAlignY.Bottom);
-            box.spacing = Vec2f(25f, 15f);
-            addChildGui(box);
-
-            auto applyBtn = new TextButton(font, "Apply");
-            applyBtn.size = Vec2f(100f, 35f);
-            applyBtn.setCallback(this, "apply");
-            box.addChildGui(applyBtn);
-
-            auto cancelBtn = new TextButton(font, "Cancel");
-            cancelBtn.size = Vec2f(100f, 35f);
-            cancelBtn.setCallback(this, "cancel");
-            box.addChildGui(cancelBtn);
-        }
-
-        { //List
-            auto vbox = new VContainer;
-            vbox.setAlign(GuiAlignX.Center, GuiAlignY.Center);
-            addChildGui(vbox);
-
-            {
-                _pathLabel = new Label(_projectRootPath);
-                vbox.addChildGui(_pathLabel);
-            }
-            {
-                auto hbox = new HContainer;
-                vbox.addChildGui(hbox);
-
-                auto parentBtn = new TextButton(getDefaultFont(), "Parent");
-                parentBtn.setCallback(this, "parent_folder");
-                hbox.addChildGui(parentBtn);
-            }
-            {
-                _list = new DirListGui;
-                _list.setCallback(this, "sub_folder");
-                vbox.addChildGui(_list);
-            }
-        }
-
-        _projectRootPath = dirName(thisExePath());
-        reloadList();
-
-        //States
-        GuiState hiddenState = {
-            offset: Vec2f(0f, -50f),
-            color: Color.clear
-        };
-        addState("hidden", hiddenState);
-
-        GuiState defaultState = {
-            time: .5f,
-            easingFunction: getEasingFunction("sine-out")
-        };
-        addState("default", defaultState);
-
-        setState("hidden");
-        doTransitionState("default");
-    }
-
-    override void onCallback(string id) {
-        switch(id) {
-        case "sub_folder":
-            _projectRootPath = buildNormalizedPath(_projectRootPath, _list.getSubDir());
-            reloadList();
-            break;
-        case "parent_folder":
-            _projectRootPath = dirName(_projectRootPath);
-            reloadList();
-            break;
-        case "apply":
-            triggerCallback();
-            break;
-        case "cancel":
-            stopModalGui();
-            break;
-        default:
-            break;
-        }
-    }
-
-    void reloadList() {
-        _pathLabel.text = _projectRootPath;
-        _list.reset();
-        auto files = dirEntries(_projectRootPath, SpanMode.shallow);
-        foreach(file; files) {
-            if(!file.isDir())
-                continue;
-            _list.add(baseName(file));
         }
     }
 
