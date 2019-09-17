@@ -25,6 +25,7 @@ final class ViewerGui: GuiElementCanvas {
 		bool _isGrabbed;
         float _scale = 1f;
         bool _isResizingRectRight, _isResizingRectBottom, _isResizingHorizontally;
+        Timer _timer;
     }
 
     PreviewerGui previewerGui;
@@ -54,6 +55,8 @@ final class ViewerGui: GuiElementCanvas {
         while(i --) {
             _resizeCursors[i].size *= 2f;
         }
+
+        _timer.start(5f, TimeMode.Bounce);
     }
 
     override void onCallback(string id) {
@@ -384,6 +387,8 @@ final class ViewerGui: GuiElementCanvas {
     }
 
     override void update(float deltaTime) {
+        _timer.update(deltaTime);
+
         if(!isHovered) {
             _isSelecting = false;
             _isGrabbed = false;
@@ -509,8 +514,10 @@ final class ViewerGui: GuiElementCanvas {
     }
 
     override void draw() {
-        if(_texture !is null && _sprite !is null)
+        if(_texture !is null && _sprite !is null) {
             _sprite.draw(Vec2f.zero);
+            drawRect(Vec2f.zero, _sprite.size, Color.white * easeInOutSine(lerp(.4f, .6f, _timer.time)));
+        }
 
         if(!isActive)
             return;
@@ -524,6 +531,7 @@ final class ViewerGui: GuiElementCanvas {
             _rect.color = Color(0f, .5f, 1f, .35f);
             _rect.draw(rectOrigin + rectSize / 2f);
             drawRect(rectOrigin, rectSize, Color.white);
+            drawCross(rectOrigin + rectSize / 2f, 5f, Color.white);
             break;
         case BorderedBrushType:
         case BorderlessBrushType:
@@ -556,6 +564,8 @@ final class ViewerGui: GuiElementCanvas {
                     Vec2f s = rectSize;
 
                     drawRect(p, s, (x == 0 && y == 0) ? (Color.white) : (Color.gray));
+                    drawCross(rectOrigin + Vec2f(_selectionSize.x * x, _selectionSize.y * y) +
+                        rectSize / 2f, 5f, Color.white);
 
                     if(x == 0 && y == 0)
                         continue;
@@ -589,6 +599,8 @@ final class ViewerGui: GuiElementCanvas {
                         rectOrigin + Vec2f(_selectionSize.x * x, _selectionSize.y * y),
                         rectSize,
                         (x == 0 && y == 0) ? (Color.white) : (Color.green));
+                    drawCross(rectOrigin + Vec2f(_selectionSize.x * x, _selectionSize.y * y) +
+                        rectSize / 2f, 5f, Color.white);
                     i ++;
                 }
             }
