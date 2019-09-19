@@ -14,7 +14,7 @@ class PreviewerGui: GuiElement {
     }
 
     //General data
-    ImgType type;
+    ElementType type;
 
     Vec4i clip;
 
@@ -72,7 +72,7 @@ class PreviewerGui: GuiElement {
             return;
         if(_texture is null)
             return;
-        final switch(type) with(ImgType) {
+        final switch(type) with(ElementType) {
         case SpriteType:
             _sprite.fit(size);
             _sprite.draw(center);

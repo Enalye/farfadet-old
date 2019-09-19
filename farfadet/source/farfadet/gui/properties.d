@@ -204,19 +204,19 @@ final class PropertiesGui: VContainer {
         }
     }
 
-    ImgType getImgType() {
+    ElementType getImgType() {
         switch(_elementTypeSelector.selected) {
-        case 0: return ImgType.SpriteType;
-        case 1: return ImgType.TilesetType;
-        case 2: return ImgType.BorderedBrushType;
-        case 3: return ImgType.BorderlessBrushType;
-        case 4: return ImgType.NinePatchType;
+        case 0: return ElementType.SpriteType;
+        case 1: return ElementType.TilesetType;
+        case 2: return ElementType.BorderedBrushType;
+        case 3: return ElementType.BorderlessBrushType;
+        case 4: return ElementType.NinePatchType;
         default:
             throw new Exception("Invalid texture class property");
         }
     }
 
-    void setImgType(ImgType type) {
+    void setImgType(ElementType type) {
         _elementTypeSelector.selected(type);
     }
 

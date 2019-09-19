@@ -9,7 +9,7 @@ private final class ImgElementGui: GuiElement {
     InputField inputField;
     bool isEditingName, isFirstClick = true;
 
-    ImgElementData data;
+    ElementData data;
 
     this() {
         label = new Label("untitled");
@@ -17,7 +17,7 @@ private final class ImgElementGui: GuiElement {
         addChildGui(label);
         size = label.size;
 
-        data = new ImgElementData;
+        data = new ElementData;
     }
 
     override void onCallback(string id) {
@@ -41,7 +41,8 @@ private final class ImgElementGui: GuiElement {
         isEditingName = false;
         isFirstClick = true;
 
-        label.text = inputField.text;
+        data.name = inputField.text;
+        label.text = data.name;
         removeChildrenGuis();
         addChildGui(label);
     }
@@ -64,7 +65,7 @@ private final class ImgElementGui: GuiElement {
 
     override void draw() {
         Color color;
-        final switch(data.type) with(ImgType) {
+        final switch(data.type) with(ElementType) {
         case SpriteType:
             color = isSelected ? Color.fromRGB(0x9EFFCF) : Color.fromRGB(0x7CCCCB);
             break;
@@ -134,6 +135,8 @@ final class ElementsListGui: VList {
 		foreach(element; elements)
 			addChildGui(element);
         selected(id - 1);
+
+        setElements();
         triggerCallback();
 	}
 
@@ -157,6 +160,8 @@ final class ElementsListGui: VList {
 		foreach(element; elements)
 			addChildGui(element);
         selected(id + 1);
+
+        setElements();
         triggerCallback();
     }
 
@@ -188,6 +193,8 @@ final class ElementsListGui: VList {
         foreach(element; elements)
             addChildGui(element);
         selected(id);
+
+        setElements();
         triggerCallback();
     }
 
@@ -227,6 +234,8 @@ final class ElementsListGui: VList {
         foreach(element; elements)
             addChildGui(element);
         selected(id + 1);
+
+        setElements();
         triggerCallback();
     }
 
@@ -257,16 +266,26 @@ final class ElementsListGui: VList {
 			addChildGui(element);
         if(elements.length)
             selected(id);
+
+        setElements();
         triggerCallback();
     }
 
-    ImgElementData getSelectedData() {
+    ElementData getSelectedData() {
         auto elements = getList();
         auto id = selected();
 
         if(!elements.length || id >= elements.length)
             throw new Exception("No image element selected");
         return (cast(ImgElementGui)elements[id]).data;
+    }
+
+    void setElements() {
+        ElementData[] elements;
+		foreach(ImgElementGui elementGui; cast(ImgElementGui[])getList()) {
+            elements ~= elementGui.data;
+        }
+        setCurrentElements(elements);
     }
 
     bool isSelectingData() {
@@ -276,137 +295,16 @@ final class ElementsListGui: VList {
         return (elements.length && id < elements.length);
     }
 
-    void reset() {
-        removeChildrenGuis();
-    }
-
-    string load(string path) {
+    void reload() {
         removeChildrenGuis();
 
-        JSONValue json = parseJSON(readText(path));
-
-        if(getJsonStr(json, "DOCTYPE") != "IMAGE")
-            return "";
-
-        auto srcImage = getJsonStr(json, "texture");
-        auto elementsNode = getJsonArray(json, "elements");
-
-		foreach(JSONValue elementNode; elementsNode) {
-            auto element = new ImgElementGui;
-            element.label.text = getJsonStr(elementNode, "name");
-
-            switch(getJsonStr(elementNode, "type")) {
-            case "sprite":
-                element.data.type = ImgType.SpriteType;
-                break;
-            case "tileset":
-                element.data.type = ImgType.TilesetType;
-                break;
-            case "bordered_brush":
-                element.data.type = ImgType.BorderedBrushType;
-                break;
-            case "borderless_brush":
-                element.data.type = ImgType.BorderlessBrushType;
-                break;
-            case "ninepatch":
-                element.data.type = ImgType.NinePatchType;
-                break;
-            default:
-                throw new Exception("Invalid image type");
-            }
-
-            auto clipNode = getJson(elementNode, "clip");
-            Vec4i clip;
-            clip.x = getJsonInt(clipNode, "x");
-            clip.y = getJsonInt(clipNode, "y");
-            clip.z = getJsonInt(clipNode, "w");
-            clip.w = getJsonInt(clipNode, "h");
-            element.data.clip = clip;
-
-            final switch(element.data.type) with(ImgType) {
-            case SpriteType:
-            case BorderedBrushType:
-            case BorderlessBrushType:
-                break;
-            case TilesetType:
-                element.data.columns = getJsonInt(elementNode, "columns");
-                element.data.lines = getJsonInt(elementNode, "lines");
-                element.data.maxtiles = getJsonInt(elementNode, "maxtiles");
-                break;
-            case NinePatchType:
-                element.data.top = getJsonInt(elementNode, "top");
-                element.data.bottom = getJsonInt(elementNode, "bottom");
-                element.data.left = getJsonInt(elementNode, "left");
-                element.data.right = getJsonInt(elementNode, "right");
-                break;
-            }
-            addChildGui(element);
+        auto tabData = getCurrentTab();
+		foreach(ElementData element; tabData.elements) {
+            auto elementGui = new ImgElementGui;
+            elementGui.data = element;
+            elementGui.label.text = element.name;
+            addChildGui(elementGui);
         }
         triggerCallback();
-
-        return srcImage;
-    }
-
-    void save(string path, string srcImage) {
-        const auto elements = cast(const ImgElementGui[])getList();
-
-        JSONValue json;
-        json["DOCTYPE"] = JSONValue("IMAGE");
-        json["texture"] = JSONValue(convertPathToExport(srcImage));
-        JSONValue[] elementsNode;
-
-        foreach(element; elements) {
-            const auto data = element.data;
-
-            JSONValue elementNode;
-            elementNode["name"] = JSONValue(element.label.text);
-
-            final switch(data.type) with(ImgType) {
-            case SpriteType:
-                elementNode["type"] = JSONValue("sprite");
-                break;
-            case TilesetType:
-                elementNode["type"] = JSONValue("tileset");
-                break;
-            case BorderedBrushType:
-                elementNode["type"] = JSONValue("bordered_brush");
-                break;
-            case BorderlessBrushType:
-                elementNode["type"] = JSONValue("borderless_brush");
-                break;
-            case NinePatchType:
-                elementNode["type"] = JSONValue("ninepatch");
-                break;
-            }
-
-            JSONValue clipNode;
-            clipNode["x"] = JSONValue(data.clip.x);
-            clipNode["y"] = JSONValue(data.clip.y);
-            clipNode["w"] = JSONValue(data.clip.z);
-            clipNode["h"] = JSONValue(data.clip.w);
-            elementNode["clip"] = clipNode;
-
-            final switch(data.type) with(ImgType) {
-            case SpriteType:
-            case BorderedBrushType:
-            case BorderlessBrushType:
-                break;
-            case TilesetType:
-                elementNode["columns"] = JSONValue(data.columns);
-                elementNode["lines"] = JSONValue(data.lines);
-                elementNode["maxtiles"] = JSONValue(data.maxtiles);
-                break;
-            case NinePatchType:
-                elementNode["top"] = JSONValue(data.top);
-                elementNode["bottom"] = JSONValue(data.bottom);
-                elementNode["left"] = JSONValue(data.left);
-                elementNode["right"] = JSONValue(data.right);
-                break;
-            }
-
-            elementsNode ~= elementNode;
-        }
-        json["elements"] = elementsNode;
-        std.file.write(path, toJSON(json, true));
     }
 }

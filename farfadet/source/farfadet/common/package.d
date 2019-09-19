@@ -1,6 +1,6 @@
 module farfadet.common;
 
 public {
-    import farfadet.common.imgelement;
+    import farfadet.common.data;
     import farfadet.common.util;
 }

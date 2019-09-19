@@ -55,10 +55,8 @@ final class GraphicEditorGui: GuiElement {
     TabsGui tabsGui;
     BrushGui brushSelectGui, brushMoveGui, brushResizeCornerGui, brushResizeBorderGui;
 
-    string jsonPath, srcPath, _projectRootPath;
-    Texture texture;
-
     this(string[] args) {
+        setupData(this);
         setAlign(GuiAlignX.Left, GuiAlignY.Top);
         size = screenSize;
 
@@ -105,10 +103,6 @@ final class GraphicEditorGui: GuiElement {
             {
                 auto btns = new HContainer;
 
-                auto prjBtn = new TaskbarButtonGui("New");
-                prjBtn.setCallback(this, "new");
-                btns.addChildGui(prjBtn);
-
                 auto saveBtn = new TaskbarButtonGui("Save");
                 saveBtn.setCallback(this, "save");
                 btns.addChildGui(saveBtn);
@@ -124,6 +118,10 @@ final class GraphicEditorGui: GuiElement {
                 auto reloadBtn = new TaskbarButtonGui("Reload");
                 reloadBtn.setCallback(this, "reload");
                 btns.addChildGui(reloadBtn);
+
+                auto closeBtn = new TaskbarButtonGui("Close");
+                closeBtn.setCallback(this, "close");
+                btns.addChildGui(closeBtn);
 
                 box.addChildGui(btns);
                 box.addChildGui(tabsGui);
@@ -199,7 +197,7 @@ final class GraphicEditorGui: GuiElement {
                 vbox.addChildGui(brushResizeCornerGui);
                 box.addChildGui(vbox);
             }
-            { // Resize border tool @TODO
+            { // Resize border tool
                 auto vbox = new VContainer;
                 vbox.addChildGui(new Label("4"));
                 brushResizeBorderGui = new BrushGui;
@@ -211,13 +209,6 @@ final class GraphicEditorGui: GuiElement {
                 box.addChildGui(vbox);
             }
             addChildGui(box);
-        }
-
-        if(args.length > 1) {
-            _projectRootPath = buildNormalizedPath(args[1]);
-        }
-        else {
-            _projectRootPath = buildNormalizedPath("..");
         }
     }
 
@@ -231,7 +222,7 @@ final class GraphicEditorGui: GuiElement {
             data.clip = clip;
             
             auto type = propertiesGui.getImgType();
-            viewerGui.imgType = type;
+            viewerGui.elementType = type;
             data.type = type;
             
             data.columns = propertiesGui.getColumns();
@@ -265,7 +256,8 @@ final class GraphicEditorGui: GuiElement {
     override void onEvent(Event event) {
         super.onEvent(event);
         if(event.type == EventType.DropFile) {
-            open(relativePath(event.str));
+            openTab(relativePath(event.str));
+            reload();
         }
     }
 
@@ -276,7 +268,8 @@ final class GraphicEditorGui: GuiElement {
 
     override void onCallback(string id) {
         switch(id) {
-        case "new":
+        case "close":
+            //TODO: Close if not dirty, else display confirmation modal.
             break;
         case "save":
             save();
@@ -285,22 +278,25 @@ final class GraphicEditorGui: GuiElement {
             saveAs();
             break;
         case "reload":
+            reloadTab();
             reload();
             break;
         case "open":
-            openModal();
+            auto openModal = new OpenModal;
+            openModal.setCallback(this, "open.modal");
+            setModalGui(openModal);
             break;
         case "save.modal":
             stopModalGui();
             auto saveModal = getModalGui!SaveModal;
-            jsonPath = stripExtension(relativePath(absolutePath(saveModal.getPath()), absolutePath(buildNormalizedPath(_projectRootPath, "/data/images/"))));
-            listGui.save(saveModal.getPath(), srcPath);
-            setWindowTitle("Farfadet - " ~ jsonPath);
+            setTabDataPath(saveModal.getPath());
+            saveTab();
             break;
         case "open.modal":
             stopModalGui();
             auto loadGui = getModalGui!OpenModal;
-            open(loadGui.getPath());
+            openTab(loadGui.getPath());
+            reload();
             break;
         case "add":
             listGui.addElement();
@@ -346,7 +342,7 @@ final class GraphicEditorGui: GuiElement {
             }
             if(propertiesGui.isTypeDirty) {
                 auto type = propertiesGui.getImgType();
-                viewerGui.imgType = type;
+                viewerGui.elementType = type;
                 data.type = type;
             }
             if(propertiesGui.areSettingsDirty) {
@@ -392,23 +388,15 @@ final class GraphicEditorGui: GuiElement {
         }
     }
 
-    /// Open either an image or a json file format.
-    void open(string filePath) {
-        if(isValidImageFileType(filePath))
-            openImage(filePath);
-        else if(isValidDataFileType(filePath))
-            openData(filePath);
-    }
+    void reload() {
+        auto tabData = getCurrentTab();
 
-    void openImage(string filePath) {
-        jsonPath = "";
-        srcPath = buildNormalizedPath(filePath);
-        texture = new Texture(srcPath);
-        viewerGui.setTexture(texture);
-        previewerGui.setTexture(texture);
+        viewerGui.setTexture(tabData.texture);
+        previewerGui.setTexture(tabData.texture);
 
         listGui.removeChildrenGuis();
         propertiesGui.removeChildrenGuis();
+        
 
         viewerGui.isActive = false;
         propertiesGui.isActive = false;
@@ -417,7 +405,7 @@ final class GraphicEditorGui: GuiElement {
         propertiesGui.setClip(Vec4i.zero);
         viewerGui.setClip(Vec4i.zero);
 
-        propertiesGui.setImgType(ImgType.SpriteType);
+        propertiesGui.setImgType(ElementType.SpriteType);
 
         propertiesGui.setColumns(0);
         propertiesGui.setLines(0);
@@ -428,65 +416,27 @@ final class GraphicEditorGui: GuiElement {
         propertiesGui.setRight(0);
 
         propertiesGui.load();
-
-        setWindowTitle("Farfadet - *");
-    }
-    
-    void openData(string filePath) {
-        jsonPath = stripExtension(relativePath(absolutePath(filePath), absolutePath("data/images/")));
-        srcPath = buildNormalizedPath(listGui.load(filePath));
-        texture = new Texture(srcPath);
-        viewerGui.setTexture(texture);
-        previewerGui.setTexture(texture);
-
-        setWindowTitle("Farfadet - " ~ jsonPath);
+        listGui.reload();
     }
 
+    /// Save an already saved project.
     void save() {
-        if(!srcPath.length)
+        if(!hasTab())
             return;
-        if(!jsonPath.length) {
+        auto tabData = getCurrentTab();
+        if(tabData.hasSavePath())
+            saveTab();
+        else
             saveAs();
-            return;
-        }
-        auto path = buildPath("data/images/", setExtension(jsonPath, ".json"));
-        if(!isValidPath(path)) {
-            saveAs();
-            return;
-        }
-        if(!exists(dirName(path)))  {
-            saveAs();
-            return;
-        }
-        listGui.save(path, srcPath);
-        setWindowTitle("Farfadet - " ~ jsonPath);
     }
 
+    /// Select a new save file and save the project.
     void saveAs() {
-        if(!srcPath.length)
+        if(!hasTab())
             return;
         auto saveModal = new SaveModal;
         saveModal.setCallback(this, "save.modal");
         setModalGui(saveModal);
-    }
-
-    void reload() {
-        if(!jsonPath.length)
-            return;
-
-        auto path = buildPath("data/images/", setExtension(jsonPath, ".json"));
-        srcPath = buildNormalizedPath(listGui.load(path));
-        texture = new Texture(srcPath);
-        viewerGui.setTexture(texture);
-        previewerGui.setTexture(texture);
-
-        setWindowTitle("Farfadet - " ~ jsonPath);
-    }
-
-    void openModal() {
-        auto openModal = new OpenModal;
-        openModal.setCallback(this, "open.modal");
-        setModalGui(openModal);
     }
 }
 

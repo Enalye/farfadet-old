@@ -31,7 +31,7 @@ final class ViewerGui: GuiElementCanvas {
     PreviewerGui previewerGui;
     BrushGui brushSelectGui, brushMoveGui, brushResizeCornerGui, brushResizeBorderGui;    
 
-    ImgType imgType;
+    ElementType elementType;
     bool isActive;
 
     //External settings for Tileset and NinePatch.
@@ -525,7 +525,7 @@ final class ViewerGui: GuiElementCanvas {
         auto rectOrigin = to!Vec2f(_selectionOrigin);
         auto rectSize = to!Vec2f(_selectionSize);
             
-        final switch(imgType) with(ImgType) {
+        final switch(elementType) with(ElementType) {
         case SpriteType:
             _rect.size = rectSize;
             _rect.color = Color(0f, .5f, 1f, .35f);
