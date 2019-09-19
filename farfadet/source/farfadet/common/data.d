@@ -93,6 +93,7 @@ void setTabDataPath(string filePath) {
         throw new Exception("Tab index out of bounds");
     auto tabData = _tabs[_currentTabIndex];
     tabData._dataPath = filePath;
+    _updateTitle();
 }
 
 void saveTab() {
@@ -105,7 +106,19 @@ void setCurrentTab(int index) {
     if(index >= _tabs.length)
         throw new Exception("Tab index out of bounds");
     _currentTabIndex = index;
-    setWindowTitle("Farfadet - *");
+    _updateTitle();
+}
+
+private void _updateTitle() {
+    if(_currentTabIndex >= _tabs.length)
+        throw new Exception("Tab index out of bounds");
+    auto tabData = _tabs[_currentTabIndex];
+    if(tabData._dataPath) {
+        setWindowTitle("Farfadet - " ~ tabData._dataPath ~ " ~ (" ~ tabData._texturePath ~ ")");
+    }
+    else {
+        setWindowTitle("Farfadet - * ~ (" ~ tabData._texturePath ~ ")");
+    }
 }
 
 TabData getCurrentTab() {
