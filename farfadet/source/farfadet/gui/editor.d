@@ -40,6 +40,12 @@ private final class TaskbarButtonGui: Button {
     }
 
     override void draw() {
+        _label.color = Color.white;
+        if(isLocked) {
+            drawFilledRect(origin, size, Color(.1f, .11f, .13f));
+            _label.color = Color.grey;
+            return;
+        }
         if(isHovered)
             drawFilledRect(origin, size, Color(.2f, .2f, .2f));
         if(isClicked)
@@ -54,6 +60,11 @@ final class GraphicEditorGui: GuiElement {
     PreviewerGui previewerGui;
     TabsGui tabsGui;
     BrushGui brushSelectGui, brushMoveGui, brushResizeCornerGui, brushResizeBorderGui;
+    
+    private {
+        TaskbarButtonGui _saveBtn, _saveAsBtn, _openBtn, _reloadBtn, _closeBtn;
+        TaskbarButtonGui _addBtn, _dupBtn, _removeBtn, _upBtn, _downBtn;
+    }
 
     this(string[] args) {
         setupData(this);
@@ -103,25 +114,25 @@ final class GraphicEditorGui: GuiElement {
             {
                 auto btns = new HContainer;
 
-                auto saveBtn = new TaskbarButtonGui("Save");
-                saveBtn.setCallback(this, "save");
-                btns.addChildGui(saveBtn);
+                _openBtn = new TaskbarButtonGui("Open");
+                _openBtn.setCallback(this, "open");
+                btns.addChildGui(_openBtn);
 
-                auto saveAsBtn = new TaskbarButtonGui("Save As");
-                saveAsBtn.setCallback(this, "save_as");
-                btns.addChildGui(saveAsBtn);
+                _saveBtn = new TaskbarButtonGui("Save");
+                _saveBtn.setCallback(this, "save");
+                btns.addChildGui(_saveBtn);
 
-                auto loadBtn = new TaskbarButtonGui("Open");
-                loadBtn.setCallback(this, "open");
-                btns.addChildGui(loadBtn);
+                _saveAsBtn = new TaskbarButtonGui("Save As");
+                _saveAsBtn.setCallback(this, "save_as");
+                btns.addChildGui(_saveAsBtn);
 
-                auto reloadBtn = new TaskbarButtonGui("Reload");
-                reloadBtn.setCallback(this, "reload");
-                btns.addChildGui(reloadBtn);
+                _reloadBtn = new TaskbarButtonGui("Reload");
+                _reloadBtn.setCallback(this, "reload");
+                btns.addChildGui(_reloadBtn);
 
-                auto closeBtn = new TaskbarButtonGui("Close");
-                closeBtn.setCallback(this, "close");
-                btns.addChildGui(closeBtn);
+                _closeBtn = new TaskbarButtonGui("Close");
+                _closeBtn.setCallback(this, "close");
+                btns.addChildGui(_closeBtn);
 
                 box.addChildGui(btns);
                 box.addChildGui(tabsGui);
@@ -136,21 +147,21 @@ final class GraphicEditorGui: GuiElement {
             {
                 auto btns = new HContainer;
                 
-                auto addBtn = new TaskbarButtonGui("Add");
-                addBtn.setCallback(this, "add");
-                btns.addChildGui(addBtn);
-                auto dupBtn = new TaskbarButtonGui("Dup");
-                dupBtn.setCallback(this, "dup");
-                btns.addChildGui(dupBtn);
-                auto removeBtn = new TaskbarButtonGui("Remove");
-                removeBtn.setCallback(this, "remove");
-                btns.addChildGui(removeBtn);
-                auto upBtn = new TaskbarButtonGui("Up");
-                upBtn.setCallback(this, "up");
-                btns.addChildGui(upBtn);
-                auto downBtn = new TaskbarButtonGui("Down");
-                downBtn.setCallback(this, "down");
-                btns.addChildGui(downBtn);
+                _addBtn = new TaskbarButtonGui("Add");
+                _addBtn.setCallback(this, "add");
+                btns.addChildGui(_addBtn);
+                _dupBtn = new TaskbarButtonGui("Dup");
+                _dupBtn.setCallback(this, "dup");
+                btns.addChildGui(_dupBtn);
+                _removeBtn = new TaskbarButtonGui("Remove");
+                _removeBtn.setCallback(this, "remove");
+                btns.addChildGui(_removeBtn);
+                _upBtn = new TaskbarButtonGui("Up");
+                _upBtn.setCallback(this, "up");
+                btns.addChildGui(_upBtn);
+                _downBtn = new TaskbarButtonGui("Down");
+                _downBtn.setCallback(this, "down");
+                btns.addChildGui(_downBtn);
                 box.addChildGui(btns);
             }
             box.addChildGui(listGui);
@@ -215,6 +226,16 @@ final class GraphicEditorGui: GuiElement {
     override void update(float deltaTime) {
         super.update(deltaTime);
 
+        _saveBtn.isLocked = !hasTab();
+        _saveAsBtn.isLocked = !hasTab();
+        _reloadBtn.isLocked = !hasTab();
+        _closeBtn.isLocked = !hasTab();
+        _addBtn.isLocked = !hasTab();
+        _dupBtn.isLocked = !hasTab();
+        _removeBtn.isLocked = !hasTab();
+        _upBtn.isLocked = !hasTab();
+        _downBtn.isLocked = !hasTab();
+
         if(listGui.isSelectingData()) {
             auto data = listGui.getSelectedData();
             auto clip = propertiesGui.getClip();
@@ -269,15 +290,23 @@ final class GraphicEditorGui: GuiElement {
     override void onCallback(string id) {
         switch(id) {
         case "close":
+            if(!hasTab())
+                break;
             //TODO: Close if not dirty, else display confirmation modal.
             break;
         case "save":
+            if(!hasTab())
+                break;
             save();
             break;
         case "save_as":
+            if(!hasTab())
+                break;
             saveAs();
             break;
         case "reload":
+            if(!hasTab())
+                break;
             reloadTab();
             reload();
             break;
@@ -299,12 +328,18 @@ final class GraphicEditorGui: GuiElement {
             reload();
             break;
         case "add":
+            if(!hasTab())
+                break;
             listGui.addElement();
             break;
         case "dup":
+            if(!hasTab())
+                break;
             listGui.dupElement();
             break;
         case "remove":
+            if(!hasTab())
+                break;
             auto gui = new RemoveLayerGui;
             gui.setCallback(this, "remove.modal");
             setModalGui(gui);
@@ -315,9 +350,13 @@ final class GraphicEditorGui: GuiElement {
             listGui.removeElement();
             break;
         case "up":
+            if(!hasTab())
+                break;
             listGui.moveUpElement();
             break;
         case "down":
+            if(!hasTab())
+                break;
             listGui.moveDownElement();
             break;
         case "selection":
