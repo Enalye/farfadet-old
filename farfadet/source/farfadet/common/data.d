@@ -39,13 +39,16 @@ final class ElementData {
 final class TabData {
     private {
         ElementData[] _elements;
-        string _dataPath, _texturePath;
+        string _dataPath, _texturePath, _title = "untitled";
         Texture _texture;
+        bool _isTitleDirty =  true;
     }
 
     @property {
         ElementData[] elements() { return _elements; }
         Texture texture() { return _texture; }
+        bool isTitleDirty() const { return _isTitleDirty; }
+        string title() { _isTitleDirty = false; return _title;}
     }
 
 
@@ -76,7 +79,7 @@ void openTab(string filePath) {
     tabData._texture = new Texture(tabData._texturePath);
 
     _tabs ~= tabData;
-    setCurrentTab(cast(int)_tabs.length - 1);
+    setCurrentTab(tabData);
 }
 
 void reloadTab() {
@@ -102,10 +105,16 @@ void saveTab() {
     _saveData(_tabs[_currentTabIndex]);
 }
 
-void setCurrentTab(int index) {
-    if(index >= _tabs.length)
-        throw new Exception("Tab index out of bounds");
-    _currentTabIndex = index;
+void setCurrentTab(TabData tabData) {
+    _currentTabIndex = cast(uint)_tabs.length;
+    for(int i; i < _tabs.length; i ++) {
+        if(tabData == _tabs[i]) {
+            _currentTabIndex = i;
+            break;
+        }
+    }
+    if(_currentTabIndex >= _tabs.length)
+        throw new Exception("Tab no found");
     _updateTitle();
 }
 
@@ -113,10 +122,13 @@ private void _updateTitle() {
     if(_currentTabIndex >= _tabs.length)
         throw new Exception("Tab index out of bounds");
     auto tabData = _tabs[_currentTabIndex];
+    tabData._isTitleDirty = true;
     if(tabData._dataPath) {
+        tabData._title = baseName(tabData._dataPath);
         setWindowTitle("Farfadet - " ~ tabData._dataPath ~ " ~ (" ~ tabData._texturePath ~ ")");
     }
     else {
+        tabData._title = baseName(tabData._texturePath);
         setWindowTitle("Farfadet - * ~ (" ~ tabData._texturePath ~ ")");
     }
 }

@@ -81,6 +81,7 @@ final class GraphicEditorGui: GuiElement {
         viewerGui.previewerGui = previewerGui;
 
         tabsGui = new TabsGui;
+        tabsGui.setCallback(this, "tabs");
 
         viewerGui.setCallback(this, "selection");
         propertiesGui.setCallback(this, "properties");
@@ -325,6 +326,12 @@ final class GraphicEditorGui: GuiElement {
             stopModalGui();
             auto loadGui = getModalGui!OpenModal;
             openTab(loadGui.getPath());
+            reload();
+            tabsGui.addTab();
+            break;
+        case "tabs":
+            if(!hasTab())
+                break;
             reload();
             break;
         case "add":
