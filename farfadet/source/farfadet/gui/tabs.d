@@ -47,13 +47,29 @@ final private class TabButtonGui: GuiElement {
     }
 }
 
-final class TabsGui: HContainer {
+final class TabsGui: GuiElementCanvas {
+    private {
+        HContainer _box;
+    }
+
     this() {
-        
+        size(Vec2f(screenHeight, 35f));
+        setEventHook(true);
+
+        _box = new HContainer;
+        addChildGui(_box);
     }
 
     override void draw() {
         drawFilledRect(origin, size, Color(.11f, .09f, .18f));
+    }
+
+    override void onEvent(Event event) {
+        if(event.type == EventType.MouseWheel) {
+            const float delta = event.position.y - event.position.x;
+            canvas.position.x -= delta * 50f;
+            canvas.position = canvas.position.clamp(canvas.size / 2f, Vec2f(_box.size.x - canvas.size.x / 2f, canvas.size.y));
+        }
     }
 
     override void onCallback(string id) {
@@ -68,6 +84,6 @@ final class TabsGui: HContainer {
         auto tabData = getCurrentTab();
         auto tabGui = new TabButtonGui(tabData);
         tabGui.setCallback(this, "tab");
-        addChildGui(tabGui);
+        _box.addChildGui(tabGui);
     }
 }
