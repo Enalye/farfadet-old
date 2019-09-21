@@ -6,6 +6,7 @@ import farfadet.common;
 
 class PreviewerGui: GuiElement {
     private {
+        TabData _currentTabData;
         Sprite _sprite;
         Tileset _tileset;
         Animation _animation;
@@ -99,11 +100,19 @@ class PreviewerGui: GuiElement {
         drawRect(origin, size, Color.white);
     }
 
-    void setTexture(Texture tex) {
-        _texture = tex;
-        _sprite.texture = tex;
-        _tileset.texture = tex;
-        _ninePatch.texture = tex;
+    void reload() {
+        auto tabData = getCurrentTab();
+        if(_currentTabData && _currentTabData != tabData) {
+            _currentTabData.hasPreviewerData = true;
+            _currentTabData.previewerSpeed = playbackSpeedSlider.fvalue;
+        }
+        _currentTabData = tabData;
+        playbackSpeedSlider.fvalue = tabData.hasPreviewerData ? _currentTabData.previewerSpeed : 0f;
+
+        _texture = _currentTabData.texture;
+        _sprite.texture = _texture;
+        _tileset.texture = _texture;
+        _ninePatch.texture = _texture;
     }
 
     int getCurrentAnimFrame() {

@@ -59,6 +59,17 @@ final class TabData {
     bool canReload() {
         return false;
     }
+
+    //Temporary data, not saved
+    bool hasViewerData;
+    float viewerScale = 1f;
+    Vec2f viewerPosition = Vec2f.zero;
+
+    bool hasPreviewerData;
+    float previewerSpeed;
+
+    bool hasElementsListData;
+    uint elementsListIndex;
 }
 
 void setupData(GraphicEditorGui editor) {

@@ -12,6 +12,7 @@ enum BrushType {
 
 final class ViewerGui: GuiElementCanvas {
     private {
+        TabData _currentTabData;
         Texture _texture;
         Sprite _sprite;
         Sprite _rect;
@@ -371,14 +372,32 @@ final class ViewerGui: GuiElementCanvas {
             }
         }
     }
+    
+    void reload() {
+        auto tabData = getCurrentTab();
+        if(_currentTabData && _currentTabData != tabData) {
+            _currentTabData.hasViewerData = true;
+            _currentTabData.viewerPosition = canvas.position;
+            _currentTabData.viewerScale = _scale;
+        }
+        _currentTabData = tabData;
 
-    void setTexture(Texture tex) {
-        _texture = tex;
-        _sprite = new Sprite(tex);
+        _texture = tabData.texture;
+        _sprite = new Sprite(_texture);
         _sprite.anchor = Vec2f.zero;
 
-        //Reset camera position
-        canvas.position = canvas.size / 2f;
+        if(!tabData.hasViewerData) {
+            //Reset camera position
+            canvas.position = canvas.size / 2f;
+            _scale = 1f;
+            canvas.size = size * _scale;
+        }
+        else {
+            //Restore camera position
+            canvas.position = tabData.viewerPosition;
+            _scale = tabData.viewerScale;
+            canvas.size = size * _scale;
+        }
     }
 
     void setClip(Vec4i clip) {

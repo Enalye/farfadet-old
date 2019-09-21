@@ -437,10 +437,9 @@ final class GraphicEditorGui: GuiElement {
     void reload() {
         auto tabData = getCurrentTab();
 
-        viewerGui.setTexture(tabData.texture);
-        previewerGui.setTexture(tabData.texture);
+        viewerGui.reload();
+        previewerGui.reload();
 
-        listGui.removeChildrenGuis();
         propertiesGui.removeChildrenGuis();
         
 

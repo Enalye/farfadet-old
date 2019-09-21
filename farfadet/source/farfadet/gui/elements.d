@@ -87,6 +87,10 @@ private final class ImgElementGui: GuiElement {
 }
 
 final class ElementsListGui: VList {
+    private {
+        TabData _currentTabData;
+    }
+
     this() {
         float sz = (screenWidth - screenHeight) / 2f;
         super(Vec2f(sz, screenHeight - sz - 80f));
@@ -294,8 +298,9 @@ final class ElementsListGui: VList {
 
         return (elements.length && id < elements.length);
     }
-
+    
     void reload() {
+        const auto lastIndex = selected();
         removeChildrenGuis();
 
         auto tabData = getCurrentTab();
@@ -305,6 +310,12 @@ final class ElementsListGui: VList {
             elementGui.label.text = element.name;
             addChildGui(elementGui);
         }
+        if(_currentTabData && _currentTabData != tabData) {
+            _currentTabData.hasElementsListData = true;
+            _currentTabData.elementsListIndex = lastIndex;
+        }
+        _currentTabData = tabData;
+        selected(_currentTabData.hasElementsListData ? _currentTabData.elementsListIndex : 0);
         triggerCallback();
     }
 }
