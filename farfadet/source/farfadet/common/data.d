@@ -49,11 +49,12 @@ final class TabData {
         Texture texture() { return _texture; }
         bool isTitleDirty() const { return _isTitleDirty; }
         string title() { _isTitleDirty = false; return _title;}
+        string dataPath() const { return _dataPath; }
+        string texturePath() const { return _texturePath; }
     }
 
-
     bool hasSavePath() {
-        return false;   
+        return _dataPath.length > 0uL;   
     }
 
     bool canReload() {

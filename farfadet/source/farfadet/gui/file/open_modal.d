@@ -54,7 +54,16 @@ final class OpenModal: GuiElement {
     }
 
 	this() {
-        _path = dirName(thisExePath());
+        if(hasTab()) {
+            auto tabData = getCurrentTab();
+            if(tabData.hasSavePath())
+                _path = dirName(tabData.dataPath());
+            else
+                _path = dirName(tabData.texturePath());
+        }
+        else {
+            _path = dirName(getcwd());
+        }
 
         size(Vec2f(500f, 500f));
         setAlign(GuiAlignX.Center, GuiAlignY.Center);

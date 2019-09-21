@@ -2,6 +2,7 @@ module farfadet.gui.file.save_modal;
 
 import std.file, std.path;
 import atelier;
+import farfadet.common;
 import farfadet.gui.file.editable_path_gui;
 
 final class SaveModal: GuiElement {
@@ -48,9 +49,18 @@ final class SaveModal: GuiElement {
         DirListGui _list;
 		string _path;
     }
-
+    
 	this() {
-        _path = dirName(thisExePath());
+        if(hasTab()) {
+            auto tabData = getCurrentTab();
+            if(tabData.hasSavePath())
+                _path = dirName(tabData.dataPath());
+            else
+                _path = dirName(tabData.texturePath());
+        }
+        else {
+            _path = dirName(getcwd());
+        }
 
         size(Vec2f(500f, 500f));
         setAlign(GuiAlignX.Center, GuiAlignY.Center);
