@@ -293,6 +293,9 @@ final class GraphicEditorGui: GuiElement {
         case "close":
             if(!hasTab())
                 break;
+            auto gui = new RemoveLayerGui;
+            gui.setCallback(this, "remove.modal");
+            setModalGui(gui);
             //TODO: Close if not dirty, else display confirmation modal.
             break;
         case "save":
@@ -328,6 +331,8 @@ final class GraphicEditorGui: GuiElement {
             openTab(loadGui.getPath());
             reload();
             tabsGui.addTab();
+            break;
+        case "close.modal":
             break;
         case "tabs":
             if(!hasTab())

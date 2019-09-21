@@ -19,20 +19,95 @@ enum ElementType {
 
 /// Data describing a single element.
 final class ElementData {
-    /// Key name
-    string name = "untitled";
+    private {
+        string _name = "untitled";
+        ElementType _type = ElementType.SpriteType;
+        Vec4i _clip = Vec4i.zero;
+        int _columns = 1, _lines = 1, _maxtiles;
+        int _top, _bottom, _left, _right;
+    }
 
-    /// General type
-    ElementType type = ElementType.SpriteType;
+    @property {
+        /// Key name
+        string name() const { return _name; }
+        string name(string v) { _onDirty(); return _name = v; }
 
-    /// Texture region
-    Vec4i clip = Vec4i.zero;
+        /// General type
+        ElementType type() const { return _type; }
+        ElementType type(ElementType v) {
+            if(v == _type)
+                return v;
+            _onDirty();
+            return _type = v;
+        }
 
-    /// Tileset specific data
-    int columns = 1, lines = 1, maxtiles;
+        /// Texture region
+        Vec4i clip() const { return _clip; }
+        Vec4i clip(Vec4i v) {
+            if(v == _clip)
+                return v;
+            _onDirty();
+            return _clip = v;
+        }
 
-    /// NinePatch specific data
-    int top, bottom, left, right;
+        /// Tileset specific data
+        int columns() const { return _columns; }
+        int columns(int v) {
+            if(v == _columns)
+                return v;
+            _onDirty();
+            return _columns = v;
+        }
+
+        int lines() const { return _lines; }
+        int lines(int v) {
+            if(v == _lines)
+                return v;
+            _onDirty();
+            return _lines = v;
+        }
+
+        int maxtiles() const { return _maxtiles; }
+        int maxtiles(int v) {
+            if(v == _maxtiles)
+                return v;
+            _onDirty();
+            return _maxtiles = v;
+        }
+
+        /// NinePatch specific data
+        int top() const { return _top; }
+        int top(int v) {
+            if(v == _top)
+                return v;
+            _onDirty();
+            return _top = v;
+        }
+
+        int bottom() const { return _bottom; }
+        int bottom(int v) {
+            if(v == _bottom)
+                return v;
+            _onDirty();
+            return _bottom = v;
+        }
+
+        int left() const { return _left; }
+        int left(int v) {
+            if(v == _left)
+                return v;
+            _onDirty();
+            return _left = v;
+        }
+
+        int right() const { return _right; }
+        int right(int v) {
+            if(v == _right)
+                return v;
+            _onDirty();
+            return _right = v;
+        }
+    }
 }
 
 /// An entire image/json file containing all its elements.
@@ -41,16 +116,18 @@ final class TabData {
         ElementData[] _elements;
         string _dataPath, _texturePath, _title = "untitled";
         Texture _texture;
-        bool _isTitleDirty =  true;
+        bool _isTitleDirty =  true, _isDirty = true;
     }
 
     @property {
         ElementData[] elements() { return _elements; }
         Texture texture() { return _texture; }
+        bool isTitleDirty(bool v) { return _isTitleDirty = v; }
         bool isTitleDirty() const { return _isTitleDirty; }
         string title() { _isTitleDirty = false; return _title;}
         string dataPath() const { return _dataPath; }
         string texturePath() const { return _texturePath; }
+        bool isDirty() const { return _isDirty; }
     }
 
     bool hasSavePath() {
@@ -101,6 +178,7 @@ void reloadTab() {
     if(!exists(tabData._dataPath))
         return;
     _loadData(tabData);
+    _updateTitle();
 }
 
 void setTabDataPath(string filePath) {
@@ -115,6 +193,7 @@ void saveTab() {
     if(_currentTabIndex >= _tabs.length)
         throw new Exception("Tab index out of bounds");
     _saveData(_tabs[_currentTabIndex]);
+    _updateTitle();
 }
 
 void setCurrentTab(TabData tabData) {
@@ -135,13 +214,14 @@ private void _updateTitle() {
         throw new Exception("Tab index out of bounds");
     auto tabData = _tabs[_currentTabIndex];
     tabData._isTitleDirty = true;
-    if(tabData._dataPath) {
-        tabData._title = baseName(tabData._dataPath);
-        setWindowTitle("Farfadet - " ~ tabData._dataPath ~ " ~ (" ~ tabData._texturePath ~ ")");
+    string dirtyString = (tabData._isDirty ? " *" : "");
+    if(tabData._dataPath.length) {
+        tabData._title = baseName(tabData._dataPath) ~ dirtyString;
+        setWindowTitle("Farfadet - " ~ tabData._dataPath ~ " ~ (" ~ tabData._texturePath ~ ")" ~ dirtyString);
     }
     else {
-        tabData._title = baseName(tabData._texturePath);
-        setWindowTitle("Farfadet - * ~ (" ~ tabData._texturePath ~ ")");
+        tabData._title = baseName(tabData._texturePath) ~ tabData._isDirty ? " *" : "";
+        setWindowTitle("Farfadet - * ~ (" ~ tabData._texturePath ~ ")" ~ dirtyString);
     }
 }
 
@@ -173,6 +253,15 @@ void setSavePath(string filePath) {
     _tabs[_currentTabIndex]._dataPath = filePath;
 }
 
+private void _onDirty() {
+    if(_tabs[_currentTabIndex]._isDirty)
+        return;
+    if(_currentTabIndex >= _tabs.length)
+        throw new Exception("Tab index out of bounds");
+    _tabs[_currentTabIndex]._isDirty = true;
+    _updateTitle();
+}
+
 private void _loadData(TabData tabData) {
     JSONValue json = parseJSON(readText(tabData._dataPath));
 
@@ -185,23 +274,23 @@ private void _loadData(TabData tabData) {
     tabData._elements.length = 0uL;
     foreach(JSONValue elementNode; elementsNode) {
         auto element = new ElementData;
-        element.name = getJsonStr(elementNode, "name");
+        element._name = getJsonStr(elementNode, "name");
 
         switch(getJsonStr(elementNode, "type")) {
         case "sprite":
-            element.type = ElementType.SpriteType;
+            element._type = ElementType.SpriteType;
             break;
         case "tileset":
-            element.type = ElementType.TilesetType;
+            element._type = ElementType.TilesetType;
             break;
         case "bordered_brush":
-            element.type = ElementType.BorderedBrushType;
+            element._type = ElementType.BorderedBrushType;
             break;
         case "borderless_brush":
-            element.type = ElementType.BorderlessBrushType;
+            element._type = ElementType.BorderlessBrushType;
             break;
         case "ninepatch":
-            element.type = ElementType.NinePatchType;
+            element._type = ElementType.NinePatchType;
             break;
         default:
             throw new Exception("Invalid image type");
@@ -213,27 +302,28 @@ private void _loadData(TabData tabData) {
         clip.y = getJsonInt(clipNode, "y");
         clip.z = getJsonInt(clipNode, "w");
         clip.w = getJsonInt(clipNode, "h");
-        element.clip = clip;
+        element._clip = clip;
 
-        final switch(element.type) with(ElementType) {
+        final switch(element._type) with(ElementType) {
         case SpriteType:
         case BorderedBrushType:
         case BorderlessBrushType:
             break;
         case TilesetType:
-            element.columns = getJsonInt(elementNode, "columns");
-            element.lines = getJsonInt(elementNode, "lines");
-            element.maxtiles = getJsonInt(elementNode, "maxtiles");
+            element._columns = getJsonInt(elementNode, "columns");
+            element._lines = getJsonInt(elementNode, "lines");
+            element._maxtiles = getJsonInt(elementNode, "maxtiles");
             break;
         case NinePatchType:
-            element.top = getJsonInt(elementNode, "top");
-            element.bottom = getJsonInt(elementNode, "bottom");
-            element.left = getJsonInt(elementNode, "left");
-            element.right = getJsonInt(elementNode, "right");
+            element._top = getJsonInt(elementNode, "top");
+            element._bottom = getJsonInt(elementNode, "bottom");
+            element._left = getJsonInt(elementNode, "left");
+            element._right = getJsonInt(elementNode, "right");
             break;
         }
         tabData._elements ~= element;
     }
+    tabData._isDirty = false;
 }
 
 private void _saveData(TabData tabData) {
@@ -244,9 +334,9 @@ private void _saveData(TabData tabData) {
 
     foreach(ElementData element; tabData._elements) {
         JSONValue elementNode;
-        elementNode["name"] = JSONValue(element.name);
+        elementNode["name"] = JSONValue(element._name);
 
-        final switch(element.type) with(ElementType) {
+        final switch(element._type) with(ElementType) {
         case SpriteType:
             elementNode["type"] = JSONValue("sprite");
             break;
@@ -265,32 +355,32 @@ private void _saveData(TabData tabData) {
         }
 
         JSONValue clipNode;
-        clipNode["x"] = JSONValue(element.clip.x);
-        clipNode["y"] = JSONValue(element.clip.y);
-        clipNode["w"] = JSONValue(element.clip.z);
-        clipNode["h"] = JSONValue(element.clip.w);
+        clipNode["x"] = JSONValue(element._clip.x);
+        clipNode["y"] = JSONValue(element._clip.y);
+        clipNode["w"] = JSONValue(element._clip.z);
+        clipNode["h"] = JSONValue(element._clip.w);
         elementNode["clip"] = clipNode;
 
-        final switch(element.type) with(ElementType) {
+        final switch(element._type) with(ElementType) {
         case SpriteType:
         case BorderedBrushType:
         case BorderlessBrushType:
             break;
         case TilesetType:
-            elementNode["columns"] = JSONValue(element.columns);
-            elementNode["lines"] = JSONValue(element.lines);
-            elementNode["maxtiles"] = JSONValue(element.maxtiles);
+            elementNode["columns"] = JSONValue(element._columns);
+            elementNode["lines"] = JSONValue(element._lines);
+            elementNode["maxtiles"] = JSONValue(element._maxtiles);
             break;
         case NinePatchType:
-            elementNode["top"] = JSONValue(element.top);
-            elementNode["bottom"] = JSONValue(element.bottom);
-            elementNode["left"] = JSONValue(element.left);
-            elementNode["right"] = JSONValue(element.right);
+            elementNode["top"] = JSONValue(element._top);
+            elementNode["bottom"] = JSONValue(element._bottom);
+            elementNode["left"] = JSONValue(element._left);
+            elementNode["right"] = JSONValue(element._right);
             break;
         }
-
         elementsNode ~= elementNode;
     }
     json["elements"] = elementsNode;
     std.file.write(tabData._dataPath, toJSON(json, true));
+    tabData._isDirty = false;
 }

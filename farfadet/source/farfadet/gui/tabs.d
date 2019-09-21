@@ -23,6 +23,7 @@ final private class TabButtonGui: GuiElement {
         isSelected = getCurrentTab() == _tabData;
         if(isSelected) {
             if(_tabData.isTitleDirty) {
+                _tabData.isTitleDirty = false;
                 _label.text = _tabData.title;
                 size(Vec2f(_label.size.x + 20f, 35f));
             }
