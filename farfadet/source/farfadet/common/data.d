@@ -178,7 +178,7 @@ private void _loadData(TabData tabData) {
     if(getJsonStr(json, "type") != "spritesheet")
         return;
 
-    tabData._texturePath = buildPath(dirName(tabData._dataPath), convertPathToImport(getJsonStr(json, "texture")));
+    tabData._texturePath = buildNormalizedPath(dirName(tabData._dataPath), convertPathToImport(getJsonStr(json, "texture")));
     auto elementsNode = getJsonArray(json, "elements");
 
     tabData._elements.length = 0uL;
