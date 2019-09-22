@@ -62,7 +62,7 @@ final class GraphicEditorGui: GuiElement {
     BrushGui brushSelectGui, brushMoveGui, brushResizeCornerGui, brushResizeBorderGui;
     
     private {
-        TaskbarButtonGui _saveBtn, _saveAsBtn, _openBtn, _reloadBtn, _closeBtn;
+        TaskbarButtonGui _saveBtn, _saveAsBtn, _openBtn, _reloadBtn, _reloadTexBtn, _closeBtn;
         TaskbarButtonGui _addBtn, _dupBtn, _removeBtn, _upBtn, _downBtn;
     }
 
@@ -124,12 +124,16 @@ final class GraphicEditorGui: GuiElement {
                 btns.addChildGui(_saveBtn);
 
                 _saveAsBtn = new TaskbarButtonGui("Save As");
-                _saveAsBtn.setCallback(this, "save_as");
+                _saveAsBtn.setCallback(this, "save-as");
                 btns.addChildGui(_saveAsBtn);
 
                 _reloadBtn = new TaskbarButtonGui("Reload");
                 _reloadBtn.setCallback(this, "reload");
                 btns.addChildGui(_reloadBtn);
+
+                _reloadTexBtn = new TaskbarButtonGui("Update Texture");
+                _reloadTexBtn.setCallback(this, "reload-texture");
+                btns.addChildGui(_reloadTexBtn);
 
                 _closeBtn = new TaskbarButtonGui("Close");
                 _closeBtn.setCallback(this, "close");
@@ -227,9 +231,45 @@ final class GraphicEditorGui: GuiElement {
     override void update(float deltaTime) {
         super.update(deltaTime);
 
+        if(isKeyDown("lctrl") || isKeyDown("rctrl")) {
+            if(getKeyDown("open") || getKeyDown("open2"))
+                onCallback("open");
+            else if(getKeyDown("close"))
+                onCallback("close");
+            else if(getKeyDown("reload"))
+                onCallback("reload");
+            else if(getKeyDown("reload-texture"))
+                onCallback("reload-texture");
+            else if(getKeyDown("save")) {
+                if(isKeyDown("lshift") || isKeyDown("rshift"))
+                    onCallback("save-as");
+                else
+                    onCallback("save");
+            }
+            else if(getKeyDown("add") || getKeyDown("add2"))
+                onCallback("add");
+            else if(getKeyDown("remove"))
+                onCallback("remove");
+            else if(getKeyDown("dup"))
+                onCallback("dup");
+            else if(getKeyDown("up"))
+                onCallback("up");
+            else if(getKeyDown("down"))
+                onCallback("down");
+            else if(getKeyDown("left")) {
+                setPreviousTab();
+                reload();
+            }
+            else if(getKeyDown("right")) {
+                setNextTab();
+                reload();
+            }
+        }
+
         _saveBtn.isLocked = !hasTab();
         _saveAsBtn.isLocked = !hasTab();
         _reloadBtn.isLocked = !hasTab();
+        _reloadTexBtn.isLocked = !hasTab();
         _closeBtn.isLocked = !hasTab();
         _addBtn.isLocked = !hasTab();
         _dupBtn.isLocked = !hasTab();
@@ -280,6 +320,7 @@ final class GraphicEditorGui: GuiElement {
         if(event.type == EventType.DropFile) {
             openTab(relativePath(event.str));
             reload();
+            tabsGui.addTab();
         }
     }
 
@@ -309,7 +350,7 @@ final class GraphicEditorGui: GuiElement {
                 break;
             save();
             break;
-        case "save_as":
+        case "save-as":
             if(!hasTab())
                 break;
             saveAs();
@@ -318,6 +359,12 @@ final class GraphicEditorGui: GuiElement {
             if(!hasTab())
                 break;
             reloadTab();
+            reload();
+            break;
+        case "reload-texture":
+            if(!hasTab())
+                break;
+            reloadTabTexture();
             reload();
             break;
         case "open":

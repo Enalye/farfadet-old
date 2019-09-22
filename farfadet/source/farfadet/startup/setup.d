@@ -20,15 +20,20 @@ void setupApplication(string[] args) {
     bindKey("right", SDL_SCANCODE_RIGHT);
     bindKey("lctrl", SDL_SCANCODE_LCTRL);
     bindKey("rctrl", SDL_SCANCODE_RCTRL);
+    bindKey("lshift", SDL_SCANCODE_LSHIFT);
+    bindKey("rshift", SDL_SCANCODE_RSHIFT);
     bindKey("all", SDL_SCANCODE_Q);
     bindKey("save", SDL_SCANCODE_S);
     bindKey("rename", SDL_SCANCODE_R);
     bindKey("open", SDL_SCANCODE_O);
+    bindKey("open2", SDL_SCANCODE_I);
+    bindKey("close", SDL_SCANCODE_P);
     bindKey("dup", SDL_SCANCODE_D);
     bindKey("remove", SDL_SCANCODE_DELETE);
     bindKey("add", SDL_SCANCODE_A);
+    bindKey("add2", SDL_SCANCODE_N);
     bindKey("reload", SDL_SCANCODE_F);
-    bindKey("import", SDL_SCANCODE_I);
+    bindKey("reload-texture", SDL_SCANCODE_G);
 
     loadAssets();
     setDefaultFont(fetch!Font("VeraMono"));

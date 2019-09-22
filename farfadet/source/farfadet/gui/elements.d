@@ -5,6 +5,10 @@ import atelier;
 import farfadet.common;
 
 private final class ImgElementGui: GuiElement {
+    private {
+        Timer _timer;
+    }
+
     Label label;
     InputField inputField;
     bool isEditingName, isFirstClick = true;
@@ -18,6 +22,7 @@ private final class ImgElementGui: GuiElement {
         size = label.size;
 
         data = new ElementData;
+        _timer.start(2f, TimeMode.Bounce);
     }
 
     override void onCallback(string id) {
@@ -27,11 +32,27 @@ private final class ImgElementGui: GuiElement {
     }
 
     override void update(float deltaTime) {
+        _timer.update(deltaTime);
+        if(isSelected && !isEditingName) {
+            if(isKeyDown("lctrl") || isKeyDown("rctrl")) {
+                if(getKeyDown("rename"))
+                    switchToEditMode();
+            }
+        }
         if(!isSelected && isEditingName) {
             applyEditedName();
         }
         else if(!isSelected) {
             isFirstClick = true;
+        }
+
+        if(label.size.x > size.x && isSelected) {
+            label.setAlign(GuiAlignX.Left, GuiAlignY.Center);
+            label.position = Vec2f(lerp(-(label.size.x - size.x), 0f, easeInOutSine(_timer.time)), 0f);
+        }
+        else {
+            label.setAlign(GuiAlignX.Center, GuiAlignY.Center);
+            label.position = Vec2f.zero;
         }
     }
 
@@ -47,16 +68,20 @@ private final class ImgElementGui: GuiElement {
         addChildGui(label);
     }
 
+    private void switchToEditMode() {
+        isEditingName = true;
+        removeChildrenGuis();
+        inputField = new InputField(size, label.text != "untitled" ? label.text : "");
+        inputField.setAlign(GuiAlignX.Center, GuiAlignY.Center);
+        inputField.setCallback(this, "editname");
+        inputField.hasFocus = true;
+        addChildGui(inputField);
+    }
+
     override void onSubmit() {
         if(isSelected && !isEditingName) {
             if(!isFirstClick) {
-                isEditingName = true;
-                removeChildrenGuis();
-                inputField = new InputField(size, label.text != "untitled" ? label.text : "");
-                inputField.setAlign(GuiAlignX.Center, GuiAlignY.Center);
-                inputField.setCallback(this, "editname");
-                inputField.hasFocus = true;
-                addChildGui(inputField);
+                switchToEditMode();
             }
             isFirstClick = false;
         }
@@ -105,13 +130,15 @@ final class ElementsListGui: VList {
 
     override void update(float deltaTime) {
         super.update(deltaTime);
-        if(getKeyDown("up")) {
-            selected(selected() - 1);
-            triggerCallback();
-        }
-        if(getKeyDown("down")) {
-            selected(selected() + 1);      
-            triggerCallback();            
+        if(!(isKeyDown("lctrl") || isKeyDown("rctrl"))) {
+            if(getKeyDown("up")) {
+                selected(selected() - 1);
+                triggerCallback();
+            }
+            if(getKeyDown("down")) {
+                selected(selected() + 1);      
+                triggerCallback();            
+            }
         }
     }
 

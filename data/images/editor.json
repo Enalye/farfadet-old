@@ -1,5 +1,4 @@
 {
-    "type": "spritesheet",
     "elements": [
         {
             "clip": {
@@ -222,5 +221,6 @@
             "type": "sprite"
         }
     ],
-    "texture": "..\/..\/media\/gui\/editor.png"
+    "texture": "..\/..\/media\/gui\/editor.png",
+    "type": "spritesheet"
 }

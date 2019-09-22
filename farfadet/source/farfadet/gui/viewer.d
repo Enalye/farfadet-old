@@ -424,6 +424,17 @@ final class ViewerGui: GuiElementCanvas {
             _isGrabbed = false;
         }
 
+        if(isKeyDown("lctrl") || isKeyDown("rctrl")) {
+            if(getKeyDown("all")) {
+                setClip(Vec4i(
+                    0, 0,
+                    _texture.width,
+                    _texture.height
+                ));
+                triggerCallback();
+            }
+        }
+
         if(getKeyDown("select"))
             toggleBrushSelect();
         if(getKeyDown("move"))

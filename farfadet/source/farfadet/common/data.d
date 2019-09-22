@@ -181,6 +181,15 @@ void reloadTab() {
     _updateTitle();
 }
 
+void reloadTabTexture() {
+    if(_currentTabIndex >= _tabs.length)
+        throw new Exception("Tab index out of bounds");
+    auto tabData = _tabs[_currentTabIndex];
+    if(!exists(tabData._texturePath))
+        return;
+    tabData._texture = new Texture(tabData._texturePath);    
+}
+
 void setTabDataPath(string filePath) {
     if(_currentTabIndex >= _tabs.length)
         throw new Exception("Tab index out of bounds");
@@ -228,6 +237,20 @@ void setCurrentTab(TabData tabData) {
     _updateTitle();
 }
 
+void setPreviousTab() {
+    if(!hasTab())
+        return;
+    _currentTabIndex = (_currentTabIndex == 0u) ? (cast(int)_tabs.length - 1) : (_currentTabIndex - 1);
+    _updateTitle();
+}
+
+void setNextTab() {
+    if(!hasTab())
+        return;
+    _currentTabIndex = ((_currentTabIndex + 1) >= _tabs.length) ? 0u : (_currentTabIndex + 1u);
+    _updateTitle();
+}
+
 private void _updateTitle() {
     if(_currentTabIndex >= _tabs.length) {
         setWindowTitle("Farfadet");
@@ -248,10 +271,8 @@ private void _updateTitle() {
 }
 
 TabData getCurrentTab() {
-    if(_currentTabIndex >= _tabs.length) {
-        assert(false, "bounds");
-    }
-        //throw new Exception("Tab index out of bounds5");
+    if(_currentTabIndex >= _tabs.length)
+        throw new Exception("Tab index out of bounds5");
     return _tabs[_currentTabIndex];
 }
 
