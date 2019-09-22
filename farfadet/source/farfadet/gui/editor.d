@@ -293,10 +293,16 @@ final class GraphicEditorGui: GuiElement {
         case "close":
             if(!hasTab())
                 break;
-            auto gui = new RemoveLayerGui;
-            gui.setCallback(this, "remove.modal");
-            setModalGui(gui);
-            //TODO: Close if not dirty, else display confirmation modal.
+            if(getCurrentTab().isDirty) {
+                auto gui = new RemoveLayerGui;
+                gui.setCallback(this, "close.modal");
+                setModalGui(gui);
+            }
+            else {
+                tabsGui.removeTab();
+                closeTab();
+                reload();
+            }
             break;
         case "save":
             if(!hasTab())
@@ -333,6 +339,11 @@ final class GraphicEditorGui: GuiElement {
             tabsGui.addTab();
             break;
         case "close.modal":
+            stopModalGui();
+            auto loadGui = getModalGui!OpenModal;
+            tabsGui.removeTab();
+            closeTab();
+            reload();
             break;
         case "tabs":
             if(!hasTab())
@@ -440,13 +451,10 @@ final class GraphicEditorGui: GuiElement {
     }
 
     void reload() {
-        auto tabData = getCurrentTab();
-
         viewerGui.reload();
         previewerGui.reload();
 
         propertiesGui.removeChildrenGuis();
-        
 
         viewerGui.isActive = false;
         propertiesGui.isActive = false;

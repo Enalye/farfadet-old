@@ -101,18 +101,23 @@ class PreviewerGui: GuiElement {
     }
 
     void reload() {
-        auto tabData = getCurrentTab();
-        if(_currentTabData && _currentTabData != tabData) {
-            _currentTabData.hasPreviewerData = true;
-            _currentTabData.previewerSpeed = playbackSpeedSlider.fvalue;
-        }
-        _currentTabData = tabData;
-        playbackSpeedSlider.fvalue = tabData.hasPreviewerData ? _currentTabData.previewerSpeed : 0f;
+        if(hasTab()) {
+            auto tabData = getCurrentTab();
+            if(_currentTabData && _currentTabData != tabData) {
+                _currentTabData.hasPreviewerData = true;
+                _currentTabData.previewerSpeed = playbackSpeedSlider.fvalue;
+            }
+            _currentTabData = tabData;
+            playbackSpeedSlider.fvalue = tabData.hasPreviewerData ? _currentTabData.previewerSpeed : 0f;
 
-        _texture = _currentTabData.texture;
-        _sprite.texture = _texture;
-        _tileset.texture = _texture;
-        _ninePatch.texture = _texture;
+            _texture = _currentTabData.texture;
+            _sprite.texture = _texture;
+            _tileset.texture = _texture;
+            _ninePatch.texture = _texture;
+        }
+        else {
+            isActive = false;
+        }
     }
 
     int getCurrentAnimFrame() {

@@ -303,19 +303,21 @@ final class ElementsListGui: VList {
         const auto lastIndex = selected();
         removeChildrenGuis();
 
-        auto tabData = getCurrentTab();
-		foreach(ElementData element; tabData.elements) {
-            auto elementGui = new ImgElementGui;
-            elementGui.data = element;
-            elementGui.label.text = element.name;
-            addChildGui(elementGui);
+        if(hasTab()) {
+            auto tabData = getCurrentTab();
+            foreach(ElementData element; tabData.elements) {
+                auto elementGui = new ImgElementGui;
+                elementGui.data = element;
+                elementGui.label.text = element.name;
+                addChildGui(elementGui);
+            }
+            if(_currentTabData && _currentTabData != tabData) {
+                _currentTabData.hasElementsListData = true;
+                _currentTabData.elementsListIndex = lastIndex;
+            }
+            _currentTabData = tabData;
+            selected(_currentTabData.hasElementsListData ? _currentTabData.elementsListIndex : 0);
         }
-        if(_currentTabData && _currentTabData != tabData) {
-            _currentTabData.hasElementsListData = true;
-            _currentTabData.elementsListIndex = lastIndex;
-        }
-        _currentTabData = tabData;
-        selected(_currentTabData.hasElementsListData ? _currentTabData.elementsListIndex : 0);
         triggerCallback();
     }
 }

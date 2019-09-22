@@ -374,29 +374,40 @@ final class ViewerGui: GuiElementCanvas {
     }
     
     void reload() {
-        auto tabData = getCurrentTab();
-        if(_currentTabData && _currentTabData != tabData) {
-            _currentTabData.hasViewerData = true;
-            _currentTabData.viewerPosition = canvas.position;
-            _currentTabData.viewerScale = _scale;
+        if(hasTab()) {
+            auto tabData = getCurrentTab();
+            if(_currentTabData && _currentTabData != tabData) {
+                _currentTabData.hasViewerData = true;
+                _currentTabData.viewerPosition = canvas.position;
+                _currentTabData.viewerScale = _scale;
+            }
+            _currentTabData = tabData;
+
+            _texture = tabData.texture;
+            _sprite = new Sprite(_texture);
+            _sprite.anchor = Vec2f.zero;
+
+            if(!tabData.hasViewerData) {
+                //Reset camera position
+                canvas.position = canvas.size / 2f;
+                _scale = 1f;
+                canvas.size = size * _scale;
+            }
+            else {
+                //Restore camera position
+                canvas.position = tabData.viewerPosition;
+                _scale = tabData.viewerScale;
+                canvas.size = size * _scale;
+            }
         }
-        _currentTabData = tabData;
-
-        _texture = tabData.texture;
-        _sprite = new Sprite(_texture);
-        _sprite.anchor = Vec2f.zero;
-
-        if(!tabData.hasViewerData) {
+        else {
             //Reset camera position
             canvas.position = canvas.size / 2f;
             _scale = 1f;
             canvas.size = size * _scale;
-        }
-        else {
-            //Restore camera position
-            canvas.position = tabData.viewerPosition;
-            _scale = tabData.viewerScale;
-            canvas.size = size * _scale;
+            _texture = null;
+            _sprite = null;
+            isActive = false;
         }
     }
 

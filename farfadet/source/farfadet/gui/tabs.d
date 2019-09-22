@@ -8,18 +8,67 @@ final private class TabButtonGui: GuiElement {
     private {
         Label _label;
         TabData _tabData;
+        TabsGui _tabs;
+        bool _isDeleted;
     }
 
-    this(TabData tabData) {
+    this(TabsGui tabs, TabData tabData) {
+        _tabs = tabs;
         _tabData = tabData;
         _label = new Label("untitled");
+
+        GuiState hiddenState = {
+            color: Color(1f, 1f, 1f, 0f),
+            scale: Vec2f(0f, 1f),
+            time: .5f,
+            easingFunction: getEasingFunction("sine-in-out")
+        };
+
+        GuiState visibleState = {
+            time: .5f,
+            easingFunction: getEasingFunction("sine-in-out")
+        };
+
+        _label.addState("hidden", hiddenState);
+        _label.addState("visible", visibleState);
+        _label.setState("hidden");
+
+
         _label.setAlign(GuiAlignX.Center, GuiAlignY.Center);
         addChildGui(_label);
 
         size(Vec2f(_label.size.x + 20f, 35f));
+
+        GuiState startState = {
+            scale: Vec2f(0f, 1f),
+            time: .5f,
+            easingFunction: getEasingFunction("sine-in-out")
+        };
+
+        GuiState endState = {
+            scale: Vec2f(0f, 1f),
+            time: .5f,
+            easingFunction: getEasingFunction("sine-in-out"),
+            callbackId: "end"
+        };
+
+        GuiState defaultState = {
+            time: .5f,
+            easingFunction: getEasingFunction("sine-in-out")
+        };
+
+        addState("start", startState);
+        addState("default", defaultState);
+        addState("end", endState);
+
+        setState("start");
+        doTransitionState("default");
+        _label.doTransitionState("visible");
     }
 
     override void update(float deltaTime) {
+        if(!hasTab())
+            return;
         isSelected = getCurrentTab() == _tabData;
         if(isSelected) {
             if(_tabData.isTitleDirty) {
@@ -31,6 +80,8 @@ final private class TabButtonGui: GuiElement {
     }
 
     override void onSubmit() {
+        if(isLocked)
+            return;
         if(!isSelected) {
             setCurrentTab(_tabData);
             triggerCallback();
@@ -38,13 +89,28 @@ final private class TabButtonGui: GuiElement {
     }
 
     override void draw() {
-        drawFilledRect(origin, size, Color(.12f, .13f, .19f));
+        drawFilledRect(origin, scaledSize, Color(.12f, .13f, .19f));
+        if(isLocked)
+            return;
         if(isHovered)
-            drawFilledRect(origin, size, Color(.2f, .2f, .2f));
+            drawFilledRect(origin, scaledSize, Color(.2f, .2f, .2f));
         if(isClicked)
-            drawFilledRect(origin, size, Color(.5f, .5f, .5f));
+            drawFilledRect(origin, scaledSize, Color(.5f, .5f, .5f));
         if(isSelected)
-            drawFilledRect(origin, size, Color(.4f, .4f, .5f));
+            drawFilledRect(origin, scaledSize, Color(.4f, .4f, .5f));
+    }
+
+    void close() {
+        doTransitionState("end");
+        _label.doTransitionState("hidden");
+        isLocked = true;
+    }
+    
+    override void onCallback(string id) {
+        if(id == "end") {
+            _isDeleted = true;
+            _tabs._remove();
+        }
     }
 }
 
@@ -83,8 +149,29 @@ final class TabsGui: GuiElementCanvas {
         if(!hasTab())
             return;
         auto tabData = getCurrentTab();
-        auto tabGui = new TabButtonGui(tabData);
+        auto tabGui = new TabButtonGui(this, tabData);
         tabGui.setCallback(this, "tab");
         _box.addChildGui(tabGui);
+    }
+
+    void removeTab() {
+        foreach(TabButtonGui tabGui; cast(TabButtonGui[])_box.children()) {
+            if(tabGui._tabData == getCurrentTab()) {
+                tabGui.close();
+            }
+        }
+    }
+
+    void _remove() {
+        TabButtonGui[] tabs;
+        foreach(TabButtonGui tabGui; cast(TabButtonGui[])_box.children()) {
+            if(!tabGui._isDeleted) {
+                tabs ~= tabGui;
+            }
+        }
+        _box.removeChildrenGuis();
+        foreach(TabButtonGui tabGui; tabs) {
+            _box.addChildGui(tabGui);
+        }
     }
 }

@@ -196,6 +196,25 @@ void saveTab() {
     _updateTitle();
 }
 
+void closeTab() {
+    if(_currentTabIndex >= _tabs.length)
+        throw new Exception("Tab index out of bounds");
+
+    if((_currentTabIndex + 1) == _tabs.length) {
+        _tabs.length --;
+        _currentTabIndex = (_currentTabIndex == 0) ? 0 : (_currentTabIndex - 1);
+    }
+    else if(_currentTabIndex == 0) {
+        _tabs = _tabs[1.. $];
+        _currentTabIndex = 0;
+    }
+    else {
+        _tabs = _tabs[0.. _currentTabIndex] ~ _tabs[(_currentTabIndex + 1).. $];
+        _currentTabIndex --;
+    }
+    _updateTitle();
+}
+
 void setCurrentTab(TabData tabData) {
     _currentTabIndex = cast(uint)_tabs.length;
     for(int i; i < _tabs.length; i ++) {
@@ -210,24 +229,29 @@ void setCurrentTab(TabData tabData) {
 }
 
 private void _updateTitle() {
-    if(_currentTabIndex >= _tabs.length)
-        throw new Exception("Tab index out of bounds");
-    auto tabData = _tabs[_currentTabIndex];
-    tabData._isTitleDirty = true;
-    string dirtyString = (tabData._isDirty ? " *" : "");
-    if(tabData._dataPath.length) {
-        tabData._title = baseName(tabData._dataPath) ~ dirtyString;
-        setWindowTitle("Farfadet - " ~ tabData._dataPath ~ " ~ (" ~ tabData._texturePath ~ ")" ~ dirtyString);
+    if(_currentTabIndex >= _tabs.length) {
+        setWindowTitle("Farfadet");
     }
     else {
-        tabData._title = baseName(tabData._texturePath) ~ tabData._isDirty ? " *" : "";
-        setWindowTitle("Farfadet - * ~ (" ~ tabData._texturePath ~ ")" ~ dirtyString);
+        auto tabData = _tabs[_currentTabIndex];
+        tabData._isTitleDirty = true;
+        string dirtyString = (tabData._isDirty ? " *" : "");
+        if(tabData._dataPath.length) {
+            tabData._title = baseName(tabData._dataPath) ~ dirtyString;
+            setWindowTitle("Farfadet - " ~ tabData._dataPath ~ " ~ (" ~ tabData._texturePath ~ ")" ~ dirtyString);
+        }
+        else {
+            tabData._title = baseName(tabData._texturePath) ~ tabData._isDirty ? " *" : "";
+            setWindowTitle("Farfadet - * ~ (" ~ tabData._texturePath ~ ")" ~ dirtyString);
+        }
     }
 }
 
 TabData getCurrentTab() {
-    if(_currentTabIndex >= _tabs.length)
-        throw new Exception("Tab index out of bounds");
+    if(_currentTabIndex >= _tabs.length) {
+        assert(false, "bounds");
+    }
+        //throw new Exception("Tab index out of bounds5");
     return _tabs[_currentTabIndex];
 }
 
