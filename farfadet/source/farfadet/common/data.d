@@ -269,6 +269,7 @@ void setCurrentElements(ElementData[] elements) {
     if(_currentTabIndex >= _tabs.length)
         throw new Exception("Tab index out of bounds");
     _tabs[_currentTabIndex]._elements = elements;
+    _onDirty();
 }
 
 void setSavePath(string filePath) {

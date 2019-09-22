@@ -23,10 +23,10 @@ void loadTextures() {
     foreach(file; files) {
         JSONValue json = parseJSON(readText(file));
 
-        if(getJsonStr(json, "DOCTYPE") != "IMAGE")
+        if(getJsonStr(json, "type") != "spritesheet")
             continue;
 
-        auto srcImage = convertPathToImport(getJsonStr(json, "texture"));
+        auto srcImage = buildNormalizedPath(dirName(file), convertPathToImport(getJsonStr(json, "texture")));
         auto texture = new Texture(srcImage);
         textureCache.set(texture, srcImage);
 

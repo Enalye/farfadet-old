@@ -294,7 +294,7 @@ final class GraphicEditorGui: GuiElement {
             if(!hasTab())
                 break;
             if(getCurrentTab().isDirty) {
-                auto gui = new RemoveLayerGui;
+                auto gui = new WarningMessageGui("There are unsaved modifications. Do you want to close ?", "Close");
                 gui.setCallback(this, "close.modal");
                 setModalGui(gui);
             }
@@ -340,7 +340,6 @@ final class GraphicEditorGui: GuiElement {
             break;
         case "close.modal":
             stopModalGui();
-            auto loadGui = getModalGui!OpenModal;
             tabsGui.removeTab();
             closeTab();
             reload();
@@ -363,12 +362,12 @@ final class GraphicEditorGui: GuiElement {
         case "remove":
             if(!hasTab())
                 break;
-            auto gui = new RemoveLayerGui;
+            auto gui = new WarningMessageGui("Do you want to remove this key ?", "Remove");
             gui.setCallback(this, "remove.modal");
             setModalGui(gui);
             break;
         case "remove.modal":
-            auto gui = getModalGui!RemoveLayerGui;
+            auto gui = getModalGui!WarningMessageGui;
             stopModalGui();
             listGui.removeElement();
             break;
@@ -498,18 +497,18 @@ final class GraphicEditorGui: GuiElement {
     }
 }
 
-private final class RemoveLayerGui: GuiElement {
-    this() {
-        size(Vec2f(400f, 100f));
+private final class WarningMessageGui: GuiElement {
+    this(string message, string action) {
         setAlign(GuiAlignX.Center, GuiAlignY.Center);
 
         Font font = getDefaultFont();
 
         { //Title
-            auto title = new Label(font, "Do you want to remove this element ?");
+            auto title = new Label(font, message);
             title.setAlign(GuiAlignX.Left, GuiAlignY.Top);
             title.position = Vec2f(20f, 10f);
             addChildGui(title);
+            size(Vec2f(title.size.x + 40f, 100f));
         }
 
         { //Validation
@@ -518,7 +517,7 @@ private final class RemoveLayerGui: GuiElement {
             box.spacing = Vec2f(25f, 15f);
             addChildGui(box);
 
-            auto applyBtn = new TextButton(font, "Remove");
+            auto applyBtn = new TextButton(font, action);
             applyBtn.size = Vec2f(100f, 35f);
             applyBtn.setCallback(this, "apply");
             box.addChildGui(applyBtn);
