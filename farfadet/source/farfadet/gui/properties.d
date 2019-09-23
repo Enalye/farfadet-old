@@ -6,11 +6,11 @@ import farfadet.gui.editor, farfadet.common;
 
 final class PropertiesGui: VContainer {
     private {
-        DropDownList _elementTypeSelector;
-        InputField _fieldX, _fieldY, _fieldW, _fieldH;
+        DropDownList _elementTypeSelector, _flipSelector;
+        InputField _fieldX, _fieldY, _fieldW, _fieldH, _fieldMarginX, _fieldMarginY;
 
-        //Tileset parameters
-        InputField _fieldColumns, _fieldLines, _fieldMaxTiles;
+        //Tileset/Animation parameters
+        InputField _fieldColumns, _fieldLines, _fieldMaxTiles, _fieldDuration;
 
         //NinePatch parameters
         InputField _fieldTop, _fieldBottom, _fieldLeft, _fieldRight;
@@ -26,19 +26,29 @@ final class PropertiesGui: VContainer {
 
         _elementTypeSelector = new DropDownList(Vec2f(200f, 30f), 4);
         _elementTypeSelector.add("Sprite");
+        _elementTypeSelector.add("Animation");
         _elementTypeSelector.add("Tileset");
         _elementTypeSelector.add("Brush (borders)");
         _elementTypeSelector.add("Brush (no border)");
         _elementTypeSelector.add("NinePatch");
 
+        _flipSelector = new DropDownList(Vec2f(200f, 30f), 4);
+        _flipSelector.add("No Flip");
+        _flipSelector.add("Horizontal Flip");
+        _flipSelector.add("Vertical Flip");
+        _flipSelector.add("Both Flip");
+
         _fieldX = new InputField(Vec2f(50f, 25f), "0");
         _fieldY = new InputField(Vec2f(50f, 25f), "0");
         _fieldW = new InputField(Vec2f(50f, 25f), "0");
         _fieldH = new InputField(Vec2f(50f, 25f), "0");
+        _fieldMarginX = new InputField(Vec2f(50f, 25f), "0");
+        _fieldMarginY = new InputField(Vec2f(50f, 25f), "0");
 
         _fieldColumns = new InputField(Vec2f(50f, 25f), "1");
         _fieldLines = new InputField(Vec2f(50f, 25f), "1");
         _fieldMaxTiles = new InputField(Vec2f(50f, 25f), "0");
+        _fieldDuration = new InputField(Vec2f(50f, 25f), "0");
 
         _fieldTop = new InputField(Vec2f(50f, 25f), "0");
         _fieldBottom = new InputField(Vec2f(50f, 25f), "0");
@@ -49,10 +59,13 @@ final class PropertiesGui: VContainer {
         _fieldY.setAllowedCharacters("0123456789"d);
         _fieldW.setAllowedCharacters("0123456789"d);
         _fieldH.setAllowedCharacters("0123456789"d);
+        _fieldMarginX.setAllowedCharacters("0123456789"d);
+        _fieldMarginY.setAllowedCharacters("0123456789"d);
 
         _fieldColumns.setAllowedCharacters("0123456789"d);
         _fieldLines.setAllowedCharacters("0123456789"d);
         _fieldMaxTiles.setAllowedCharacters("0123456789"d);
+        _fieldDuration.setAllowedCharacters("0123456789."d);
 
         _fieldTop.setAllowedCharacters("0123456789"d);
         _fieldBottom.setAllowedCharacters("0123456789"d);
@@ -61,15 +74,19 @@ final class PropertiesGui: VContainer {
 
         //Callbacks
         _elementTypeSelector.setCallback(this, "type");
+        _flipSelector.setCallback(this, "flip");
 
         _fieldX.setCallback(this, "x");
         _fieldY.setCallback(this, "y");
         _fieldW.setCallback(this, "w");
         _fieldH.setCallback(this, "h");
+        _fieldMarginX.setCallback(this, "x-margin");
+        _fieldMarginY.setCallback(this, "y-margin");
 
         _fieldColumns.setCallback(this, "columns");
         _fieldLines.setCallback(this, "lines");
         _fieldMaxTiles.setCallback(this, "maxtiles");
+        _fieldDuration.setCallback(this, "duration");
 
         _fieldTop.setCallback(this, "top");
         _fieldBottom.setCallback(this, "bottom");
@@ -96,9 +113,13 @@ final class PropertiesGui: VContainer {
             isClipDirty = true;
             triggerCallback();
             break;
+        case "flip":
         case "columns":
         case "lines":
         case "maxtiles":
+        case "duration":
+        case "x-margin":
+        case "y-margin":
         case "top":
         case "bottom":
         case "left":
@@ -146,7 +167,47 @@ final class PropertiesGui: VContainer {
             addChildGui(box);
         }
 
+        if(_elementTypeSelector.selected < 3) {
+            auto box = new HContainer;
+            box.addChildGui(new Label("Flip: "));
+            box.addChildGui(_flipSelector);
+            addChildGui(box);
+        }
+
         if(_elementTypeSelector.selected == 1) {
+            addChildGui(new Label("- Anim settings -"));
+            {
+                auto box = new HContainer;
+                box.addChildGui(new Label("cols: "));
+                box.addChildGui(_fieldColumns);
+                box.addChildGui(new Label(" lines: "));
+                box.addChildGui(_fieldLines);
+                addChildGui(box);
+            }
+            {
+                auto box = new HContainer;
+                box.addChildGui(new Label("max (optional): "));
+                box.addChildGui(_fieldMaxTiles);
+                addChildGui(box);
+            }
+            addChildGui(new Label("- Margin -"));
+            {
+                auto box = new HContainer;
+                box.addChildGui(new Label("x: "));
+                box.addChildGui(_fieldMarginX);
+                box.addChildGui(new Label(" y: "));
+                box.addChildGui(_fieldMarginY);
+                addChildGui(box);
+            }
+            {
+                auto box = new HContainer;
+                box.addChildGui(new Label("duration: "));
+                box.addChildGui(_fieldDuration);
+                box.addChildGui(new Label(" secs"));
+                addChildGui(box);
+            }
+        }
+        else if(_elementTypeSelector.selected == 2) {
             addChildGui(new Label("- Tileset settings -"));
             {
                 auto box = new HContainer;
@@ -162,8 +223,17 @@ final class PropertiesGui: VContainer {
                 box.addChildGui(_fieldMaxTiles);
                 addChildGui(box);
             }
+            addChildGui(new Label("- Margin -"));
+            {
+                auto box = new HContainer;
+                box.addChildGui(new Label("x: "));
+                box.addChildGui(_fieldMarginX);
+                box.addChildGui(new Label(" y: "));
+                box.addChildGui(_fieldMarginY);
+                addChildGui(box);
+            }
         }
-        else if(_elementTypeSelector.selected == 4) {
+        else if(_elementTypeSelector.selected == 5) {
             addChildGui(new Label("- NinePatch settings -"));
             {
                 auto box = new HContainer;
@@ -207,10 +277,11 @@ final class PropertiesGui: VContainer {
     ElementType getImgType() {
         switch(_elementTypeSelector.selected) {
         case 0: return ElementType.SpriteType;
-        case 1: return ElementType.TilesetType;
-        case 2: return ElementType.BorderedBrushType;
-        case 3: return ElementType.BorderlessBrushType;
-        case 4: return ElementType.NinePatchType;
+        case 1: return ElementType.AnimationType;
+        case 2: return ElementType.TilesetType;
+        case 3: return ElementType.BorderedBrushType;
+        case 4: return ElementType.BorderlessBrushType;
+        case 5: return ElementType.NinePatchType;
         default:
             throw new Exception("Invalid texture class property");
         }
@@ -218,6 +289,21 @@ final class PropertiesGui: VContainer {
 
     void setImgType(ElementType type) {
         _elementTypeSelector.selected(type);
+    }
+
+    Flip getFlip() {
+        switch(_flipSelector.selected) {
+        case 0: return Flip.NoFlip;
+        case 1: return Flip.HorizontalFlip;
+        case 2: return Flip.VerticalFlip;
+        case 3: return Flip.BothFlip;
+        default:
+            throw new Exception("Invalid flip type property");
+        }
+    }
+
+    void setFlip(Flip flip) {
+        _flipSelector.selected(flip);
     }
 
     int getColumns() {
@@ -263,6 +349,45 @@ final class PropertiesGui: VContainer {
     
     void setMaxTiles(int value) {
         _fieldMaxTiles.text = to!string(value);
+    }
+
+    float getDuration() {
+        try {
+            return _fieldDuration.text.length ? to!float(_fieldDuration.text) : 1f;
+        }
+        catch(ConvException e) {
+            return 1f;
+        }
+    }
+    
+    void setDuration(float value) {
+        _fieldDuration.text = to!string(value);
+    }
+
+    int getMarginX() {
+        try {
+            return _fieldMarginX.text.length ? to!int(_fieldMarginX.text) : 0;
+        }
+        catch(ConvException e) {
+            return 0;
+        }
+    }
+    
+    void setMarginX(int value) {
+        _fieldMarginX.text = to!string(value);
+    }
+
+    int getMarginY() {
+        try {
+            return _fieldMarginY.text.length ? to!int(_fieldMarginY.text) : 0;
+        }
+        catch(ConvException e) {
+            return 0;
+        }
+    }
+    
+    void setMarginY(int value) {
+        _fieldMarginY.text = to!string(value);
     }
 
     int getTop() {

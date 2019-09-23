@@ -14,7 +14,7 @@ private {
 
 /// General type of an element.
 enum ElementType {
-    SpriteType, TilesetType, BorderedBrushType, BorderlessBrushType, NinePatchType
+    SpriteType, AnimationType, TilesetType, BorderedBrushType, BorderlessBrushType, NinePatchType
 }
 
 /// Data describing a single element.
@@ -25,6 +25,9 @@ final class ElementData {
         Vec4i _clip = Vec4i.zero;
         int _columns = 1, _lines = 1, _maxtiles;
         int _top, _bottom, _left, _right;
+        int _marginX, _marginY;
+        float _duration = 1f;
+        Flip _flip = Flip.NoFlip;
     }
 
     @property {
@@ -48,6 +51,15 @@ final class ElementData {
                 return v;
             _onDirty();
             return _clip = v;
+        }
+
+        /// Flip
+        Flip flip() const { return _flip; }
+        Flip flip(Flip v) {
+            if(v == _flip)
+                return v;
+            _onDirty();
+            return _flip = v;
         }
 
         /// Tileset specific data
@@ -106,6 +118,22 @@ final class ElementData {
                 return v;
             _onDirty();
             return _right = v;
+        }
+
+        int marginX() const { return _marginX; }
+        int marginX(int v) {
+            if(v == _marginX)
+                return v;
+            _onDirty();
+            return _marginX = v;
+        }
+
+        int marginY() const { return _marginY; }
+        int marginY(int v) {
+            if(v == _marginY)
+                return v;
+            _onDirty();
+            return _marginY = v;
         }
     }
 }
@@ -326,6 +354,9 @@ private void _loadData(TabData tabData) {
         case "sprite":
             element._type = ElementType.SpriteType;
             break;
+        case "animation":
+            element._type = ElementType.AnimationType;
+            break;
         case "tileset":
             element._type = ElementType.TilesetType;
             break;
@@ -342,6 +373,23 @@ private void _loadData(TabData tabData) {
             throw new Exception("Invalid image type");
         }
 
+        switch(getJsonStr(elementNode, "flip", "none")) {
+        case "none":
+            element._flip = Flip.NoFlip;
+            break;
+        case "horizontal":
+            element._flip = Flip.HorizontalFlip;
+            break;
+        case "vertical":
+            element._flip = Flip.VerticalFlip;
+            break;
+        case "both":
+            element._flip = Flip.BothFlip;
+            break;
+        default:
+            throw new Exception("Invalid flip type");
+        }
+
         auto clipNode = getJson(elementNode, "clip");
         Vec4i clip;
         clip.x = getJsonInt(clipNode, "x");
@@ -355,16 +403,21 @@ private void _loadData(TabData tabData) {
         case BorderedBrushType:
         case BorderlessBrushType:
             break;
+        case AnimationType:
+            element._duration = getJsonFloat(elementNode, "duration", 1f);
+            goto case TilesetType;
         case TilesetType:
-            element._columns = getJsonInt(elementNode, "columns");
-            element._lines = getJsonInt(elementNode, "lines");
-            element._maxtiles = getJsonInt(elementNode, "maxtiles");
+            element._columns = getJsonInt(elementNode, "columns", 1);
+            element._lines = getJsonInt(elementNode, "lines", 1);
+            element._maxtiles = getJsonInt(elementNode, "maxtiles", 0);
+            element._marginX = getJsonInt(elementNode, "x-margin", 0);
+            element._marginY = getJsonInt(elementNode, "y-margin", 0);
             break;
         case NinePatchType:
-            element._top = getJsonInt(elementNode, "top");
-            element._bottom = getJsonInt(elementNode, "bottom");
-            element._left = getJsonInt(elementNode, "left");
-            element._right = getJsonInt(elementNode, "right");
+            element._top = getJsonInt(elementNode, "top", 0);
+            element._bottom = getJsonInt(elementNode, "bottom", 0);
+            element._left = getJsonInt(elementNode, "left", 0);
+            element._right = getJsonInt(elementNode, "right", 0);
             break;
         }
         tabData._elements ~= element;
@@ -386,6 +439,9 @@ private void _saveData(TabData tabData) {
         case SpriteType:
             elementNode["type"] = JSONValue("sprite");
             break;
+        case AnimationType:
+            elementNode["type"] = JSONValue("animation");
+            break;
         case TilesetType:
             elementNode["type"] = JSONValue("tileset");
             break;
@@ -397,6 +453,21 @@ private void _saveData(TabData tabData) {
             break;
         case NinePatchType:
             elementNode["type"] = JSONValue("ninepatch");
+            break;
+        }
+
+        final switch(element._flip) with(Flip) {
+        case NoFlip:
+            elementNode["flip"] = JSONValue("none");
+            break;
+        case HorizontalFlip:
+            elementNode["flip"] = JSONValue("horizontal");
+            break;
+        case VerticalFlip:
+            elementNode["flip"] = JSONValue("vertical");
+            break;
+        case BothFlip:
+            elementNode["flip"] = JSONValue("both");
             break;
         }
 
@@ -412,10 +483,15 @@ private void _saveData(TabData tabData) {
         case BorderedBrushType:
         case BorderlessBrushType:
             break;
+        case AnimationType:
+            elementNode["duration"] = JSONValue(element._duration);
+            goto case TilesetType;
         case TilesetType:
             elementNode["columns"] = JSONValue(element._columns);
             elementNode["lines"] = JSONValue(element._lines);
             elementNode["maxtiles"] = JSONValue(element._maxtiles);
+            elementNode["x-margin"] = JSONValue(element._marginX);
+            elementNode["y-margin"] = JSONValue(element._marginY);
             break;
         case NinePatchType:
             elementNode["top"] = JSONValue(element._top);

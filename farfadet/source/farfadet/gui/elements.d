@@ -94,6 +94,9 @@ private final class ImgElementGui: GuiElement {
         case SpriteType:
             color = isSelected ? Color.fromRGB(0x9EFFCF) : Color.fromRGB(0x7CCCCB);
             break;
+        case AnimationType:
+            color = isSelected ? Color.fromRGB(0x9EBBFF) : Color.fromRGB(0x8B7CCC);
+            break;
         case TilesetType:
             color = isSelected ? Color.fromRGB(0x9EBBFF) : Color.fromRGB(0x8B7CCC);
             break;

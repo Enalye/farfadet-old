@@ -17,6 +17,8 @@ class PreviewerGui: GuiElement {
     //General data
     ElementType type;
 
+    Flip flip;
+
     Vec4i clip;
 
     //Tileset specific data
@@ -24,6 +26,9 @@ class PreviewerGui: GuiElement {
 
     //NinePatch specific data
     int top, bottom, left, right;
+
+    int marginX, marginY;
+    float duration = 1f;
 
     Slider playbackSpeedSlider;
 
@@ -48,15 +53,18 @@ class PreviewerGui: GuiElement {
 
     override void update(float deltaTime) {
         if(_sprite !is null) {
+            _sprite.flip = flip;
             _sprite.clip = clip;
             _sprite.size = size;
         }
         if(_tileset !is null) {
+            _tileset.flip = flip;
             _tileset.clip = clip;
             _tileset.columns = columns;
             _tileset.lines = lines;
             _tileset.maxtiles = maxtiles;
             _tileset.size = size;
+            _tileset.margin = Vec2i(marginX, marginY);
             _animation.update(deltaTime);
         }
         if(_ninePatch !is null) {
@@ -86,6 +94,7 @@ class PreviewerGui: GuiElement {
             _sprite.fit(size);
             _sprite.draw(center);
             break;
+        case AnimationType:
         case TilesetType:
             _animation.tileset.fit(size);
             _animation.draw(center);

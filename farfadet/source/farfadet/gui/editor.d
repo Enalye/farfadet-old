@@ -287,9 +287,12 @@ final class GraphicEditorGui: GuiElement {
             viewerGui.elementType = type;
             data.type = type;
             
+            data.flip = propertiesGui.getFlip();
             data.columns = propertiesGui.getColumns();
             data.lines = propertiesGui.getLines();
             data.maxtiles = propertiesGui.getMaxTiles();
+            data.marginX = propertiesGui.getMarginX();
+            data.marginY = propertiesGui.getMarginY();
             data.top = propertiesGui.getTop();
             data.bottom = propertiesGui.getBottom();
             data.left = propertiesGui.getLeft();
@@ -298,16 +301,21 @@ final class GraphicEditorGui: GuiElement {
             viewerGui.columns = data.columns;
             viewerGui.lines = data.lines;
             viewerGui.maxtiles = data.maxtiles;
+            viewerGui.marginX = data.marginX;
+            viewerGui.marginY = data.marginY;
             viewerGui.top = data.top;
             viewerGui.bottom = data.bottom;
             viewerGui.left = data.left;
             viewerGui.right = data.right;
 
             previewerGui.type = data.type;
+            previewerGui.flip = data.flip;
             previewerGui.clip = data.clip;
             previewerGui.columns = data.columns;
             previewerGui.lines = data.lines;
             previewerGui.maxtiles = data.maxtiles;
+            previewerGui.marginX = data.marginX;
+            previewerGui.marginY = data.marginY;
             previewerGui.top = data.top;
             previewerGui.bottom = data.bottom;
             previewerGui.left = data.left;
@@ -454,9 +462,12 @@ final class GraphicEditorGui: GuiElement {
                 data.type = type;
             }
             if(propertiesGui.areSettingsDirty) {
+                data.flip = propertiesGui.getFlip();
                 data.columns = propertiesGui.getColumns();
                 data.lines = propertiesGui.getLines();
                 data.maxtiles = propertiesGui.getMaxTiles();
+                data.marginX = propertiesGui.getMarginX();
+                data.marginY = propertiesGui.getMarginY();
                 data.top = propertiesGui.getTop();
                 data.bottom = propertiesGui.getBottom();
                 data.left = propertiesGui.getLeft();
@@ -476,9 +487,12 @@ final class GraphicEditorGui: GuiElement {
 
                 propertiesGui.setImgType(data.type);
 
+                propertiesGui.setFlip(data.flip);
                 propertiesGui.setColumns(data.columns);
                 propertiesGui.setLines(data.lines);
                 propertiesGui.setMaxTiles(data.maxtiles);
+                propertiesGui.setMarginX(data.marginX);
+                propertiesGui.setMarginY(data.marginY);
                 propertiesGui.setTop(data.top);
                 propertiesGui.setBottom(data.bottom);
                 propertiesGui.setLeft(data.left);
@@ -511,9 +525,12 @@ final class GraphicEditorGui: GuiElement {
 
         propertiesGui.setImgType(ElementType.SpriteType);
 
+        propertiesGui.setFlip(Flip.NoFlip);
         propertiesGui.setColumns(0);
         propertiesGui.setLines(0);
         propertiesGui.setMaxTiles(0);
+        propertiesGui.setMarginX(0);
+        propertiesGui.setMarginY(0);
         propertiesGui.setTop(0);
         propertiesGui.setBottom(0);
         propertiesGui.setLeft(0);

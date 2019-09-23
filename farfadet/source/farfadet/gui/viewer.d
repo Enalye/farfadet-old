@@ -38,6 +38,7 @@ final class ViewerGui: GuiElementCanvas {
     //External settings for Tileset and NinePatch.
     int columns, lines, maxtiles;
     int top, bottom, left, right;
+    int marginX, marginY;
 
     this() {
         size(Vec2f(screenHeight, screenHeight - 85));
@@ -605,8 +606,7 @@ final class ViewerGui: GuiElementCanvas {
                     Vec2f s = rectSize;
 
                     drawRect(p, s, (x == 0 && y == 0) ? (Color.white) : (Color.gray));
-                    drawCross(rectOrigin + Vec2f(_selectionSize.x * x, _selectionSize.y * y) +
-                        rectSize / 2f, 5f, Color.white);
+                    drawCross(p + s / 2f, 5f, Color.white);
 
                     if(x == 0 && y == 0)
                         continue;
@@ -623,6 +623,7 @@ final class ViewerGui: GuiElementCanvas {
                 }
             }
             break;
+        case AnimationType:
         case TilesetType:
             int i;
             drawLoop: foreach(int y; 0.. lines) {
@@ -630,18 +631,14 @@ final class ViewerGui: GuiElementCanvas {
                     if(maxtiles != 0 && i >= maxtiles)
                         break drawLoop;
 
+                    Vec2f p = rectOrigin + Vec2f((_selectionSize.x + marginX) * x, (_selectionSize.y + marginY) * y);
                     if(i == previewerGui.getCurrentAnimFrame()) {
                         _rect.size = rectSize;
                         _rect.color = Color(0f, .5f, 1f, .35f);
-                        _rect.draw(rectOrigin + Vec2f(_selectionSize.x * x, _selectionSize.y * y)
-                            + rectSize / 2f);
+                        _rect.draw(p + rectSize / 2f);
                     }
-                    drawRect(
-                        rectOrigin + Vec2f(_selectionSize.x * x, _selectionSize.y * y),
-                        rectSize,
-                        (x == 0 && y == 0) ? (Color.white) : (Color.green));
-                    drawCross(rectOrigin + Vec2f(_selectionSize.x * x, _selectionSize.y * y) +
-                        rectSize / 2f, 5f, Color.white);
+                    drawRect(p, rectSize, (x == 0 && y == 0) ? (Color.white) : (Color.green));
+                    drawCross(p + rectSize / 2f, 5f, Color.white);
                     i ++;
                 }
             }
