@@ -48,7 +48,7 @@ final class PropertiesGui: VContainer {
         _fieldColumns = new InputField(Vec2f(50f, 25f), "1");
         _fieldLines = new InputField(Vec2f(50f, 25f), "1");
         _fieldMaxTiles = new InputField(Vec2f(50f, 25f), "0");
-        _fieldDuration = new InputField(Vec2f(50f, 25f), "0");
+        _fieldDuration = new InputField(Vec2f(50f, 25f), "1");
 
         _fieldTop = new InputField(Vec2f(50f, 25f), "0");
         _fieldBottom = new InputField(Vec2f(50f, 25f), "0");
@@ -167,7 +167,7 @@ final class PropertiesGui: VContainer {
             addChildGui(box);
         }
 
-        if(_elementTypeSelector.selected < 3) {
+        {
             auto box = new HContainer;
             box.addChildGui(new Label("Flip: "));
             box.addChildGui(_flipSelector);

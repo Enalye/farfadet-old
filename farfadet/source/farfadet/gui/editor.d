@@ -291,6 +291,7 @@ final class GraphicEditorGui: GuiElement {
             data.columns = propertiesGui.getColumns();
             data.lines = propertiesGui.getLines();
             data.maxtiles = propertiesGui.getMaxTiles();
+            data.duration = propertiesGui.getDuration();
             data.marginX = propertiesGui.getMarginX();
             data.marginY = propertiesGui.getMarginY();
             data.top = propertiesGui.getTop();
@@ -301,6 +302,7 @@ final class GraphicEditorGui: GuiElement {
             viewerGui.columns = data.columns;
             viewerGui.lines = data.lines;
             viewerGui.maxtiles = data.maxtiles;
+            viewerGui.duration = data.duration;
             viewerGui.marginX = data.marginX;
             viewerGui.marginY = data.marginY;
             viewerGui.top = data.top;
@@ -314,6 +316,7 @@ final class GraphicEditorGui: GuiElement {
             previewerGui.columns = data.columns;
             previewerGui.lines = data.lines;
             previewerGui.maxtiles = data.maxtiles;
+            previewerGui.duration = data.duration;
             previewerGui.marginX = data.marginX;
             previewerGui.marginY = data.marginY;
             previewerGui.top = data.top;

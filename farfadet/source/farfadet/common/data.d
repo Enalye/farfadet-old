@@ -87,6 +87,14 @@ final class ElementData {
             return _maxtiles = v;
         }
 
+        float duration() const { return _duration; }
+        float duration(float v) {
+            if(v == _duration)
+                return v;
+            _onDirty();
+            return _duration = v;
+        }
+
         /// NinePatch specific data
         int top() const { return _top; }
         int top(int v) {
@@ -410,8 +418,16 @@ private void _loadData(TabData tabData) {
             element._columns = getJsonInt(elementNode, "columns", 1);
             element._lines = getJsonInt(elementNode, "lines", 1);
             element._maxtiles = getJsonInt(elementNode, "maxtiles", 0);
-            element._marginX = getJsonInt(elementNode, "x-margin", 0);
-            element._marginY = getJsonInt(elementNode, "y-margin", 0);
+
+            if(hasJson(elementNode, "margin")) {
+                auto marginNode = getJson(elementNode, "margin");
+                element._marginX = getJsonInt(marginNode, "x", 0);
+                element._marginY = getJsonInt(marginNode, "y", 0);
+            }
+            else {
+                element._marginX = 0;
+                element._marginY = 0;
+            }
             break;
         case NinePatchType:
             element._top = getJsonInt(elementNode, "top", 0);
@@ -490,8 +506,11 @@ private void _saveData(TabData tabData) {
             elementNode["columns"] = JSONValue(element._columns);
             elementNode["lines"] = JSONValue(element._lines);
             elementNode["maxtiles"] = JSONValue(element._maxtiles);
-            elementNode["x-margin"] = JSONValue(element._marginX);
-            elementNode["y-margin"] = JSONValue(element._marginY);
+
+            JSONValue marginNode;
+            marginNode["x"] = JSONValue(element._marginX);
+            marginNode["y"] = JSONValue(element._marginY);
+            elementNode["margin"] = marginNode;
             break;
         case NinePatchType:
             elementNode["top"] = JSONValue(element._top);
