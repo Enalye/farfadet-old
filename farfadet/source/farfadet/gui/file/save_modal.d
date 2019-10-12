@@ -63,20 +63,20 @@ final class SaveModal: GuiElement {
         }
 
         size(Vec2f(500f, 500f));
-        setAlign(GuiAlignX.Center, GuiAlignY.Center);
+        setAlign(GuiAlignX.center, GuiAlignY.center);
 
         Font font = getDefaultFont();
 
         { //Title
             auto title = new Label(font, "Save to Json:");
-            title.setAlign(GuiAlignX.Left, GuiAlignY.Top);
+            title.setAlign(GuiAlignX.left, GuiAlignY.top);
             title.position = Vec2f(20f, 10f);
             addChildGui(title);
         }
 
         {
             _pathLabel = new EditablePathGui(_path);
-            _pathLabel.setAlign(GuiAlignX.Left, GuiAlignY.Top);
+            _pathLabel.setAlign(GuiAlignX.left, GuiAlignY.top);
             _pathLabel.position = Vec2f(20f, 50f);
             _pathLabel.setCallback(this, "path");
             addChildGui(_pathLabel);
@@ -84,7 +84,7 @@ final class SaveModal: GuiElement {
 
         { //Text Field
             auto box = new HContainer;
-            box.setAlign(GuiAlignX.Center, GuiAlignY.Bottom);
+            box.setAlign(GuiAlignX.center, GuiAlignY.bottom);
             box.position = Vec2f(0f, 60f);
             addChildGui(box);
 
@@ -96,7 +96,7 @@ final class SaveModal: GuiElement {
 
         { //Validation
             auto box = new HContainer;
-            box.setAlign(GuiAlignX.Right, GuiAlignY.Bottom);
+            box.setAlign(GuiAlignX.right, GuiAlignY.bottom);
             box.spacing = Vec2f(25f, 15f);
             addChildGui(box);
 
@@ -113,7 +113,7 @@ final class SaveModal: GuiElement {
 
         { //List
             auto vbox = new VContainer;
-            vbox.setAlign(GuiAlignX.Center, GuiAlignY.Center);
+            vbox.setAlign(GuiAlignX.center, GuiAlignY.center);
             vbox.position = Vec2f(0f, -50f);
             addChildGui(vbox);
 
@@ -142,7 +142,7 @@ final class SaveModal: GuiElement {
 
         GuiState defaultState = {
             time: .5f,
-            easingFunction: getEasingFunction("sine-out")
+            easingFunction: getEasingFunction(EasingAlgorithm.sineOut)
         };
         addState("default", defaultState);
 

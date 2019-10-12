@@ -18,7 +18,7 @@ final class EditablePathGui: GuiElement {
 
     this(string path = "untitled") {
         label = new Label(path);
-        label.setAlign(GuiAlignX.Left, GuiAlignY.Center);
+        label.setAlign(GuiAlignX.left, GuiAlignY.center);
         addChildGui(label);
         size = label.size;
     }
@@ -67,7 +67,7 @@ final class EditablePathGui: GuiElement {
                 isEditingName = true;
                 removeChildrenGuis();
                 inputField = new InputField(size, label.text != "untitled" ? label.text : "");
-                inputField.setAlign(GuiAlignX.Center, GuiAlignY.Center);
+                inputField.setAlign(GuiAlignX.center, GuiAlignY.center);
                 inputField.setCallback(this, "editname");
                 inputField.size = Vec2f(400f, label.size.y);
                 inputField.hasFocus = true;

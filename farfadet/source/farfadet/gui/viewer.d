@@ -59,7 +59,7 @@ final class ViewerGui: GuiElementCanvas {
             _resizeCursors[i].size *= 2f;
         }
 
-        _timer.start(5f, TimeMode.Bounce);
+        _timer.start(5f, TimeMode.bounce);
     }
 
     override void onCallback(string id) {
@@ -181,7 +181,7 @@ final class ViewerGui: GuiElementCanvas {
         if(_texture is null)
             return;
         switch(event.type) with(EventType) {
-        case MouseUpdate:
+        case mouseUpdate:
             _cursorPosition = event.position;
             Vec2i roundedPosition = to!Vec2i(event.position.round());
             roundedPosition = roundedPosition.clamp(Vec2i.zero, Vec2i(_texture.width, _texture.height));
@@ -201,7 +201,7 @@ final class ViewerGui: GuiElementCanvas {
             }
             generateHint(roundedPosition);
             break;
-        case MouseDown:
+        case mouseDown:
             _cursorPosition = event.position;
             Vec2i roundedPosition = to!Vec2i(event.position.round());
             roundedPosition = roundedPosition.clamp(Vec2i.zero, Vec2i(_texture.width, _texture.height));
@@ -216,7 +216,7 @@ final class ViewerGui: GuiElementCanvas {
 				_startMovingCursorPosition = event.position;
             }
             break;
-        case MouseUp:
+        case mouseUp:
             _cursorPosition = event.position;
             Vec2i roundedPosition = to!Vec2i(event.position.round());
             roundedPosition = roundedPosition.clamp(Vec2i.zero, Vec2i(_texture.width, _texture.height));
@@ -231,7 +231,7 @@ final class ViewerGui: GuiElementCanvas {
                 canvas.position += (_startMovingCursorPosition - event.position);
             }
             break;
-        case MouseWheel:
+        case mouseWheel:
             const Vec2f delta = (_cursorPosition - canvas.position) / (canvas.size);
             if(event.position.y > 0f) {
                 if(_scale > 0.01f)
@@ -456,8 +456,8 @@ final class ViewerGui: GuiElementCanvas {
     void generateHint(Vec2i cursorPosition) {
         if(_isSelecting) {
             setHint("[" ~ to!string(cursorPosition.x) ~ "; " ~ to!string(cursorPosition.y) ~ "]",
-                "[" ~ to!string(_selectionOrigin.x) ~ "; " ~ to!string(_selectionOrigin.y) ~ "]{n}"
-                ~ "[" ~ to!string(_selectionSize.x) ~ "; " ~ to!string(_selectionSize.y) ~ "]");
+                "[" ~ to!string(_selectionOrigin.x) ~ "; " ~ to!string(_selectionOrigin.y) ~ "; "
+                ~ to!string(_selectionSize.x) ~ "; " ~ to!string(_selectionSize.y) ~ "]");
         }
         else {
             setHint("[" ~ to!string(cursorPosition.x) ~ "; " ~ to!string(cursorPosition.y) ~ "]");

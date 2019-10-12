@@ -21,12 +21,12 @@ final private class TabButtonGui: GuiElement {
             color: Color(1f, 1f, 1f, 0f),
             scale: Vec2f(0f, 1f),
             time: .5f,
-            easingFunction: getEasingFunction("sine-in-out")
+            easingFunction: getEasingFunction(EasingAlgorithm.sineInOut)
         };
 
         GuiState visibleState = {
             time: .5f,
-            easingFunction: getEasingFunction("sine-in-out")
+            easingFunction: getEasingFunction(EasingAlgorithm.sineInOut)
         };
 
         _label.addState("hidden", hiddenState);
@@ -34,7 +34,7 @@ final private class TabButtonGui: GuiElement {
         _label.setState("hidden");
 
 
-        _label.setAlign(GuiAlignX.Center, GuiAlignY.Center);
+        _label.setAlign(GuiAlignX.center, GuiAlignY.center);
         addChildGui(_label);
 
         size(Vec2f(_label.size.x + 20f, 35f));
@@ -42,19 +42,19 @@ final private class TabButtonGui: GuiElement {
         GuiState startState = {
             scale: Vec2f(0f, 1f),
             time: .5f,
-            easingFunction: getEasingFunction("sine-in-out")
+            easingFunction: getEasingFunction(EasingAlgorithm.sineInOut)
         };
 
         GuiState endState = {
             scale: Vec2f(0f, 1f),
             time: .5f,
-            easingFunction: getEasingFunction("sine-in-out"),
+            easingFunction: getEasingFunction(EasingAlgorithm.sineInOut),
             callbackId: "end"
         };
 
         GuiState defaultState = {
             time: .5f,
-            easingFunction: getEasingFunction("sine-in-out")
+            easingFunction: getEasingFunction(EasingAlgorithm.sineInOut)
         };
 
         addState("start", startState);
@@ -132,7 +132,7 @@ final class TabsGui: GuiElementCanvas {
     }
 
     override void onEvent(Event event) {
-        if(event.type == EventType.MouseWheel) {
+        if(event.type == EventType.mouseWheel) {
             const float delta = event.position.y - event.position.x;
             canvas.position.x -= delta * 50f;
             canvas.position = canvas.position.clamp(canvas.size / 2f, Vec2f(_box.size.x - canvas.size.x / 2f, canvas.size.y));

@@ -36,7 +36,7 @@ void setupApplication(string[] args) {
     bindKey("reload-texture", SDL_SCANCODE_G);
 
     loadAssets();
-    setDefaultFont(fetch!Font("VeraMono"));
+    setDefaultFont(fetch!TrueTypeFont("VeraMono"));
 
 	//Run
     onMainMenu(args);

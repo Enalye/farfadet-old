@@ -83,18 +83,11 @@ void loadTextures() {
 }
 
 void loadFonts() {
-    auto fontCache = new ResourceCache!Font;
-	setResourceCache!Font(fontCache);
-
+    auto fontCache = new ResourceCache!TrueTypeFont;
+	setResourceCache!TrueTypeFont(fontCache);
 
     auto files = dirEntries("media/font/", "{*.ttf}", SpanMode.depth);
     foreach(file; files) {
-        fontCache.set(new Font(file), baseName(file, ".ttf"));
+        fontCache.set(new TrueTypeFont(file), baseName(file, ".ttf"));
     }
-
-    //Font
-	setTextStandardFont(new FontCache(fetch!Font("VeraMono")));
-	setTextItalicFont(new FontCache(fetch!Font("VeraMoIt")));
-	setTextBoldFont(new FontCache(fetch!Font("VeraMoBd")));
-	setTextItalicBoldFont(new FontCache(fetch!Font("VeraMoBI")));
 }

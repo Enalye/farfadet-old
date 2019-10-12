@@ -27,7 +27,7 @@ final class ElementData {
         int _top, _bottom, _left, _right;
         int _marginX, _marginY;
         float _duration = 1f;
-        Flip _flip = Flip.NoFlip;
+        Flip _flip = Flip.none;
     }
 
     @property {
@@ -392,16 +392,16 @@ private void _loadData(TabData tabData) {
 
         switch(getJsonStr(elementNode, "flip", "none")) {
         case "none":
-            element._flip = Flip.NoFlip;
+            element._flip = Flip.none;
             break;
         case "horizontal":
-            element._flip = Flip.HorizontalFlip;
+            element._flip = Flip.horizontal;
             break;
         case "vertical":
-            element._flip = Flip.VerticalFlip;
+            element._flip = Flip.vertical;
             break;
         case "both":
-            element._flip = Flip.BothFlip;
+            element._flip = Flip.both;
             break;
         default:
             throw new Exception("Invalid flip type");
@@ -482,16 +482,16 @@ private void _saveData(TabData tabData) {
         }
 
         final switch(element._flip) with(Flip) {
-        case NoFlip:
+        case none:
             elementNode["flip"] = JSONValue("none");
             break;
-        case HorizontalFlip:
+        case horizontal:
             elementNode["flip"] = JSONValue("horizontal");
             break;
-        case VerticalFlip:
+        case vertical:
             elementNode["flip"] = JSONValue("vertical");
             break;
-        case BothFlip:
+        case both:
             elementNode["flip"] = JSONValue("both");
             break;
         }

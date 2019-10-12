@@ -17,12 +17,12 @@ private final class ImgElementGui: GuiElement {
 
     this() {
         label = new Label("untitled");
-        label.setAlign(GuiAlignX.Center, GuiAlignY.Center);
+        label.setAlign(GuiAlignX.center, GuiAlignY.center);
         addChildGui(label);
         size = label.size;
 
         data = new ElementData;
-        _timer.start(2f, TimeMode.Bounce);
+        _timer.start(2f, TimeMode.bounce);
     }
 
     override void onCallback(string id) {
@@ -47,11 +47,11 @@ private final class ImgElementGui: GuiElement {
         }
 
         if(label.size.x > size.x && isSelected) {
-            label.setAlign(GuiAlignX.Left, GuiAlignY.Center);
+            label.setAlign(GuiAlignX.left, GuiAlignY.center);
             label.position = Vec2f(lerp(-(label.size.x - size.x), 0f, easeInOutSine(_timer.time)), 0f);
         }
         else {
-            label.setAlign(GuiAlignX.Center, GuiAlignY.Center);
+            label.setAlign(GuiAlignX.center, GuiAlignY.center);
             label.position = Vec2f.zero;
         }
     }
@@ -72,7 +72,7 @@ private final class ImgElementGui: GuiElement {
         isEditingName = true;
         removeChildrenGuis();
         inputField = new InputField(size, label.text != "untitled" ? label.text : "");
-        inputField.setAlign(GuiAlignX.Center, GuiAlignY.Center);
+        inputField.setAlign(GuiAlignX.center, GuiAlignY.center);
         inputField.setCallback(this, "editname");
         inputField.hasFocus = true;
         addChildGui(inputField);

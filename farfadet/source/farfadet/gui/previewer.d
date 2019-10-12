@@ -40,7 +40,7 @@ class PreviewerGui: GuiElement {
         _tileset = new Tileset;
         _animation = new Animation;
         _animation.tileset = _tileset;
-        _animation.start(1f, TimeMode.Loop);
+        _animation.start(1f, TimeMode.loop);
         _ninePatch = new NinePatch;
         _ninePatch.size = size;
     }

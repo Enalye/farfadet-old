@@ -33,7 +33,7 @@ private final class TaskbarButtonGui: Button {
 
     this(string text) {
         _label = new Label(text);
-        _label.setAlign(GuiAlignX.Center, GuiAlignY.Center);
+        _label.setAlign(GuiAlignX.center, GuiAlignY.center);
         addChildGui(_label);
 
         size(Vec2f(_label.size.x + 20f, 50f));
@@ -68,12 +68,12 @@ final class GraphicEditorGui: GuiElement {
 
     this(string[] args) {
         setupData(this);
-        setAlign(GuiAlignX.Left, GuiAlignY.Top);
+        setAlign(GuiAlignX.left, GuiAlignY.top);
         size = screenSize;
 
         viewerGui = new ViewerGui;
         propertiesGui = new PropertiesGui;
-        propertiesGui.setAlign(GuiAlignX.Right, GuiAlignY.Top);
+        propertiesGui.setAlign(GuiAlignX.right, GuiAlignY.top);
         addChildGui(propertiesGui);
 
         listGui = new ElementsListGui;
@@ -93,8 +93,8 @@ final class GraphicEditorGui: GuiElement {
 
         { // Previewer
             auto box = new VContainer;
-            box.setAlign(GuiAlignX.Left, GuiAlignY.Bottom);
-            box.setChildAlign(GuiAlignX.Center);
+            box.setAlign(GuiAlignX.left, GuiAlignY.bottom);
+            box.setChildAlign(GuiAlignX.center);
             auto speedSlider = new HScrollbar;
             speedSlider.setHint("Playback speed");
             speedSlider.size = Vec2f(200f, 10f);
@@ -110,8 +110,8 @@ final class GraphicEditorGui: GuiElement {
 
         { // Taskbar
             auto box = new VContainer;
-            box.setAlign(GuiAlignX.Center, GuiAlignY.Top);
-            box.setChildAlign(GuiAlignX.Right);
+            box.setAlign(GuiAlignX.center, GuiAlignY.top);
+            box.setChildAlign(GuiAlignX.right);
             {
                 auto btns = new HContainer;
 
@@ -148,7 +148,7 @@ final class GraphicEditorGui: GuiElement {
 
         { // Elements list
             auto box = new VContainer;
-            box.setAlign(GuiAlignX.Left, GuiAlignY.Top);
+            box.setAlign(GuiAlignX.left, GuiAlignY.top);
             {
                 auto btns = new HContainer;
                 
@@ -175,7 +175,7 @@ final class GraphicEditorGui: GuiElement {
 
         { // Tools
             auto box = new HContainer;
-            box.setAlign(GuiAlignX.Right, GuiAlignY.Bottom);
+            box.setAlign(GuiAlignX.right, GuiAlignY.bottom);
             box.position = Vec2f(5f, 40f);
             box.spacing = Vec2f(15f, 10f);
 
@@ -328,7 +328,7 @@ final class GraphicEditorGui: GuiElement {
 
     override void onEvent(Event event) {
         super.onEvent(event);
-        if(event.type == EventType.DropFile) {
+        if(event.type == EventType.dropFile) {
             openTab(relativePath(event.str));
             reload();
             tabsGui.addTab();
@@ -533,7 +533,7 @@ final class GraphicEditorGui: GuiElement {
 
         propertiesGui.setImgType(ElementType.SpriteType);
 
-        propertiesGui.setFlip(Flip.NoFlip);
+        propertiesGui.setFlip(Flip.none);
         propertiesGui.setColumns(0);
         propertiesGui.setLines(0);
         propertiesGui.setMaxTiles(0);
@@ -571,13 +571,13 @@ final class GraphicEditorGui: GuiElement {
 
 private final class WarningMessageGui: GuiElement {
     this(string message, string action, string cancel = "Cancel") {
-        setAlign(GuiAlignX.Center, GuiAlignY.Center);
+        setAlign(GuiAlignX.center, GuiAlignY.center);
 
         Font font = getDefaultFont();
 
         { //Title
             auto title = new Label(font, message);
-            title.setAlign(GuiAlignX.Left, GuiAlignY.Top);
+            title.setAlign(GuiAlignX.left, GuiAlignY.top);
             title.position = Vec2f(20f, 10f);
             addChildGui(title);
             size(Vec2f(title.size.x + 40f, 100f));
@@ -585,7 +585,7 @@ private final class WarningMessageGui: GuiElement {
 
         { //Validation
             auto box = new HContainer;
-            box.setAlign(GuiAlignX.Right, GuiAlignY.Bottom);
+            box.setAlign(GuiAlignX.right, GuiAlignY.bottom);
             box.spacing = Vec2f(25f, 15f);
             addChildGui(box);
 
@@ -611,7 +611,7 @@ private final class WarningMessageGui: GuiElement {
 
         GuiState defaultState = {
             time: .5f,
-            easingFunction: getEasingFunction("sine-out")
+            easingFunction: getEasingFunction(EasingAlgorithm.sineOut)
         };
         addState("default", defaultState);
 

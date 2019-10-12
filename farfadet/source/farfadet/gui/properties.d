@@ -21,7 +21,7 @@ final class PropertiesGui: VContainer {
 
     this() {
         spacing(Vec2f(10f, 20f));
-        setChildAlign(GuiAlignX.Center);
+        setChildAlign(GuiAlignX.center);
         minimalWidth(260f);
 
         _elementTypeSelector = new DropDownList(Vec2f(200f, 30f), 4);
@@ -293,10 +293,10 @@ final class PropertiesGui: VContainer {
 
     Flip getFlip() {
         switch(_flipSelector.selected) {
-        case 0: return Flip.NoFlip;
-        case 1: return Flip.HorizontalFlip;
-        case 2: return Flip.VerticalFlip;
-        case 3: return Flip.BothFlip;
+        case 0: return Flip.none;
+        case 1: return Flip.horizontal;
+        case 2: return Flip.vertical;
+        case 3: return Flip.both;
         default:
             throw new Exception("Invalid flip type property");
         }
