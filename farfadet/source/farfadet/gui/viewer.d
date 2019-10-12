@@ -308,7 +308,7 @@ final class ViewerGui: GuiElementCanvas {
             _isResizingRectBottom = (cursorPosition.y >= (_selectionOrigin.y + (_selectionSize.y >> 1)));
 
             _isResizingHorizontally = abs(_cursorPosition.x - (_selectionOrigin.x + (_selectionSize.x >> 1))) >= 
-                    abs(_cursorPosition.y - (_selectionOrigin.y + (_selectionSize.y >> 1)));
+                abs(_cursorPosition.y - (_selectionOrigin.y + (_selectionSize.y >> 1)));
 
             _selectionStart = Vec2i(_selectionOrigin.x + (_isResizingRectRight ? 0 : _selectionSize.x),
                 _selectionOrigin.y + (_isResizingRectBottom ? 0 : _selectionSize.y));

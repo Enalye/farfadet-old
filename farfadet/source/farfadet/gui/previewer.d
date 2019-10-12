@@ -40,7 +40,7 @@ class PreviewerGui: GuiElement {
         _tileset = new Tileset;
         _animation = new Animation;
         _animation.tileset = _tileset;
-        _animation.start(1f, TimeMode.loop);
+        _animation.start(duration, TimeMode.loop);
         _ninePatch = new NinePatch;
         _ninePatch.size = size;
     }
@@ -52,6 +52,8 @@ class PreviewerGui: GuiElement {
     }
 
     override void update(float deltaTime) {
+        if(type == ElementType.AnimationType)
+            _animation.timer.duration = duration;
         if(_sprite !is null) {
             _sprite.flip = flip;
             _sprite.clip = clip;
