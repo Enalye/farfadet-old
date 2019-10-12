@@ -392,9 +392,14 @@ final class GraphicEditorGui: GuiElement {
         case "open.modal":
             stopModalGui();
             auto loadGui = getModalGui!OpenModal;
-            openTab(loadGui.getPath());
-            reload();
-            tabsGui.addTab();
+            if(!openTab(loadGui.getPath())) {
+                auto gui = new WarningMessageGui("Could not open this file", "", "Ok");
+                setModalGui(gui);
+            }
+            else {
+                reload();
+                tabsGui.addTab();
+            }
             break;
         case "close.modal":
             stopModalGui();
@@ -565,7 +570,7 @@ final class GraphicEditorGui: GuiElement {
 }
 
 private final class WarningMessageGui: GuiElement {
-    this(string message, string action) {
+    this(string message, string action, string cancel = "Cancel") {
         setAlign(GuiAlignX.Center, GuiAlignY.Center);
 
         Font font = getDefaultFont();
@@ -584,12 +589,14 @@ private final class WarningMessageGui: GuiElement {
             box.spacing = Vec2f(25f, 15f);
             addChildGui(box);
 
-            auto applyBtn = new TextButton(font, action);
-            applyBtn.size = Vec2f(100f, 35f);
-            applyBtn.setCallback(this, "apply");
-            box.addChildGui(applyBtn);
+            if(action.length) {
+                auto applyBtn = new TextButton(font, action);
+                applyBtn.size = Vec2f(100f, 35f);
+                applyBtn.setCallback(this, "apply");
+                box.addChildGui(applyBtn);
+            }
 
-            auto cancelBtn = new TextButton(font, "Cancel");
+            auto cancelBtn = new TextButton(font, cancel);
             cancelBtn.size = Vec2f(100f, 35f);
             cancelBtn.setCallback(this, "cancel");
             box.addChildGui(cancelBtn);

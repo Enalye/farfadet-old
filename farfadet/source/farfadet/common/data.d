@@ -191,7 +191,7 @@ void setupData(GraphicEditorGui editor) {
 }
 
 /// Open either an image or a json file format in a new tab.
-void openTab(string filePath) {
+bool openTab(string filePath) {
     auto tabData = new TabData;
 
     if(isValidImageFileType(filePath)) {
@@ -199,12 +199,21 @@ void openTab(string filePath) {
     }        
     else if(isValidDataFileType(filePath)) {
         tabData._dataPath = buildNormalizedPath(filePath);
-        _loadData(tabData);
+        try {
+            _loadData(tabData);
+        }
+        catch(Exception e) {
+            return false;
+        }
+    }
+    else {
+        return false;
     }
     tabData._texture = new Texture(tabData._texturePath);
 
     _tabs ~= tabData;
     setCurrentTab(tabData);
+    return true;
 }
 
 void reloadTab() {

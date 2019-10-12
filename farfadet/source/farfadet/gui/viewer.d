@@ -39,6 +39,7 @@ final class ViewerGui: GuiElementCanvas {
     int columns, lines, maxtiles;
     int top, bottom, left, right;
     int marginX, marginY;
+    float duration = 1f;
 
     this() {
         size(Vec2f(screenHeight, screenHeight - 85));
