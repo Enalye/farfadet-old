@@ -569,15 +569,15 @@ final class ViewerGui: GuiElementCanvas {
         auto rectSize = to!Vec2f(_selectionSize);
             
         final switch(elementType) with(ElementType) {
-        case SpriteType:
+        case sprite:
             _rect.size = rectSize;
             _rect.color = Color(0f, .5f, 1f, .35f);
             _rect.draw(rectOrigin + rectSize / 2f);
             drawRect(rectOrigin, rectSize, Color.white);
             drawCross(rectOrigin + rectSize / 2f, 5f, Color.white);
             break;
-        case BorderedBrushType:
-        case BorderlessBrushType:
+        case borderedBrush:
+        case borderlessBrush:
             int i;
             enum int[4][15] borders = [
                 [1, 1, 0, 0],
@@ -624,8 +624,8 @@ final class ViewerGui: GuiElementCanvas {
                 }
             }
             break;
-        case AnimationType:
-        case TilesetType:
+        case animation:
+        case tileset:
             int i;
             drawLoop: foreach(int y; 0.. lines) {
                 foreach(int x; 0.. columns) {
@@ -644,7 +644,7 @@ final class ViewerGui: GuiElementCanvas {
                 }
             }
             break;
-        case NinePatchType:
+        case ninepatch:
             _rect.size = rectSize;
             _rect.color = Color(0f, .5f, 1f, .35f);
             _rect.draw(rectOrigin + rectSize / 2f);

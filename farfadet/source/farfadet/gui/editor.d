@@ -531,7 +531,7 @@ final class GraphicEditorGui: GuiElement {
         propertiesGui.setClip(Vec4i.zero);
         viewerGui.setClip(Vec4i.zero);
 
-        propertiesGui.setImgType(ElementType.SpriteType);
+        propertiesGui.setImgType(ElementType.sprite);
 
         propertiesGui.setFlip(Flip.none);
         propertiesGui.setColumns(0);

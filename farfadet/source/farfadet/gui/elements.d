@@ -91,22 +91,22 @@ private final class ImgElementGui: GuiElement {
     override void draw() {
         Color color;
         final switch(data.type) with(ElementType) {
-        case SpriteType:
+        case sprite:
             color = isSelected ? Color.fromRGB(0x9EFFCF) : Color.fromRGB(0x7CCCCB);
             break;
-        case AnimationType:
+        case animation:
             color = isSelected ? Color.fromRGB(0x9EBBFF) : Color.fromRGB(0x8B7CCC);
             break;
-        case TilesetType:
+        case tileset:
             color = isSelected ? Color.fromRGB(0x9EBBFF) : Color.fromRGB(0x8B7CCC);
             break;
-        case BorderedBrushType:
+        case borderedBrush:
             color = isSelected ? Color.fromRGB(0xF59EFF) : Color.fromRGB(0xCC7CAE);
             break;
-        case BorderlessBrushType:
+        case borderlessBrush:
             color = isSelected ? Color.fromRGB(0xFFA89E) : Color.fromRGB(0xCCAB7C);
             break;
-        case NinePatchType:
+        case ninepatch:
             color = isSelected ? Color.fromRGB(0xE2FF9E) : Color.fromRGB(0x8ECC7C);
             break;
         }

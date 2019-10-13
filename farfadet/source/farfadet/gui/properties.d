@@ -276,12 +276,12 @@ final class PropertiesGui: VContainer {
 
     ElementType getImgType() {
         switch(_elementTypeSelector.selected) {
-        case 0: return ElementType.SpriteType;
-        case 1: return ElementType.AnimationType;
-        case 2: return ElementType.TilesetType;
-        case 3: return ElementType.BorderedBrushType;
-        case 4: return ElementType.BorderlessBrushType;
-        case 5: return ElementType.NinePatchType;
+        case 0: return ElementType.sprite;
+        case 1: return ElementType.animation;
+        case 2: return ElementType.tileset;
+        case 3: return ElementType.borderedBrush;
+        case 4: return ElementType.borderlessBrush;
+        case 5: return ElementType.ninepatch;
         default:
             throw new Exception("Invalid texture class property");
         }

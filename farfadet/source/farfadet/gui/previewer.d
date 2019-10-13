@@ -52,7 +52,7 @@ class PreviewerGui: GuiElement {
     }
 
     override void update(float deltaTime) {
-        if(type == ElementType.AnimationType)
+        if(type == ElementType.animation)
             _animation.timer.duration = duration;
         if(_sprite !is null) {
             _sprite.flip = flip;
@@ -84,24 +84,24 @@ class PreviewerGui: GuiElement {
         if(_texture is null)
             return;
         final switch(type) with(ElementType) {
-        case SpriteType:
+        case sprite:
             _sprite.fit(size);
             _sprite.draw(center);
             break;
-        case BorderedBrushType:
+        case borderedBrush:
             _sprite.fit(size);
             _sprite.draw(center);
             break;
-        case BorderlessBrushType:
+        case borderlessBrush:
             _sprite.fit(size);
             _sprite.draw(center);
             break;
-        case AnimationType:
-        case TilesetType:
+        case animation:
+        case tileset:
             _animation.tileset.fit(size);
             _animation.draw(center);
             break;
-        case NinePatchType:
+        case ninepatch:
             _ninePatch.draw(center);
             break;
         }

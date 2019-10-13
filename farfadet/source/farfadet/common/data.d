@@ -14,14 +14,14 @@ private {
 
 /// General type of an element.
 enum ElementType {
-    SpriteType, AnimationType, TilesetType, BorderedBrushType, BorderlessBrushType, NinePatchType
+    sprite, animation, tileset, borderedBrush, borderlessBrush, ninepatch
 }
 
 /// Data describing a single element.
 final class ElementData {
     private {
         string _name = "untitled";
-        ElementType _type = ElementType.SpriteType;
+        ElementType _type = ElementType.sprite;
         Vec4i _clip = Vec4i.zero;
         int _columns = 1, _lines = 1, _maxtiles;
         int _top, _bottom, _left, _right;
@@ -369,22 +369,22 @@ private void _loadData(TabData tabData) {
 
         switch(getJsonStr(elementNode, "type")) {
         case "sprite":
-            element._type = ElementType.SpriteType;
+            element._type = ElementType.sprite;
             break;
         case "animation":
-            element._type = ElementType.AnimationType;
+            element._type = ElementType.animation;
             break;
         case "tileset":
-            element._type = ElementType.TilesetType;
+            element._type = ElementType.tileset;
             break;
         case "bordered_brush":
-            element._type = ElementType.BorderedBrushType;
+            element._type = ElementType.borderedBrush;
             break;
         case "borderless_brush":
-            element._type = ElementType.BorderlessBrushType;
+            element._type = ElementType.borderlessBrush;
             break;
         case "ninepatch":
-            element._type = ElementType.NinePatchType;
+            element._type = ElementType.ninepatch;
             break;
         default:
             throw new Exception("Invalid image type");
@@ -416,14 +416,14 @@ private void _loadData(TabData tabData) {
         element._clip = clip;
 
         final switch(element._type) with(ElementType) {
-        case SpriteType:
-        case BorderedBrushType:
-        case BorderlessBrushType:
+        case sprite:
+        case borderedBrush:
+        case borderlessBrush:
             break;
-        case AnimationType:
+        case animation:
             element._duration = getJsonFloat(elementNode, "duration", 1f);
-            goto case TilesetType;
-        case TilesetType:
+            goto case tileset;
+        case tileset:
             element._columns = getJsonInt(elementNode, "columns", 1);
             element._lines = getJsonInt(elementNode, "lines", 1);
             element._maxtiles = getJsonInt(elementNode, "maxtiles", 0);
@@ -438,7 +438,7 @@ private void _loadData(TabData tabData) {
                 element._marginY = 0;
             }
             break;
-        case NinePatchType:
+        case ninepatch:
             element._top = getJsonInt(elementNode, "top", 0);
             element._bottom = getJsonInt(elementNode, "bottom", 0);
             element._left = getJsonInt(elementNode, "left", 0);
@@ -461,22 +461,22 @@ private void _saveData(TabData tabData) {
         elementNode["name"] = JSONValue(element._name);
 
         final switch(element._type) with(ElementType) {
-        case SpriteType:
+        case sprite:
             elementNode["type"] = JSONValue("sprite");
             break;
-        case AnimationType:
+        case animation:
             elementNode["type"] = JSONValue("animation");
             break;
-        case TilesetType:
+        case tileset:
             elementNode["type"] = JSONValue("tileset");
             break;
-        case BorderedBrushType:
+        case borderedBrush:
             elementNode["type"] = JSONValue("bordered_brush");
             break;
-        case BorderlessBrushType:
+        case borderlessBrush:
             elementNode["type"] = JSONValue("borderless_brush");
             break;
-        case NinePatchType:
+        case ninepatch:
             elementNode["type"] = JSONValue("ninepatch");
             break;
         }
@@ -504,14 +504,14 @@ private void _saveData(TabData tabData) {
         elementNode["clip"] = clipNode;
 
         final switch(element._type) with(ElementType) {
-        case SpriteType:
-        case BorderedBrushType:
-        case BorderlessBrushType:
+        case sprite:
+        case borderedBrush:
+        case borderlessBrush:
             break;
-        case AnimationType:
+        case animation:
             elementNode["duration"] = JSONValue(element._duration);
-            goto case TilesetType;
-        case TilesetType:
+            goto case tileset;
+        case tileset:
             elementNode["columns"] = JSONValue(element._columns);
             elementNode["lines"] = JSONValue(element._lines);
             elementNode["maxtiles"] = JSONValue(element._maxtiles);
@@ -521,7 +521,7 @@ private void _saveData(TabData tabData) {
             marginNode["y"] = JSONValue(element._marginY);
             elementNode["margin"] = marginNode;
             break;
-        case NinePatchType:
+        case ninepatch:
             elementNode["top"] = JSONValue(element._top);
             elementNode["bottom"] = JSONValue(element._bottom);
             elementNode["left"] = JSONValue(element._left);

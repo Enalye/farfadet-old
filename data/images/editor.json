@@ -7,6 +7,7 @@
                 "x": 0,
                 "y": 0
             },
+            "flip": "none",
             "name": "editor.select-off",
             "type": "sprite"
         },
@@ -17,6 +18,7 @@
                 "x": 0,
                 "y": 17
             },
+            "flip": "none",
             "name": "editor.select-on",
             "type": "sprite"
         },
@@ -27,6 +29,7 @@
                 "x": 17,
                 "y": 0
             },
+            "flip": "none",
             "name": "editor.move-off",
             "type": "sprite"
         },
@@ -37,6 +40,7 @@
                 "x": 17,
                 "y": 17
             },
+            "flip": "none",
             "name": "editor.move-on",
             "type": "sprite"
         },
@@ -47,6 +51,7 @@
                 "x": 34,
                 "y": 0
             },
+            "flip": "none",
             "name": "editor.resize-corner-off",
             "type": "sprite"
         },
@@ -57,6 +62,7 @@
                 "x": 34,
                 "y": 17
             },
+            "flip": "none",
             "name": "editor.resize-corner-on",
             "type": "sprite"
         },
@@ -67,6 +73,7 @@
                 "x": 51,
                 "y": 0
             },
+            "flip": "none",
             "name": "editor.resize-border-off",
             "type": "sprite"
         },
@@ -77,6 +84,7 @@
                 "x": 51,
                 "y": 17
             },
+            "flip": "none",
             "name": "editor.resize-border-on",
             "type": "sprite"
         },
@@ -87,6 +95,7 @@
                 "x": 0,
                 "y": 34
             },
+            "flip": "none",
             "name": "editor.cursor",
             "type": "sprite"
         },
@@ -97,6 +106,7 @@
                 "x": 9,
                 "y": 34
             },
+            "flip": "none",
             "name": "editor.cursor-move",
             "type": "sprite"
         },
@@ -107,6 +117,7 @@
                 "x": 24,
                 "y": 34
             },
+            "flip": "none",
             "name": "editor.cursor-corner1",
             "type": "sprite"
         },
@@ -117,6 +128,7 @@
                 "x": 24,
                 "y": 49
             },
+            "flip": "none",
             "name": "editor.cursor-corner2",
             "type": "sprite"
         },
@@ -127,6 +139,7 @@
                 "x": 39,
                 "y": 49
             },
+            "flip": "none",
             "name": "editor.cursor-corner3",
             "type": "sprite"
         },
@@ -137,6 +150,7 @@
                 "x": 39,
                 "y": 34
             },
+            "flip": "none",
             "name": "editor.cursor-corner4",
             "type": "sprite"
         },
@@ -147,6 +161,7 @@
                 "x": 54,
                 "y": 34
             },
+            "flip": "none",
             "name": "editor.cursor-border1",
             "type": "sprite"
         },
@@ -157,6 +172,7 @@
                 "x": 69,
                 "y": 34
             },
+            "flip": "none",
             "name": "editor.cursor-border2",
             "type": "sprite"
         },
@@ -167,6 +183,7 @@
                 "x": 54,
                 "y": 49
             },
+            "flip": "none",
             "name": "editor.cursor-border3",
             "type": "sprite"
         },
@@ -177,6 +194,7 @@
                 "x": 69,
                 "y": 49
             },
+            "flip": "none",
             "name": "editor.cursor-border4",
             "type": "sprite"
         },
@@ -187,6 +205,7 @@
                 "x": 170,
                 "y": 0
             },
+            "flip": "none",
             "name": "editor.visible",
             "type": "sprite"
         },
@@ -197,6 +216,7 @@
                 "x": 170,
                 "y": 50
             },
+            "flip": "none",
             "name": "editor.hidden",
             "type": "sprite"
         },
@@ -207,6 +227,7 @@
                 "x": 0,
                 "y": 49
             },
+            "flip": "none",
             "name": "editor.rect",
             "type": "sprite"
         },
@@ -217,6 +238,7 @@
                 "x": 128,
                 "y": 128
             },
+            "flip": "none",
             "name": "editor.circle",
             "type": "sprite"
         }
