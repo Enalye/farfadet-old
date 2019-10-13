@@ -68,9 +68,7 @@ class PreviewerGui: GuiElement {
 
     override void update(float deltaTime) {
         if(type == ElementType.animation) {
-            _animation.timer.duration = duration;/*
-import std.stdio;
-            writeln(_animation.timer);*/
+            _animation.timer.duration = duration;
         }
         if(_sprite !is null) {
             _sprite.flip = flip;

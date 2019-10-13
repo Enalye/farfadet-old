@@ -6,7 +6,7 @@ import farfadet.gui.editor, farfadet.common;
 
 final class PropertiesGui: VContainer {
     private {
-        DropDownList _elementTypeSelector, _flipSelector, _loopSelector;
+        DropDownList _elementTypeSelector, _flipSelector, _loopSelector, _easingSelector;
         InputField _fieldX, _fieldY, _fieldW, _fieldH, _fieldMarginX, _fieldMarginY;
 
         //Tileset/Animation parameters
@@ -21,7 +21,7 @@ final class PropertiesGui: VContainer {
     bool isActive;
 
     this() {
-        spacing(Vec2f(10f, 15f));
+        spacing(Vec2f(10f, 12f));
         setChildAlign(GuiAlignX.center);
         minimalWidth(260f);
 
@@ -43,6 +43,39 @@ final class PropertiesGui: VContainer {
         _loopSelector.add("Once");
         _loopSelector.add("Loop");
         _loopSelector.add("Bounce");
+
+        _easingSelector = new DropDownList(Vec2f(180f, 30f), 4);
+        _easingSelector.add("Linear");
+        _easingSelector.add("Sine In");
+        _easingSelector.add("Sine Out");
+        _easingSelector.add("Sine In Out");
+        _easingSelector.add("Quad In");
+        _easingSelector.add("Quad Out");
+        _easingSelector.add("Quad In Out");
+        _easingSelector.add("Cubic In");
+        _easingSelector.add("Cubic Out");
+        _easingSelector.add("Cubic In Out");
+        _easingSelector.add("Quart In");
+        _easingSelector.add("Quart Out");
+        _easingSelector.add("Quart In Out");
+        _easingSelector.add("Quint In");
+        _easingSelector.add("Quint Out");
+        _easingSelector.add("Quint In Out");
+        _easingSelector.add("Exp In");
+        _easingSelector.add("Exp Out");
+        _easingSelector.add("Exp In Out");
+        _easingSelector.add("Circ In");
+        _easingSelector.add("Circ Out");
+        _easingSelector.add("Circ In Out");
+        _easingSelector.add("Back In");
+        _easingSelector.add("Back Out");
+        _easingSelector.add("Back In Out");
+        _easingSelector.add("Elastic In");
+        _easingSelector.add("Elastic Out");
+        _easingSelector.add("Elastic In Out");
+        _easingSelector.add("Bounce In");
+        _easingSelector.add("Bounce Out");
+        _easingSelector.add("Bounce In Out");
 
         _reverseCheck = new Checkbox;
         _reverseCheck.size = Vec2f(20f, 20f);
@@ -96,6 +129,9 @@ final class PropertiesGui: VContainer {
         _fieldLines.setCallback(this, "lines");
         _fieldMaxTiles.setCallback(this, "maxtiles");
         _fieldDuration.setCallback(this, "duration");
+        _loopSelector.setCallback(this, "loop");
+        _reverseCheck.setCallback(this, "reverse");
+        _easingSelector.setCallback(this, "easing");
 
         _fieldTop.setCallback(this, "top");
         _fieldBottom.setCallback(this, "bottom");
@@ -127,6 +163,9 @@ final class PropertiesGui: VContainer {
         case "lines":
         case "maxtiles":
         case "duration":
+        case "easing":
+        case "loop":
+        case "reverse":
         case "x-margin":
         case "y-margin":
         case "top":
@@ -210,9 +249,8 @@ final class PropertiesGui: VContainer {
             }
             {
                 auto box = new HContainer;
-                box.addChildGui(new Label("duration: "));
-                box.addChildGui(_fieldDuration);
-                box.addChildGui(new Label(" secs"));
+                box.addChildGui(new Label("Ease: "));
+                box.addChildGui(_easingSelector);
                 addChildGui(box);
             }
             {
@@ -225,6 +263,13 @@ final class PropertiesGui: VContainer {
                 auto box = new HContainer;
                 box.addChildGui(new Label("Is reversed ? : "));
                 box.addChildGui(_reverseCheck);
+                addChildGui(box);
+            }
+            {
+                auto box = new HContainer;
+                box.addChildGui(new Label("duration: "));
+                box.addChildGui(_fieldDuration);
+                box.addChildGui(new Label(" secs"));
                 addChildGui(box);
             }
         }
@@ -352,6 +397,16 @@ final class PropertiesGui: VContainer {
         default:
             throw new Exception("Invalid loop mode property");
         }
+    }
+
+    EasingAlgorithm getEasingAlgorithm() {
+        if(_easingSelector.selected > EasingAlgorithm.bounceInOut)
+            throw new Exception("Invalid easing algorithm");
+        return cast(EasingAlgorithm) _easingSelector.selected;
+    }
+
+    void setEasingAlgorithm(EasingAlgorithm algorithm) {
+        _easingSelector.selected = algorithm;
     }
 
     bool getReverse() {

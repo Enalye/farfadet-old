@@ -30,6 +30,7 @@ final class ElementData {
         bool _isReverse = false;
         TimeMode _loopMode = TimeMode.once;
         Flip _flip = Flip.none;
+        EasingAlgorithm _easingAlgorithm = EasingAlgorithm.linear;
     }
 
     @property {
@@ -71,6 +72,14 @@ final class ElementData {
                 return v;
             _onDirty();
             return _loopMode = v;
+        }
+
+        EasingAlgorithm easingAlgorithm() const { return _easingAlgorithm; }
+        EasingAlgorithm easingAlgorithm(EasingAlgorithm v) {
+            if(v == _easingAlgorithm)
+                return v;
+            _onDirty();
+            return _easingAlgorithm = v;
         }
 
         bool isReverse() const { return _isReverse; }
@@ -456,6 +465,29 @@ private void _loadData(TabData tabData) {
             default:
                 throw new Exception("Invalid loop mode");
             }
+
+            __easingNode: switch(getJsonStr(elementNode, "easing", "linear")) {
+            static foreach(value; [
+                "linear",
+                "sineIn", "sineOut", "sineInOut",
+                "quadIn", "quadOut", "quadInOut",
+                "cubicIn", "cubicOut", "cubicInOut",
+                "quartIn", "quartOut", "quartInOut",
+                "quintIn", "quintOut", "quintInOut",
+                "expIn", "expOut", "expInOut",
+                "circIn", "circOut", "circInOut",
+                "backIn", "backOut", "backInOut",
+                "elasticIn", "elasticOut", "elasticInOut",
+                "bounceIn", "bounceOut", "bounceInOut"]) {
+                mixin("
+                case \"" ~ value ~ "\":
+                    element._easingAlgorithm = EasingAlgorithm." ~ value ~ ";
+                    break __easingNode;
+                    ");
+            }
+            default:
+                throw new Exception("Invalid easing algorithm");
+            }
             goto case tileset;
         case tileset:
             element._columns = getJsonInt(elementNode, "columns", 1);
@@ -557,6 +589,27 @@ private void _saveData(TabData tabData) {
             case bounce:
                 elementNode["loop"] = JSONValue("bounce");
                 break;
+            }
+
+            __easingNode: final switch(element._easingAlgorithm) with(EasingAlgorithm) {
+            static foreach(value; [
+                "linear",
+                "sineIn", "sineOut", "sineInOut",
+                "quadIn", "quadOut", "quadInOut",
+                "cubicIn", "cubicOut", "cubicInOut",
+                "quartIn", "quartOut", "quartInOut",
+                "quintIn", "quintOut", "quintInOut",
+                "expIn", "expOut", "expInOut",
+                "circIn", "circOut", "circInOut",
+                "backIn", "backOut", "backInOut",
+                "elasticIn", "elasticOut", "elasticInOut",
+                "bounceIn", "bounceOut", "bounceInOut"]) {
+                mixin("
+                case " ~ value ~ ":
+                    elementNode[\"easing\"] = JSONValue(\"" ~ value ~ "\");
+                    break __easingNode;
+                    ");
+                }
             }
             goto case tileset;
         case tileset:

@@ -294,6 +294,7 @@ final class GraphicEditorGui: GuiElement {
             data.duration = propertiesGui.getDuration();
             data.loopMode = propertiesGui.getLoop();
             data.isReverse = propertiesGui.getReverse();
+            data.easingAlgorithm = propertiesGui.getEasingAlgorithm();
             data.marginX = propertiesGui.getMarginX();
             data.marginY = propertiesGui.getMarginY();
             data.top = propertiesGui.getTop();
@@ -481,6 +482,7 @@ final class GraphicEditorGui: GuiElement {
                 data.duration = propertiesGui.getDuration();
                 data.loopMode = propertiesGui.getLoop();
                 data.isReverse = propertiesGui.getReverse();
+                data.easingAlgorithm = propertiesGui.getEasingAlgorithm();
                 data.marginX = propertiesGui.getMarginX();
                 data.marginY = propertiesGui.getMarginY();
                 data.top = propertiesGui.getTop();
@@ -509,6 +511,7 @@ final class GraphicEditorGui: GuiElement {
                 propertiesGui.setDuration(data.duration);
                 propertiesGui.setLoop(data.loopMode);
                 propertiesGui.setReverse(data.isReverse);
+                propertiesGui.setEasingAlgorithm(data.easingAlgorithm);
                 propertiesGui.setMarginX(data.marginX);
                 propertiesGui.setMarginY(data.marginY);
                 propertiesGui.setTop(data.top);
@@ -550,6 +553,7 @@ final class GraphicEditorGui: GuiElement {
         propertiesGui.setDuration(1f);
         propertiesGui.setLoop(TimeMode.once);
         propertiesGui.setReverse(false);
+        propertiesGui.setEasingAlgorithm(EasingAlgorithm.linear);
         propertiesGui.setMarginX(0);
         propertiesGui.setMarginY(0);
         propertiesGui.setTop(0);
