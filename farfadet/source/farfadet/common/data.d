@@ -27,6 +27,8 @@ final class ElementData {
         int _top, _bottom, _left, _right;
         int _marginX, _marginY;
         float _duration = 1f;
+        bool _isReverse = false;
+        TimeMode _loopMode = TimeMode.once;
         Flip _flip = Flip.none;
     }
 
@@ -60,6 +62,23 @@ final class ElementData {
                 return v;
             _onDirty();
             return _flip = v;
+        }
+
+        /// Loop mode
+        TimeMode loopMode() const { return _loopMode; }
+        TimeMode loopMode(TimeMode v) {
+            if(v == _loopMode)
+                return v;
+            _onDirty();
+            return _loopMode = v;
+        }
+
+        bool isReverse() const { return _isReverse; }
+        bool isReverse(bool v) {
+            if(v == _isReverse)
+                return v;
+            _onDirty();
+            return _isReverse = v;
         }
 
         /// Tileset specific data
@@ -422,6 +441,21 @@ private void _loadData(TabData tabData) {
             break;
         case animation:
             element._duration = getJsonFloat(elementNode, "duration", 1f);
+            element._isReverse = getJsonBool(elementNode, "reverse", false);
+
+            switch(getJsonStr(elementNode, "loop", "once")) {
+            case "once":
+                element._loopMode = TimeMode.once;
+                break;
+            case "loop":
+                element._loopMode = TimeMode.loop;
+                break;
+            case "bounce":
+                element._loopMode = TimeMode.bounce;
+                break;
+            default:
+                throw new Exception("Invalid loop mode");
+            }
             goto case tileset;
         case tileset:
             element._columns = getJsonInt(elementNode, "columns", 1);
@@ -510,6 +544,20 @@ private void _saveData(TabData tabData) {
             break;
         case animation:
             elementNode["duration"] = JSONValue(element._duration);
+            elementNode["reverse"] = JSONValue(element._isReverse);
+
+            final switch(element._loopMode) with(TimeMode) {
+            case stop:
+            case once:
+                elementNode["loop"] = JSONValue("once");
+                break;
+            case loop:
+                elementNode["loop"] = JSONValue("loop");
+                break;
+            case bounce:
+                elementNode["loop"] = JSONValue("bounce");
+                break;
+            }
             goto case tileset;
         case tileset:
             elementNode["columns"] = JSONValue(element._columns);

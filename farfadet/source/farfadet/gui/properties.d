@@ -6,11 +6,12 @@ import farfadet.gui.editor, farfadet.common;
 
 final class PropertiesGui: VContainer {
     private {
-        DropDownList _elementTypeSelector, _flipSelector;
+        DropDownList _elementTypeSelector, _flipSelector, _loopSelector;
         InputField _fieldX, _fieldY, _fieldW, _fieldH, _fieldMarginX, _fieldMarginY;
 
         //Tileset/Animation parameters
         InputField _fieldColumns, _fieldLines, _fieldMaxTiles, _fieldDuration;
+        Checkbox _reverseCheck;
 
         //NinePatch parameters
         InputField _fieldTop, _fieldBottom, _fieldLeft, _fieldRight;
@@ -20,7 +21,7 @@ final class PropertiesGui: VContainer {
     bool isActive;
 
     this() {
-        spacing(Vec2f(10f, 20f));
+        spacing(Vec2f(10f, 15f));
         setChildAlign(GuiAlignX.center);
         minimalWidth(260f);
 
@@ -37,6 +38,14 @@ final class PropertiesGui: VContainer {
         _flipSelector.add("Horizontal Flip");
         _flipSelector.add("Vertical Flip");
         _flipSelector.add("Both Flip");
+
+        _loopSelector = new DropDownList(Vec2f(100f, 30f), 3);
+        _loopSelector.add("Once");
+        _loopSelector.add("Loop");
+        _loopSelector.add("Bounce");
+
+        _reverseCheck = new Checkbox;
+        _reverseCheck.size = Vec2f(20f, 20f);
 
         _fieldX = new InputField(Vec2f(50f, 25f), "0");
         _fieldY = new InputField(Vec2f(50f, 25f), "0");
@@ -206,6 +215,18 @@ final class PropertiesGui: VContainer {
                 box.addChildGui(new Label(" secs"));
                 addChildGui(box);
             }
+            {
+                auto box = new HContainer;
+                box.addChildGui(new Label("Loop: "));
+                box.addChildGui(_loopSelector);
+                addChildGui(box);
+            }
+            {
+                auto box = new HContainer;
+                box.addChildGui(new Label("Is reversed ? : "));
+                box.addChildGui(_reverseCheck);
+                addChildGui(box);
+            }
         }
         else if(_elementTypeSelector.selected == 2) {
             addChildGui(new Label("- Tileset settings -"));
@@ -304,6 +325,41 @@ final class PropertiesGui: VContainer {
 
     void setFlip(Flip flip) {
         _flipSelector.selected(flip);
+    }
+
+    TimeMode getLoop() {
+        switch(_loopSelector.selected) {
+        case 0: return TimeMode.once;
+        case 1: return TimeMode.loop;
+        case 2: return TimeMode.bounce;
+        default:
+            throw new Exception("Invalid loop mode property");
+        }
+    }
+
+    void setLoop(TimeMode loopMode) {
+        switch(loopMode) with(TimeMode) {
+        case stop:
+        case once:
+            _loopSelector.selected(0);
+            break;
+        case loop:
+            _loopSelector.selected(1);
+            break;
+        case bounce:
+            _loopSelector.selected(2);
+            break;
+        default:
+            throw new Exception("Invalid loop mode property");
+        }
+    }
+
+    bool getReverse() {
+        return _reverseCheck.value;
+    }
+
+    void setReverse(bool v) {
+        _reverseCheck.value = v;
     }
 
     int getColumns() {

@@ -12,6 +12,7 @@ class PreviewerGui: GuiElement {
         Animation _animation;
         NinePatch _ninePatch;
         Texture _texture;
+        TimeMode _timeMode;
     }
 
     //General data
@@ -29,10 +30,24 @@ class PreviewerGui: GuiElement {
 
     int marginX, marginY;
     float duration = 1f;
+    bool isReverse = false;
 
     Slider playbackSpeedSlider;
 
     bool isActive;
+
+    @property {
+        TimeMode timeMode(TimeMode mode) {
+            if(_timeMode == mode)
+                return _timeMode;
+            _timeMode = mode;
+            if(_timeMode == TimeMode.bounce)
+                _animation.start(duration, _timeMode);
+            else
+                _animation.start(duration, TimeMode.loop);
+            return _timeMode;
+        }
+    }
 
     this() {
         size(Vec2f.one * (screenWidth - screenHeight) / 2f);
@@ -52,8 +67,11 @@ class PreviewerGui: GuiElement {
     }
 
     override void update(float deltaTime) {
-        if(type == ElementType.animation)
-            _animation.timer.duration = duration;
+        if(type == ElementType.animation) {
+            _animation.timer.duration = duration;/*
+import std.stdio;
+            writeln(_animation.timer);*/
+        }
         if(_sprite !is null) {
             _sprite.flip = flip;
             _sprite.clip = clip;
