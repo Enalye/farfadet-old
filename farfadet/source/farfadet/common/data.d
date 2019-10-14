@@ -519,7 +519,16 @@ private void _loadData(TabData tabData) {
 private void _saveData(TabData tabData) {
     JSONValue json;
     json["type"] = JSONValue("spritesheet");
-    json["texture"] = JSONValue(convertPathToExport(relativePath(tabData._texturePath, dirName(tabData._dataPath))));
+    // relativePath() expects both arguments being absolute AND normalized,
+    // Otherwise, the path is complètement aux fraises.
+    json["texture"] = JSONValue(
+        convertPathToExport(
+            relativePath(
+                buildNormalizedPath(absolutePath(tabData._texturePath)),
+                buildNormalizedPath(absolutePath(dirName(tabData._dataPath)))
+                )
+            )
+        );
     JSONValue[] elementsNode;
 
     foreach(ElementData element; tabData._elements) {
