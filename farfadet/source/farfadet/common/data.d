@@ -403,6 +403,8 @@ private void _loadData(TabData tabData) {
         return;
 
     tabData._texturePath = buildNormalizedPath(dirName(tabData._dataPath), convertPathToImport(getJsonStr(json, "texture")));
+    if(!exists(tabData._texturePath))
+        throw new Exception("Texture path not valid");
     auto elementsNode = getJsonArray(json, "elements");
 
     tabData._elements.length = 0uL;
