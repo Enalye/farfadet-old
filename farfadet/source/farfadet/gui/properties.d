@@ -6,12 +6,11 @@ import farfadet.gui.editor, farfadet.common;
 
 final class PropertiesGui: VContainer {
     private {
-        DropDownList _elementTypeSelector, _flipSelector, _loopSelector, _easingSelector;
+        DropDownList _elementTypeSelector, _flipSelector, _animModeSelector, _easingSelector;
         InputField _fieldX, _fieldY, _fieldW, _fieldH, _fieldMarginX, _fieldMarginY;
 
         //Tileset/Animation parameters
         InputField _fieldColumns, _fieldLines, _fieldMaxTiles, _fieldDuration;
-        Checkbox _reverseCheck;
 
         //NinePatch parameters
         InputField _fieldTop, _fieldBottom, _fieldLeft, _fieldRight;
@@ -33,16 +32,19 @@ final class PropertiesGui: VContainer {
         _elementTypeSelector.add("Brush (no border)");
         _elementTypeSelector.add("NinePatch");
 
-        _flipSelector = new DropDownList(Vec2f(200f, 30f), 4);
-        _flipSelector.add("No Flip");
-        _flipSelector.add("Horizontal Flip");
-        _flipSelector.add("Vertical Flip");
-        _flipSelector.add("Both Flip");
+        _flipSelector = new DropDownList(Vec2f(180f, 30f), 4);
+        _flipSelector.add("None");
+        _flipSelector.add("Horizontal");
+        _flipSelector.add("Vertical");
+        _flipSelector.add("Both");
 
-        _loopSelector = new DropDownList(Vec2f(100f, 30f), 3);
-        _loopSelector.add("Once");
-        _loopSelector.add("Loop");
-        _loopSelector.add("Bounce");
+        _animModeSelector = new DropDownList(Vec2f(180f, 30f), 3);
+        _animModeSelector.add("Once");
+        _animModeSelector.add("Reverse");
+        _animModeSelector.add("Loop");
+        _animModeSelector.add("Loop Reverse");
+        _animModeSelector.add("Bounce");
+        _animModeSelector.add("Bounce Reverse");
 
         _easingSelector = new DropDownList(Vec2f(180f, 30f), 4);
         _easingSelector.add("Linear");
@@ -76,9 +78,6 @@ final class PropertiesGui: VContainer {
         _easingSelector.add("Bounce In");
         _easingSelector.add("Bounce Out");
         _easingSelector.add("Bounce In Out");
-
-        _reverseCheck = new Checkbox;
-        _reverseCheck.size = Vec2f(20f, 20f);
 
         _fieldX = new InputField(Vec2f(50f, 25f), "0");
         _fieldY = new InputField(Vec2f(50f, 25f), "0");
@@ -129,8 +128,7 @@ final class PropertiesGui: VContainer {
         _fieldLines.setCallback(this, "lines");
         _fieldMaxTiles.setCallback(this, "maxtiles");
         _fieldDuration.setCallback(this, "duration");
-        _loopSelector.setCallback(this, "loop");
-        _reverseCheck.setCallback(this, "reverse");
+        _animModeSelector.setCallback(this, "anim-mode");
         _easingSelector.setCallback(this, "easing");
 
         _fieldTop.setCallback(this, "top");
@@ -164,8 +162,7 @@ final class PropertiesGui: VContainer {
         case "maxtiles":
         case "duration":
         case "easing":
-        case "loop":
-        case "reverse":
+        case "anim-mode":
         case "x-margin":
         case "y-margin":
         case "top":
@@ -190,7 +187,7 @@ final class PropertiesGui: VContainer {
 
         {
             auto box = new HContainer;
-            box.addChildGui(new Label("Type: "));
+            box.addChildGui(new Label("type: "));
             box.addChildGui(_elementTypeSelector);
             addChildGui(box);
         }
@@ -217,7 +214,7 @@ final class PropertiesGui: VContainer {
 
         {
             auto box = new HContainer;
-            box.addChildGui(new Label("Flip: "));
+            box.addChildGui(new Label("flip: "));
             box.addChildGui(_flipSelector);
             addChildGui(box);
         }
@@ -249,20 +246,14 @@ final class PropertiesGui: VContainer {
             }
             {
                 auto box = new HContainer;
-                box.addChildGui(new Label("Ease: "));
+                box.addChildGui(new Label("ease: "));
                 box.addChildGui(_easingSelector);
                 addChildGui(box);
             }
             {
                 auto box = new HContainer;
-                box.addChildGui(new Label("Loop: "));
-                box.addChildGui(_loopSelector);
-                addChildGui(box);
-            }
-            {
-                auto box = new HContainer;
-                box.addChildGui(new Label("Is reversed ? : "));
-                box.addChildGui(_reverseCheck);
+                box.addChildGui(new Label("anim: "));
+                box.addChildGui(_animModeSelector);
                 addChildGui(box);
             }
             {
@@ -372,31 +363,14 @@ final class PropertiesGui: VContainer {
         _flipSelector.selected(flip);
     }
 
-    TimeMode getLoop() {
-        switch(_loopSelector.selected) {
-        case 0: return TimeMode.once;
-        case 1: return TimeMode.loop;
-        case 2: return TimeMode.bounce;
-        default:
-            throw new Exception("Invalid loop mode property");
-        }
+    Timer.Mode getAnimMode() {
+        if(_animModeSelector.selected > Timer.Mode.bounceReverse)
+            throw new Exception("Invalid animation mode");
+        return cast(Timer.Mode) _animModeSelector.selected;
     }
 
-    void setLoop(TimeMode loopMode) {
-        switch(loopMode) with(TimeMode) {
-        case stop:
-        case once:
-            _loopSelector.selected(0);
-            break;
-        case loop:
-            _loopSelector.selected(1);
-            break;
-        case bounce:
-            _loopSelector.selected(2);
-            break;
-        default:
-            throw new Exception("Invalid loop mode property");
-        }
+    void setAnimMode(Timer.Mode mode) {
+        _animModeSelector.selected = mode;
     }
 
     EasingAlgorithm getEasingAlgorithm() {
@@ -407,14 +381,6 @@ final class PropertiesGui: VContainer {
 
     void setEasingAlgorithm(EasingAlgorithm algorithm) {
         _easingSelector.selected = algorithm;
-    }
-
-    bool getReverse() {
-        return _reverseCheck.value;
-    }
-
-    void setReverse(bool v) {
-        _reverseCheck.value = v;
     }
 
     int getColumns() {

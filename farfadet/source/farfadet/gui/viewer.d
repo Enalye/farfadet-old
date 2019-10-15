@@ -59,7 +59,8 @@ final class ViewerGui: GuiElementCanvas {
             _resizeCursors[i].size *= 2f;
         }
 
-        _timer.start(5f, TimeMode.bounce);
+        _timer.mode = Timer.Mode.bounce;
+        _timer.start(5f);
     }
 
     override void onCallback(string id) {
@@ -559,7 +560,7 @@ final class ViewerGui: GuiElementCanvas {
     override void draw() {
         if(_texture !is null && _sprite !is null) {
             _sprite.draw(Vec2f.zero);
-            drawRect(Vec2f.zero, _sprite.size, Color.white * easeInOutSine(lerp(.4f, .6f, _timer.time)));
+            drawRect(Vec2f.zero, _sprite.size, Color.white * easeInOutSine(lerp(.4f, .6f, _timer.value01)));
         }
 
         if(!isActive)

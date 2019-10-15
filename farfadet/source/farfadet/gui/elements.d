@@ -22,7 +22,8 @@ private final class ImgElementGui: GuiElement {
         size = label.size;
 
         data = new ElementData;
-        _timer.start(2f, TimeMode.bounce);
+        _timer.mode = Timer.Mode.bounce;
+        _timer.start(2f);
     }
 
     override void onCallback(string id) {
@@ -48,7 +49,7 @@ private final class ImgElementGui: GuiElement {
 
         if(label.size.x > size.x && isSelected) {
             label.setAlign(GuiAlignX.left, GuiAlignY.center);
-            label.position = Vec2f(lerp(-(label.size.x - size.x), 0f, easeInOutSine(_timer.time)), 0f);
+            label.position = Vec2f(lerp(-(label.size.x - size.x), 0f, easeInOutSine(_timer.value01)), 0f);
         }
         else {
             label.setAlign(GuiAlignX.center, GuiAlignY.center);

@@ -292,8 +292,7 @@ final class GraphicEditorGui: GuiElement {
             data.lines = propertiesGui.getLines();
             data.maxtiles = propertiesGui.getMaxTiles();
             data.duration = propertiesGui.getDuration();
-            data.loopMode = propertiesGui.getLoop();
-            data.isReverse = propertiesGui.getReverse();
+            data.animMode = propertiesGui.getAnimMode();
             data.easingAlgorithm = propertiesGui.getEasingAlgorithm();
             data.marginX = propertiesGui.getMarginX();
             data.marginY = propertiesGui.getMarginY();
@@ -320,8 +319,8 @@ final class GraphicEditorGui: GuiElement {
             previewerGui.lines = data.lines;
             previewerGui.maxtiles = data.maxtiles;
             previewerGui.duration = data.duration;
-            previewerGui.timeMode = data.loopMode;
-            previewerGui.isReverse = data.isReverse;
+            previewerGui.animMode = data.animMode;
+            previewerGui.easing = data.easingAlgorithm;
             previewerGui.marginX = data.marginX;
             previewerGui.marginY = data.marginY;
             previewerGui.top = data.top;
@@ -480,8 +479,7 @@ final class GraphicEditorGui: GuiElement {
                 data.lines = propertiesGui.getLines();
                 data.maxtiles = propertiesGui.getMaxTiles();
                 data.duration = propertiesGui.getDuration();
-                data.loopMode = propertiesGui.getLoop();
-                data.isReverse = propertiesGui.getReverse();
+                data.animMode = propertiesGui.getAnimMode();
                 data.easingAlgorithm = propertiesGui.getEasingAlgorithm();
                 data.marginX = propertiesGui.getMarginX();
                 data.marginY = propertiesGui.getMarginY();
@@ -509,8 +507,7 @@ final class GraphicEditorGui: GuiElement {
                 propertiesGui.setLines(data.lines);
                 propertiesGui.setMaxTiles(data.maxtiles);
                 propertiesGui.setDuration(data.duration);
-                propertiesGui.setLoop(data.loopMode);
-                propertiesGui.setReverse(data.isReverse);
+                propertiesGui.setAnimMode(data.animMode);
                 propertiesGui.setEasingAlgorithm(data.easingAlgorithm);
                 propertiesGui.setMarginX(data.marginX);
                 propertiesGui.setMarginY(data.marginY);
@@ -551,8 +548,7 @@ final class GraphicEditorGui: GuiElement {
         propertiesGui.setLines(0);
         propertiesGui.setMaxTiles(0);
         propertiesGui.setDuration(1f);
-        propertiesGui.setLoop(TimeMode.once);
-        propertiesGui.setReverse(false);
+        propertiesGui.setAnimMode(Timer.Mode.once);
         propertiesGui.setEasingAlgorithm(EasingAlgorithm.linear);
         propertiesGui.setMarginX(0);
         propertiesGui.setMarginY(0);

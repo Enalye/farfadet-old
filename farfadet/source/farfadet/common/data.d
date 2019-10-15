@@ -28,7 +28,7 @@ final class ElementData {
         int _marginX, _marginY;
         float _duration = 1f;
         bool _isReverse = false;
-        TimeMode _loopMode = TimeMode.once;
+        Timer.Mode _animMode = Timer.Mode.once;
         Flip _flip = Flip.none;
         EasingAlgorithm _easingAlgorithm = EasingAlgorithm.linear;
     }
@@ -36,10 +36,12 @@ final class ElementData {
     @property {
         /// Key name
         string name() const { return _name; }
+        /// Ditto
         string name(string v) { _onDirty(); return _name = v; }
 
         /// General type
         ElementType type() const { return _type; }
+        /// Ditto
         ElementType type(ElementType v) {
             if(v == _type)
                 return v;
@@ -49,6 +51,7 @@ final class ElementData {
 
         /// Texture region
         Vec4i clip() const { return _clip; }
+        /// Ditto
         Vec4i clip(Vec4i v) {
             if(v == _clip)
                 return v;
@@ -58,6 +61,7 @@ final class ElementData {
 
         /// Flip
         Flip flip() const { return _flip; }
+        /// Ditto
         Flip flip(Flip v) {
             if(v == _flip)
                 return v;
@@ -66,15 +70,18 @@ final class ElementData {
         }
 
         /// Loop mode
-        TimeMode loopMode() const { return _loopMode; }
-        TimeMode loopMode(TimeMode v) {
-            if(v == _loopMode)
+        Timer.Mode animMode() const { return _animMode; }
+        /// Ditto
+        Timer.Mode animMode(Timer.Mode v) {
+            if(v == _animMode)
                 return v;
             _onDirty();
-            return _loopMode = v;
+            return _animMode = v;
         }
 
+        /// Easing used on the animation.
         EasingAlgorithm easingAlgorithm() const { return _easingAlgorithm; }
+        /// Ditto
         EasingAlgorithm easingAlgorithm(EasingAlgorithm v) {
             if(v == _easingAlgorithm)
                 return v;
@@ -82,16 +89,9 @@ final class ElementData {
             return _easingAlgorithm = v;
         }
 
-        bool isReverse() const { return _isReverse; }
-        bool isReverse(bool v) {
-            if(v == _isReverse)
-                return v;
-            _onDirty();
-            return _isReverse = v;
-        }
-
         /// Tileset specific data
         int columns() const { return _columns; }
+        /// Ditto
         int columns(int v) {
             if(v == _columns)
                 return v;
@@ -100,6 +100,7 @@ final class ElementData {
         }
 
         int lines() const { return _lines; }
+        /// Ditto
         int lines(int v) {
             if(v == _lines)
                 return v;
@@ -108,6 +109,7 @@ final class ElementData {
         }
 
         int maxtiles() const { return _maxtiles; }
+        /// Ditto
         int maxtiles(int v) {
             if(v == _maxtiles)
                 return v;
@@ -116,6 +118,7 @@ final class ElementData {
         }
 
         float duration() const { return _duration; }
+        /// Ditto
         float duration(float v) {
             if(v == _duration)
                 return v;
@@ -123,8 +126,10 @@ final class ElementData {
             return _duration = v;
         }
 
-        /// NinePatch specific data
+        // NinePatch specific data
+        /// Top border of a ninepatch.
         int top() const { return _top; }
+        /// Ditto
         int top(int v) {
             if(v == _top)
                 return v;
@@ -132,7 +137,9 @@ final class ElementData {
             return _top = v;
         }
 
+        /// Bottom border of a ninepatch.
         int bottom() const { return _bottom; }
+        /// Ditto
         int bottom(int v) {
             if(v == _bottom)
                 return v;
@@ -140,7 +147,9 @@ final class ElementData {
             return _bottom = v;
         }
 
+        /// Left border of a ninepatch.
         int left() const { return _left; }
+        /// Ditto
         int left(int v) {
             if(v == _left)
                 return v;
@@ -148,7 +157,9 @@ final class ElementData {
             return _left = v;
         }
 
+        /// Right border of a ninepatch.
         int right() const { return _right; }
+        /// Ditto
         int right(int v) {
             if(v == _right)
                 return v;
@@ -156,7 +167,9 @@ final class ElementData {
             return _right = v;
         }
 
+        /// Horizontal margin between tiles.
         int marginX() const { return _marginX; }
+        /// Ditto
         int marginX(int v) {
             if(v == _marginX)
                 return v;
@@ -164,7 +177,9 @@ final class ElementData {
             return _marginX = v;
         }
 
+        /// Vertical margin between tiles.
         int marginY() const { return _marginY; }
+        /// Ditto
         int marginY(int v) {
             if(v == _marginY)
                 return v;
@@ -452,18 +467,27 @@ private void _loadData(TabData tabData) {
             element._duration = getJsonFloat(elementNode, "duration", 1f);
             element._isReverse = getJsonBool(elementNode, "reverse", false);
 
-            switch(getJsonStr(elementNode, "loop", "once")) {
+            switch(getJsonStr(elementNode, "mode", "once")) {
             case "once":
-                element._loopMode = TimeMode.once;
+                element._animMode = Timer.Mode.once;
+                break;
+            case "reverse":
+                element._animMode = Timer.Mode.reverse;
                 break;
             case "loop":
-                element._loopMode = TimeMode.loop;
+                element._animMode = Timer.Mode.loop;
+                break;
+            case "loop_reverse":
+                element._animMode = Timer.Mode.loopReverse;
                 break;
             case "bounce":
-                element._loopMode = TimeMode.bounce;
+                element._animMode = Timer.Mode.bounce;
+                break;
+            case "bounce_reverse":
+                element._animMode = Timer.Mode.bounceReverse;
                 break;
             default:
-                throw new Exception("Invalid loop mode");
+                throw new Exception("Invalid animation mode");
             }
 
             __easingNode: switch(getJsonStr(elementNode, "easing", "linear")) {
@@ -587,16 +611,24 @@ private void _saveData(TabData tabData) {
             elementNode["duration"] = JSONValue(element._duration);
             elementNode["reverse"] = JSONValue(element._isReverse);
 
-            final switch(element._loopMode) with(TimeMode) {
-            case stop:
+            final switch(element._animMode) with(Timer.Mode) {
             case once:
-                elementNode["loop"] = JSONValue("once");
+                elementNode["mode"] = JSONValue("once");
+                break;
+            case reverse:
+                elementNode["mode"] = JSONValue("reverse");
                 break;
             case loop:
-                elementNode["loop"] = JSONValue("loop");
+                elementNode["mode"] = JSONValue("loop");
+                break;
+            case loopReverse:
+                elementNode["mode"] = JSONValue("loop_reverse");
                 break;
             case bounce:
-                elementNode["loop"] = JSONValue("bounce");
+                elementNode["mode"] = JSONValue("bounce");
+                break;
+            case bounceReverse:
+                elementNode["mode"] = JSONValue("bounce_reverse");
                 break;
             }
 
