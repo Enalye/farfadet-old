@@ -35,8 +35,8 @@ private final class ImgElementGui: GuiElement {
     override void update(float deltaTime) {
         _timer.update(deltaTime);
         if(isSelected && !isEditingName) {
-            if(isKeyDown("lctrl") || isKeyDown("rctrl")) {
-                if(getKeyDown("rename"))
+            if(isButtonDown(KeyButton.leftControl) || isButtonDown(KeyButton.rightControl)) {
+                if(getButtonDown(KeyButton.r))
                     switchToEditMode();
             }
         }
@@ -134,12 +134,12 @@ final class ElementsListGui: VList {
 
     override void update(float deltaTime) {
         super.update(deltaTime);
-        if(!(isKeyDown("lctrl") || isKeyDown("rctrl"))) {
-            if(getKeyDown("up")) {
+        if(!(isButtonDown(KeyButton.leftControl) || isButtonDown(KeyButton.rightControl))) {
+            if(getButtonDown(KeyButton.up)) {
                 selected(selected() - 1);
                 triggerCallback();
             }
-            if(getKeyDown("down")) {
+            if(getButtonDown(KeyButton.down)) {
                 selected(selected() + 1);      
                 triggerCallback();            
             }

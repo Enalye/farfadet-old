@@ -207,12 +207,12 @@ final class ViewerGui: GuiElementCanvas {
             Vec2i roundedPosition = to!Vec2i(event.position.round());
             roundedPosition = roundedPosition.clamp(Vec2i.zero, Vec2i(_texture.width, _texture.height));
 
-            if(!_isSelecting && isButtonDown(1u)) {
+            if(!_isSelecting && isButtonDown(MouseButton.left)) {
                 _isSelecting = true;
                 brushMouseDown(roundedPosition);
                 generateHint(roundedPosition);
             }
-            if(!_isGrabbed && isButtonDown(3u)) {
+            if(!_isGrabbed && isButtonDown(MouseButton.right)) {
                 _isGrabbed = true;
 				_startMovingCursorPosition = event.position;
             }
@@ -222,12 +222,12 @@ final class ViewerGui: GuiElementCanvas {
             Vec2i roundedPosition = to!Vec2i(event.position.round());
             roundedPosition = roundedPosition.clamp(Vec2i.zero, Vec2i(_texture.width, _texture.height));
 
-            if(_isSelecting && !isButtonDown(1u)) {
+            if(_isSelecting && !isButtonDown(MouseButton.left)) {
                 brushMouseUp(roundedPosition);
                 _isSelecting = false;
                 generateHint(roundedPosition);
             }
-            if(_isGrabbed && !isButtonDown(3u)) {
+            if(_isGrabbed && !isButtonDown(MouseButton.right)) {
 				_isGrabbed = false;
                 canvas.position += (_startMovingCursorPosition - event.position);
             }
@@ -427,8 +427,8 @@ final class ViewerGui: GuiElementCanvas {
             _isGrabbed = false;
         }
 
-        if(isKeyDown("lctrl") || isKeyDown("rctrl")) {
-            if(getKeyDown("all")) {
+        if(isButtonDown(KeyButton.leftControl) || isButtonDown(KeyButton.rightControl)) {
+            if(getButtonDown(KeyButton.q)) {
                 setClip(Vec4i(
                     0, 0,
                     _texture.width,
@@ -438,13 +438,13 @@ final class ViewerGui: GuiElementCanvas {
             }
         }
 
-        if(getKeyDown("select"))
+        if(getButtonDown(KeyButton.alpha1))
             toggleBrushSelect();
-        if(getKeyDown("move"))
+        if(getButtonDown(KeyButton.alpha2))
             toggleBrushMove();
-        if(getKeyDown("resize-corner"))
+        if(getButtonDown(KeyButton.alpha3))
             toggleBrushResizeCorner();
-        if(getKeyDown("resize-border"))
+        if(getButtonDown(KeyButton.alpha4))
             toggleBrushResizeBorder();
     }
 

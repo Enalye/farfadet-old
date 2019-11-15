@@ -231,36 +231,36 @@ final class GraphicEditorGui: GuiElement {
     override void update(float deltaTime) {
         super.update(deltaTime);
 
-        if(isKeyDown("lctrl") || isKeyDown("rctrl")) {
-            if(getKeyDown("open") || getKeyDown("open2"))
+        if(isButtonDown(KeyButton.leftControl) || isButtonDown(KeyButton.rightControl)) {
+            if(getButtonDown(KeyButton.o) || getButtonDown(KeyButton.i))
                 onCallback("open");
-            else if(getKeyDown("close"))
+            else if(getButtonDown(KeyButton.p))
                 onCallback("close");
-            else if(getKeyDown("reload"))
+            else if(getButtonDown(KeyButton.f))
                 onCallback("reload");
-            else if(getKeyDown("reload-texture"))
+            else if(getButtonDown(KeyButton.g))
                 onCallback("reload-texture");
-            else if(getKeyDown("save")) {
-                if(isKeyDown("lshift") || isKeyDown("rshift"))
+            else if(getButtonDown(KeyButton.s)) {
+                if(isButtonDown(KeyButton.leftShift) || isButtonDown(KeyButton.rightShift))
                     onCallback("save-as");
                 else
                     onCallback("save");
             }
-            else if(getKeyDown("add") || getKeyDown("add2"))
+            else if(getButtonDown(KeyButton.a) || getButtonDown(KeyButton.n))
                 onCallback("add");
-            else if(getKeyDown("remove"))
+            else if(getButtonDown(KeyButton.remove))
                 onCallback("remove");
-            else if(getKeyDown("dup"))
+            else if(getButtonDown(KeyButton.d))
                 onCallback("dup");
-            else if(getKeyDown("up"))
+            else if(getButtonDown(KeyButton.up))
                 onCallback("up");
-            else if(getKeyDown("down"))
+            else if(getButtonDown(KeyButton.down))
                 onCallback("down");
-            else if(getKeyDown("left")) {
+            else if(getButtonDown(KeyButton.left)) {
                 setPreviousTab();
                 reload();
             }
-            else if(getKeyDown("right")) {
+            else if(getButtonDown(KeyButton.right)) {
                 setNextTab();
                 reload();
             }
