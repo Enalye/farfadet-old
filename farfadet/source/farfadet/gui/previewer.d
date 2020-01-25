@@ -11,7 +11,7 @@ class PreviewerGui: GuiElement {
         Animation _animation;
         NinePatch _ninePatch;
         Texture _texture;
-        Timer.Mode _timeMode = Timer.Mode.loop;
+        Animation.Mode _animMode = Animation.Mode.loop;
 
         Vec4i _clip;
 
@@ -25,8 +25,6 @@ class PreviewerGui: GuiElement {
     ElementType type;
 
     Flip flip;
-
-    EasingAlgorithm easing = EasingAlgorithm.linear;
 
     Vec4i clip(Vec4i v) {
         _clip = v;
@@ -102,27 +100,27 @@ class PreviewerGui: GuiElement {
     bool isActive;
 
     @property {
-        Timer.Mode animMode(Timer.Mode mode) {
-            if(_timeMode == mode)
-                return _timeMode;
-            _timeMode = mode;
-            final switch(_timeMode) with(Timer.Mode) {
+        Animation.Mode animMode(Animation.Mode mode) {
+            if(_animMode == mode)
+                return _animMode;
+            _animMode = mode;
+            final switch(_animMode) with(Animation.Mode) {
             case once:
             case loop:
-                _animation.mode = Timer.Mode.loop;
+                _animation.mode = Animation.Mode.loop;
                 break;
             case reverse:
             case loopReverse:
-                _animation.mode = Timer.Mode.loopReverse;
+                _animation.mode = Animation.Mode.loopReverse;
                 break;
             case bounce:
-                _animation.mode = Timer.Mode.bounce;
+                _animation.mode = Animation.Mode.bounce;
                 break;
             case bounceReverse:
-                _animation.mode = Timer.Mode.bounceReverse;
+                _animation.mode = Animation.Mode.bounceReverse;
                 break;
             }
-            return _timeMode;
+            return _animMode;
         }
     }
 
@@ -130,7 +128,7 @@ class PreviewerGui: GuiElement {
         size(Vec2f.one * (screenWidth - screenHeight) / 2f);
         _sprite = new Sprite;
         _animation = new Animation;
-        _animation.mode = _timeMode;
+        _animation.mode = _animMode;
         _animation.start();
         _ninePatch = new NinePatch;
         _ninePatch.size = size;
@@ -145,7 +143,6 @@ class PreviewerGui: GuiElement {
     override void update(float deltaTime) {
         if(type == ElementType.animation) {
             _animation.duration = _duration;
-            _animation.easing = easing;
         }
         if(_sprite !is null) {
             _sprite.flip = flip;

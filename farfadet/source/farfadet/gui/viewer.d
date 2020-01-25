@@ -183,8 +183,8 @@ final class ViewerGui: GuiElementCanvas {
             return;
         switch(event.type) with(EventType) {
         case mouseUpdate:
-            _cursorPosition = event.position;
-            Vec2i roundedPosition = to!Vec2i(event.position.round());
+            _cursorPosition = event.mouse.position;
+            Vec2i roundedPosition = to!Vec2i(event.mouse.position.round());
             roundedPosition = roundedPosition.clamp(Vec2i.zero, Vec2i(_texture.width, _texture.height));
 
             if(_isSelecting) {
@@ -198,13 +198,13 @@ final class ViewerGui: GuiElementCanvas {
                 setResizeCursor();
             }
             if(_isGrabbed) {
-				canvas.position += (_startMovingCursorPosition - event.position);
+				canvas.position += (_startMovingCursorPosition - event.mouse.position);
             }
             generateHint(roundedPosition);
             break;
         case mouseDown:
-            _cursorPosition = event.position;
-            Vec2i roundedPosition = to!Vec2i(event.position.round());
+            _cursorPosition = event.mouse.position;
+            Vec2i roundedPosition = to!Vec2i(event.mouse.position.round());
             roundedPosition = roundedPosition.clamp(Vec2i.zero, Vec2i(_texture.width, _texture.height));
 
             if(!_isSelecting && isButtonDown(MouseButton.left)) {
@@ -214,12 +214,12 @@ final class ViewerGui: GuiElementCanvas {
             }
             if(!_isGrabbed && isButtonDown(MouseButton.right)) {
                 _isGrabbed = true;
-				_startMovingCursorPosition = event.position;
+				_startMovingCursorPosition = event.mouse.position;
             }
             break;
         case mouseUp:
-            _cursorPosition = event.position;
-            Vec2i roundedPosition = to!Vec2i(event.position.round());
+            _cursorPosition = event.mouse.position;
+            Vec2i roundedPosition = to!Vec2i(event.mouse.position.round());
             roundedPosition = roundedPosition.clamp(Vec2i.zero, Vec2i(_texture.width, _texture.height));
 
             if(_isSelecting && !isButtonDown(MouseButton.left)) {
@@ -229,12 +229,12 @@ final class ViewerGui: GuiElementCanvas {
             }
             if(_isGrabbed && !isButtonDown(MouseButton.right)) {
 				_isGrabbed = false;
-                canvas.position += (_startMovingCursorPosition - event.position);
+                canvas.position += (_startMovingCursorPosition - event.mouse.position);
             }
             break;
         case mouseWheel:
             const Vec2f delta = (_cursorPosition - canvas.position) / (canvas.size);
-            if(event.position.y > 0f) {
+            if(event.mouse.position.y > 0f) {
                 if(_scale > 0.01f)
                     _scale *= 0.9f;
             }

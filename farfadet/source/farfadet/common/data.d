@@ -28,7 +28,7 @@ final class ElementData {
         int _marginX, _marginY;
         float _duration = 1f;
         bool _isReverse = false;
-        Timer.Mode _animMode = Timer.Mode.once;
+        Animation.Mode _animMode = Animation.Mode.once;
         Flip _flip = Flip.none;
         EasingAlgorithm _easingAlgorithm = EasingAlgorithm.linear;
     }
@@ -70,9 +70,9 @@ final class ElementData {
         }
 
         /// Loop mode
-        Timer.Mode animMode() const { return _animMode; }
+        Animation.Mode animMode() const { return _animMode; }
         /// Ditto
-        Timer.Mode animMode(Timer.Mode v) {
+        Animation.Mode animMode(Animation.Mode v) {
             if(v == _animMode)
                 return v;
             _onDirty();
@@ -471,48 +471,25 @@ private void _loadData(TabData tabData) {
 
             switch(getJsonStr(elementNode, "mode", "once")) {
             case "once":
-                element._animMode = Timer.Mode.once;
+                element._animMode = Animation.Mode.once;
                 break;
             case "reverse":
-                element._animMode = Timer.Mode.reverse;
+                element._animMode = Animation.Mode.reverse;
                 break;
             case "loop":
-                element._animMode = Timer.Mode.loop;
+                element._animMode = Animation.Mode.loop;
                 break;
             case "loop_reverse":
-                element._animMode = Timer.Mode.loopReverse;
+                element._animMode = Animation.Mode.loopReverse;
                 break;
             case "bounce":
-                element._animMode = Timer.Mode.bounce;
+                element._animMode = Animation.Mode.bounce;
                 break;
             case "bounce_reverse":
-                element._animMode = Timer.Mode.bounceReverse;
+                element._animMode = Animation.Mode.bounceReverse;
                 break;
             default:
                 throw new Exception("Invalid animation mode");
-            }
-
-            __easingNode: switch(getJsonStr(elementNode, "easing", "linear")) {
-            static foreach(value; [
-                "linear",
-                "sineIn", "sineOut", "sineInOut",
-                "quadIn", "quadOut", "quadInOut",
-                "cubicIn", "cubicOut", "cubicInOut",
-                "quartIn", "quartOut", "quartInOut",
-                "quintIn", "quintOut", "quintInOut",
-                "expIn", "expOut", "expInOut",
-                "circIn", "circOut", "circInOut",
-                "backIn", "backOut", "backInOut",
-                "elasticIn", "elasticOut", "elasticInOut",
-                "bounceIn", "bounceOut", "bounceInOut"]) {
-                mixin("
-                case \"" ~ value ~ "\":
-                    element._easingAlgorithm = EasingAlgorithm." ~ value ~ ";
-                    break __easingNode;
-                    ");
-            }
-            default:
-                throw new Exception("Invalid easing algorithm");
             }
             goto case tileset;
         case tileset:
@@ -613,7 +590,7 @@ private void _saveData(TabData tabData) {
             elementNode["duration"] = JSONValue(element._duration);
             elementNode["reverse"] = JSONValue(element._isReverse);
 
-            final switch(element._animMode) with(Timer.Mode) {
+            final switch(element._animMode) with(Animation.Mode) {
             case once:
                 elementNode["mode"] = JSONValue("once");
                 break;

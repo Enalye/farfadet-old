@@ -1,0 +1,2 @@
+cd ../farfadet
+dub run

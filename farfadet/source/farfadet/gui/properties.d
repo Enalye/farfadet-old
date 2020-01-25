@@ -6,7 +6,7 @@ import farfadet.gui.editor, farfadet.common;
 
 final class PropertiesGui: VContainer {
     private {
-        DropDownList _elementTypeSelector, _flipSelector, _animModeSelector, _easingSelector;
+        DropDownList _elementTypeSelector, _flipSelector, _animModeSelector;
         InputField _fieldX, _fieldY, _fieldW, _fieldH, _fieldMarginX, _fieldMarginY;
 
         //Tileset/Animation parameters
@@ -45,39 +45,6 @@ final class PropertiesGui: VContainer {
         _animModeSelector.add("Loop Reverse");
         _animModeSelector.add("Bounce");
         _animModeSelector.add("Bounce Reverse");
-
-        _easingSelector = new DropDownList(Vec2f(180f, 30f), 4);
-        _easingSelector.add("Linear");
-        _easingSelector.add("Sine In");
-        _easingSelector.add("Sine Out");
-        _easingSelector.add("Sine In Out");
-        _easingSelector.add("Quad In");
-        _easingSelector.add("Quad Out");
-        _easingSelector.add("Quad In Out");
-        _easingSelector.add("Cubic In");
-        _easingSelector.add("Cubic Out");
-        _easingSelector.add("Cubic In Out");
-        _easingSelector.add("Quart In");
-        _easingSelector.add("Quart Out");
-        _easingSelector.add("Quart In Out");
-        _easingSelector.add("Quint In");
-        _easingSelector.add("Quint Out");
-        _easingSelector.add("Quint In Out");
-        _easingSelector.add("Exp In");
-        _easingSelector.add("Exp Out");
-        _easingSelector.add("Exp In Out");
-        _easingSelector.add("Circ In");
-        _easingSelector.add("Circ Out");
-        _easingSelector.add("Circ In Out");
-        _easingSelector.add("Back In");
-        _easingSelector.add("Back Out");
-        _easingSelector.add("Back In Out");
-        _easingSelector.add("Elastic In");
-        _easingSelector.add("Elastic Out");
-        _easingSelector.add("Elastic In Out");
-        _easingSelector.add("Bounce In");
-        _easingSelector.add("Bounce Out");
-        _easingSelector.add("Bounce In Out");
 
         _fieldX = new InputField(Vec2f(50f, 25f), "0");
         _fieldY = new InputField(Vec2f(50f, 25f), "0");
@@ -129,7 +96,6 @@ final class PropertiesGui: VContainer {
         _fieldMaxTiles.setCallback(this, "maxtiles");
         _fieldDuration.setCallback(this, "duration");
         _animModeSelector.setCallback(this, "anim-mode");
-        _easingSelector.setCallback(this, "easing");
 
         _fieldTop.setCallback(this, "top");
         _fieldBottom.setCallback(this, "bottom");
@@ -161,7 +127,6 @@ final class PropertiesGui: VContainer {
         case "lines":
         case "maxtiles":
         case "duration":
-        case "easing":
         case "anim-mode":
         case "x-margin":
         case "y-margin":
@@ -242,12 +207,6 @@ final class PropertiesGui: VContainer {
                 box.addChildGui(_fieldMarginX);
                 box.addChildGui(new Label(" y: "));
                 box.addChildGui(_fieldMarginY);
-                addChildGui(box);
-            }
-            {
-                auto box = new HContainer;
-                box.addChildGui(new Label("ease: "));
-                box.addChildGui(_easingSelector);
                 addChildGui(box);
             }
             {
@@ -363,24 +322,14 @@ final class PropertiesGui: VContainer {
         _flipSelector.selected(flip);
     }
 
-    Timer.Mode getAnimMode() {
-        if(_animModeSelector.selected > Timer.Mode.bounceReverse)
+    Animation.Mode getAnimMode() {
+        if(_animModeSelector.selected > Animation.Mode.bounceReverse)
             throw new Exception("Invalid animation mode");
-        return cast(Timer.Mode) _animModeSelector.selected;
+        return cast(Animation.Mode) _animModeSelector.selected;
     }
 
-    void setAnimMode(Timer.Mode mode) {
+    void setAnimMode(Animation.Mode mode) {
         _animModeSelector.selected = mode;
-    }
-
-    EasingAlgorithm getEasingAlgorithm() {
-        if(_easingSelector.selected > EasingAlgorithm.bounceInOut)
-            throw new Exception("Invalid easing algorithm");
-        return cast(EasingAlgorithm) _easingSelector.selected;
-    }
-
-    void setEasingAlgorithm(EasingAlgorithm algorithm) {
-        _easingSelector.selected = algorithm;
     }
 
     int getColumns() {

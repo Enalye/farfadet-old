@@ -293,7 +293,6 @@ final class GraphicEditorGui: GuiElement {
             data.maxtiles = propertiesGui.getMaxTiles();
             data.duration = propertiesGui.getDuration();
             data.animMode = propertiesGui.getAnimMode();
-            data.easingAlgorithm = propertiesGui.getEasingAlgorithm();
             data.marginX = propertiesGui.getMarginX();
             data.marginY = propertiesGui.getMarginY();
             data.top = propertiesGui.getTop();
@@ -320,7 +319,6 @@ final class GraphicEditorGui: GuiElement {
             previewerGui.maxtiles = data.maxtiles;
             previewerGui.duration = data.duration;
             previewerGui.animMode = data.animMode;
-            previewerGui.easing = data.easingAlgorithm;
             previewerGui.marginX = data.marginX;
             previewerGui.marginY = data.marginY;
             previewerGui.top = data.top;
@@ -333,7 +331,7 @@ final class GraphicEditorGui: GuiElement {
     override void onEvent(Event event) {
         super.onEvent(event);
         if(event.type == EventType.dropFile) {
-            openTab(relativePath(event.str));
+            openTab(relativePath(event.drop.filePath));
             reload();
             tabsGui.addTab();
         }
@@ -480,7 +478,6 @@ final class GraphicEditorGui: GuiElement {
                 data.maxtiles = propertiesGui.getMaxTiles();
                 data.duration = propertiesGui.getDuration();
                 data.animMode = propertiesGui.getAnimMode();
-                data.easingAlgorithm = propertiesGui.getEasingAlgorithm();
                 data.marginX = propertiesGui.getMarginX();
                 data.marginY = propertiesGui.getMarginY();
                 data.top = propertiesGui.getTop();
@@ -508,7 +505,6 @@ final class GraphicEditorGui: GuiElement {
                 propertiesGui.setMaxTiles(data.maxtiles);
                 propertiesGui.setDuration(data.duration);
                 propertiesGui.setAnimMode(data.animMode);
-                propertiesGui.setEasingAlgorithm(data.easingAlgorithm);
                 propertiesGui.setMarginX(data.marginX);
                 propertiesGui.setMarginY(data.marginY);
                 propertiesGui.setTop(data.top);
@@ -548,8 +544,7 @@ final class GraphicEditorGui: GuiElement {
         propertiesGui.setLines(0);
         propertiesGui.setMaxTiles(0);
         propertiesGui.setDuration(1f);
-        propertiesGui.setAnimMode(Timer.Mode.once);
-        propertiesGui.setEasingAlgorithm(EasingAlgorithm.linear);
+        propertiesGui.setAnimMode(Animation.Mode.once);
         propertiesGui.setMarginX(0);
         propertiesGui.setMarginY(0);
         propertiesGui.setTop(0);

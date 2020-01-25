@@ -133,7 +133,7 @@ final class TabsGui: GuiElementCanvas {
 
     override void onEvent(Event event) {
         if(event.type == EventType.mouseWheel) {
-            const float delta = event.position.y - event.position.x;
+            const float delta = event.scroll.delta.y - event.scroll.delta.x;
             canvas.position.x -= delta * 50f;
             canvas.position = canvas.position.clamp(canvas.size / 2f, Vec2f(_box.size.x - canvas.size.x / 2f, canvas.size.y));
         }

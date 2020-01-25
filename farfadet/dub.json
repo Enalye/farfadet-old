@@ -11,23 +11,47 @@
 			"path": "../atelier"
 		}
 	},
+	"targetName": "farfadet",
 	"targetType": "executable",
 	"workingDirectory": "..",
+	"buildTypes": {
+		"unittest": {
+			"buildOptions": ["unittests", "debugMode", "debugInfo"]
+		},
+		"debug": {
+			"buildOptions": ["debugMode", "debugInfo"]
+		},
+		"release": {
+			"buildOptions": ["releaseMode", "optimize", "inline", "noBoundsCheck"]
+		}
+	},
 	"configurations": [
 		{
 			"name": "linux-build",
 			"platforms": ["linux"],
-			"targetPath": "../bin$ARCH",
+			"targetPath": "../bin",
 			"postBuildCommands": [
-				"cp ../lib$ARCH/*.dll ../bin$ARCH"
+				"cp ../lib$ARCH/*.dll ../bin"
 			]
 		},
 		{
 			"name": "windows-build",
 			"platforms": ["windows"],
-			"targetPath": "../bin$ARCH",
+			"targetPath": "../bin",
 			"postBuildCommands": [
-				"copy ..\\lib$ARCH\\*.dll ..\\bin$ARCH"
+				"copy ..\\lib$ARCH\\*.dll ..\\bin"
+			]
+		},
+		{
+			"name": "windows-release",
+			"platforms": ["windows"],
+			"targetPath": "../release$ARCH/farfadet",
+			"lflags":[
+				"-subsystem:windows",
+				"-entry:mainCRTStartup"
+			],
+			"postBuildCommands": [
+				"copy ..\\lib$ARCH\\*.dll ..\\release$ARCH\\farfadet"
 			]
 		}
 	]

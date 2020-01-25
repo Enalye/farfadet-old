@@ -114,7 +114,7 @@ final class SaveModal: GuiElement {
         { //List
             auto vbox = new VContainer;
             vbox.setAlign(GuiAlignX.center, GuiAlignY.center);
-            vbox.position = Vec2f(0f, -50f);
+            vbox.position = Vec2f(0f, 10f);
             addChildGui(vbox);
 
             {
