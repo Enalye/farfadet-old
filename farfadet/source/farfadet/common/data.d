@@ -683,7 +683,4 @@ void setTemplate(string templateFilePath) {
     _templateDataPath = buildNormalizedPath(
         dirName(templateFilePath),
         convertPathToImport(getJsonStr(json, "data-path", "")));
-import std.stdio;
-    writeln(_templateAssetsPath);
-    writeln(_templateDataPath);
 }
