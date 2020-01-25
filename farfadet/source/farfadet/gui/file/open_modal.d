@@ -58,9 +58,13 @@ final class OpenModal: GuiElement {
             auto tabData = getCurrentTab();
             if(tabData.hasSavePath())
                 _path = dirName(tabData.dataPath());
+            else if(hasTemplate())
+                _path = getTemplateAssetsPath();
             else
                 _path = dirName(tabData.texturePath());
         }
+        else if(hasTemplate())
+            _path = getTemplateAssetsPath();
         else {
             _path = dirName(getcwd());
         }

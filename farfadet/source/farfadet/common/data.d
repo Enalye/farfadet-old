@@ -10,6 +10,9 @@ private {
     TabData[] _tabs;
     uint _currentTabIndex;
     GraphicEditorGui _editor;
+
+    bool _hasTemplate;
+    string _templateAssetsPath, _templateDataPath;
 }
 
 /// General type of an element.
@@ -654,4 +657,33 @@ private void _saveData(TabData tabData) {
     json["elements"] = elementsNode;
     std.file.write(tabData._dataPath, toJSON(json, true));
     tabData._isDirty = false;
+}
+
+bool hasTemplate() {
+    return _hasTemplate;
+}
+
+string getTemplateDataPath() {
+    return _templateDataPath;
+}
+
+string getTemplateAssetsPath() {
+    return _templateAssetsPath;
+}
+
+void setTemplate(string templateFilePath) {
+    if(!exists(templateFilePath))
+        return;
+    JSONValue json = parseJSON(readText(templateFilePath));
+    
+    _hasTemplate = true;
+    _templateAssetsPath = buildNormalizedPath(
+        dirName(templateFilePath),
+        convertPathToImport(getJsonStr(json, "assets-path", "")));
+    _templateDataPath = buildNormalizedPath(
+        dirName(templateFilePath),
+        convertPathToImport(getJsonStr(json, "data-path", "")));
+import std.stdio;
+    writeln(_templateAssetsPath);
+    writeln(_templateDataPath);
 }

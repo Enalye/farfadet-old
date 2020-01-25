@@ -68,6 +68,10 @@ final class GraphicEditorGui: GuiElement {
 
     this(string[] args) {
         setupData(this);
+        if(args.length >= 2) {
+            setTemplate(args[1]);
+        }
+
         setAlign(GuiAlignX.left, GuiAlignY.top);
         size = screenSize;
 
@@ -331,9 +335,13 @@ final class GraphicEditorGui: GuiElement {
     override void onEvent(Event event) {
         super.onEvent(event);
         if(event.type == EventType.dropFile) {
-            openTab(relativePath(event.drop.filePath));
-            reload();
-            tabsGui.addTab();
+            if(extension(event.drop.filePath) == ".farfadet")
+                setTemplate(event.drop.filePath);
+            else {
+                openTab(relativePath(event.drop.filePath));
+                reload();
+                tabsGui.addTab();
+            }
         }
     }
 
