@@ -252,6 +252,12 @@ final class ElementsListGui: VList {
         newElement.data.bottom = elements[id].data.bottom;
         newElement.data.left = elements[id].data.left;
         newElement.data.right = elements[id].data.right;
+        newElement.data.animMode = elements[id].data.animMode;
+        newElement.data.duration = elements[id].data.duration;
+        newElement.data.flip = elements[id].data.flip;
+        newElement.data.marginX = elements[id].data.marginX;
+        newElement.data.marginY = elements[id].data.marginY;
+
 
         if(id >= elements.length)
             throw new Exception("Element id out of bounds");

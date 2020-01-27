@@ -30,10 +30,8 @@ final class ElementData {
         int _top, _bottom, _left, _right;
         int _marginX, _marginY;
         float _duration = 1f;
-        bool _isReverse = false;
         Animation.Mode _animMode = Animation.Mode.once;
         Flip _flip = Flip.none;
-        EasingAlgorithm _easingAlgorithm = EasingAlgorithm.linear;
     }
 
     @property {
@@ -80,16 +78,6 @@ final class ElementData {
                 return v;
             _onDirty();
             return _animMode = v;
-        }
-
-        /// Easing used on the animation.
-        EasingAlgorithm easingAlgorithm() const { return _easingAlgorithm; }
-        /// Ditto
-        EasingAlgorithm easingAlgorithm(EasingAlgorithm v) {
-            if(v == _easingAlgorithm)
-                return v;
-            _onDirty();
-            return _easingAlgorithm = v;
         }
 
         /// Tileset specific data
@@ -470,7 +458,6 @@ private void _loadData(TabData tabData) {
             break;
         case animation:
             element._duration = getJsonFloat(elementNode, "duration", 1f);
-            element._isReverse = getJsonBool(elementNode, "reverse", false);
 
             switch(getJsonStr(elementNode, "mode", "once")) {
             case "once":
@@ -591,7 +578,6 @@ private void _saveData(TabData tabData) {
             break;
         case animation:
             elementNode["duration"] = JSONValue(element._duration);
-            elementNode["reverse"] = JSONValue(element._isReverse);
 
             final switch(element._animMode) with(Animation.Mode) {
             case once:
@@ -612,27 +598,6 @@ private void _saveData(TabData tabData) {
             case bounceReverse:
                 elementNode["mode"] = JSONValue("bounce_reverse");
                 break;
-            }
-
-            __easingNode: final switch(element._easingAlgorithm) with(EasingAlgorithm) {
-            static foreach(value; [
-                "linear",
-                "sineIn", "sineOut", "sineInOut",
-                "quadIn", "quadOut", "quadInOut",
-                "cubicIn", "cubicOut", "cubicInOut",
-                "quartIn", "quartOut", "quartInOut",
-                "quintIn", "quintOut", "quintInOut",
-                "expIn", "expOut", "expInOut",
-                "circIn", "circOut", "circInOut",
-                "backIn", "backOut", "backInOut",
-                "elasticIn", "elasticOut", "elasticInOut",
-                "bounceIn", "bounceOut", "bounceInOut"]) {
-                mixin("
-                case " ~ value ~ ":
-                    elementNode[\"easing\"] = JSONValue(\"" ~ value ~ "\");
-                    break __easingNode;
-                    ");
-                }
             }
             goto case tileset;
         case tileset:
