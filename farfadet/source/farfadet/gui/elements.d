@@ -111,7 +111,9 @@ private final class ImgElementGui: GuiElement {
             color = isSelected ? Color.fromRGB(0xE2FF9E) : Color.fromRGB(0x8ECC7C);
             break;
         }
-        drawFilledRect(origin, size, color);
+        drawFilledRect(origin, Vec2f(10f, size.y), color);
+        if(isSelected)
+            drawFilledRect(origin + Vec2f(10f, 0), size - Vec2f(10f, 0f), Color.fromRGB(0x3B4D6E));
     }
 }
 
