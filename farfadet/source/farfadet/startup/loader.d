@@ -19,7 +19,7 @@ void loadTextures() {
     setResourceCache!Tileset(tilesetCache);
     setResourceCache!NinePatch(ninePathCache);
 
-	auto files = dirEntries("data/images/", "{*.json}", SpanMode.depth);
+	auto files = dirEntries(buildNormalizedPath(dirName(thisExePath()), "assets", "data", "images"), "{*.json}", SpanMode.depth);
     foreach(file; files) {
         JSONValue json = parseJSON(readText(file));
 
@@ -86,7 +86,7 @@ void loadFonts() {
     auto fontCache = new ResourceCache!TrueTypeFont;
 	setResourceCache!TrueTypeFont(fontCache);
 
-    auto files = dirEntries("media/font/", "{*.ttf}", SpanMode.depth);
+    auto files = dirEntries(buildNormalizedPath(dirName(thisExePath()), "assets", "media", "font"), "{*.ttf}", SpanMode.depth);
     foreach(file; files) {
         fontCache.set(new TrueTypeFont(file), baseName(file, ".ttf"));
     }
