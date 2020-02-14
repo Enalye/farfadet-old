@@ -125,7 +125,7 @@ class PreviewerGui: GuiElement {
     }
 
     this() {
-        size(Vec2f.one * (screenWidth - screenHeight) / 2f);
+        size(Vec2f.one * 300f);
         _sprite = new Sprite;
         _animation = new Animation;
         _animation.mode = _animMode;

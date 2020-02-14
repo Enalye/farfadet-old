@@ -336,7 +336,11 @@ final class GraphicEditorGui: GuiElement {
 
     override void onEvent(Event event) {
         super.onEvent(event);
-        if(event.type == EventType.dropFile) {
+        switch(event.type) with(EventType) {
+        case resize:
+            size = cast(Vec2f) event.window.size;
+            break;
+        case dropFile:
             if(extension(event.drop.filePath) == ".farfadet")
                 setTemplate(event.drop.filePath);
             else {
@@ -344,6 +348,9 @@ final class GraphicEditorGui: GuiElement {
                 reload();
                 tabsGui.addTab();
             }
+            break;
+        default:
+            break;
         }
     }
 

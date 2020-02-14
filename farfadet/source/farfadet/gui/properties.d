@@ -22,7 +22,7 @@ final class PropertiesGui: VContainer {
     this() {
         spacing(Vec2f(10f, 12f));
         setChildAlign(GuiAlignX.center);
-        minimalWidth(260f);
+        minimalWidth(280f);
 
         _elementTypeSelector = new DropDownList(Vec2f(200f, 30f), 4);
         _elementTypeSelector.add("Sprite");

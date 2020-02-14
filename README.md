@@ -86,7 +86,7 @@ So you get :
 * `Ctrl + N or Ctrl + Q` -> Create a new key.
 * `Ctrl + D` -> Duplicate the current key.
 * `Ctrl + R` -> Rename the current key.
-* `Ctrl + Delete` -> Delete the current key.
+* `Delete` -> Delete the current key.
 
 * `Up` -> Select the key above.
 * `Down` -> Select the key below.

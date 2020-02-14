@@ -123,8 +123,7 @@ final class ElementsListGui: VList {
     }
 
     this() {
-        float sz = (screenWidth - screenHeight) / 2f;
-        super(Vec2f(sz, screenHeight - sz - 80f));
+        super(Vec2f(300f, screenHeight - 380f));
     }
 
     override void onCallback(string id) {
@@ -145,6 +144,16 @@ final class ElementsListGui: VList {
                 selected(selected() + 1);      
                 triggerCallback();            
             }
+        }
+    }
+
+    override void onEvent(Event event) {
+        switch(event.type) with(EventType) {
+        case resize:
+            size = Vec2f(300f, event.window.size.y - 380f);
+            break;
+        default:
+            break;
         }
     }
 

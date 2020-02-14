@@ -42,7 +42,7 @@ final class ViewerGui: GuiElementCanvas {
     float duration = 1f;
 
     this() {
-        size(Vec2f(screenHeight, screenHeight - 85));
+        size(Vec2f(screenWidth - 600f, screenHeight - 85));
         _rect = fetch!Sprite("editor.rect");
 
         _resizeCursors[0] = fetch!Sprite("editor.cursor-corner1");
@@ -179,6 +179,13 @@ final class ViewerGui: GuiElementCanvas {
     }
 
     override void onEvent(Event event) {
+        switch(event.type) with(EventType) {
+        case resize:
+            size = Vec2f(event.window.size.x - 600f, event.window.size.y - 85f);
+            break;
+        default:
+            break;
+        }
         if(_texture is null)
             return;
         switch(event.type) with(EventType) {

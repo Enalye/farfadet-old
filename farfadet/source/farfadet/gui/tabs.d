@@ -120,7 +120,7 @@ final class TabsGui: GuiElementCanvas {
     }
 
     this() {
-        size(Vec2f(screenHeight, 35f));
+        size(Vec2f(screenWidth - 600f, 35f));
         setEventHook(true);
 
         _box = new HContainer;
@@ -132,10 +132,17 @@ final class TabsGui: GuiElementCanvas {
     }
 
     override void onEvent(Event event) {
-        if(event.type == EventType.mouseWheel) {
+        switch(event.type) with(EventType) {
+        case mouseWheel:
             const float delta = event.scroll.delta.y - event.scroll.delta.x;
             canvas.position.x -= delta * 50f;
             canvas.position = canvas.position.clamp(canvas.size / 2f, Vec2f(_box.size.x - canvas.size.x / 2f, canvas.size.y));
+            break;
+        case resize:
+            size = Vec2f(event.window.size.x - 600f, 35f);
+            break;
+        default:
+            break;
         }
     }
 
