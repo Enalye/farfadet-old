@@ -56,7 +56,7 @@ final class PropertiesGui: VContainer {
         _fieldColumns = new InputField(Vec2f(50f, 25f), "1");
         _fieldLines = new InputField(Vec2f(50f, 25f), "1");
         _fieldMaxTiles = new InputField(Vec2f(50f, 25f), "0");
-        _fieldDuration = new InputField(Vec2f(50f, 25f), "1");
+        _fieldDuration = new InputField(Vec2f(50f, 25f), "0.1");
 
         _fieldTop = new InputField(Vec2f(50f, 25f), "0");
         _fieldBottom = new InputField(Vec2f(50f, 25f), "0");
@@ -379,10 +379,10 @@ final class PropertiesGui: VContainer {
 
     float getDuration() {
         try {
-            return _fieldDuration.text.length ? to!float(_fieldDuration.text) : 1f;
+            return _fieldDuration.text.length ? to!float(_fieldDuration.text) : 0.1f;
         }
         catch(ConvException e) {
-            return 1f;
+            return 0.1f;
         }
     }
     

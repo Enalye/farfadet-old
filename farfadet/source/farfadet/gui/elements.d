@@ -99,10 +99,10 @@ private final class ImgElementGui: GuiElement {
             color = isSelected ? Color.fromRGB(0x9EBBFF) : Color.fromRGB(0x8B7CCC);
             break;
         case tileset:
-            color = isSelected ? Color.fromRGB(0x9EBBFF) : Color.fromRGB(0x8B7CCC);
+            color = isSelected ? Color.fromRGB(0xF59EFF) : Color.fromRGB(0xCC7CAE);
             break;
         case borderedBrush:
-            color = isSelected ? Color.fromRGB(0xF59EFF) : Color.fromRGB(0xCC7CAE);
+            color = isSelected ? Color.fromRGB(0xFFA89E) : Color.fromRGB(0xCCAB7C);
             break;
         case borderlessBrush:
             color = isSelected ? Color.fromRGB(0xFFA89E) : Color.fromRGB(0xCCAB7C);
@@ -245,6 +245,7 @@ final class ElementsListGui: VList {
         }
 
         newElement.label.text = elements[id].label.text;
+        newElement.data.name = elements[id].data.name;
         newElement.data.type = elements[id].data.type;
         newElement.data.clip = elements[id].data.clip;
         newElement.data.columns = elements[id].data.columns;

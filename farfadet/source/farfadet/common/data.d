@@ -391,7 +391,7 @@ private void _loadData(TabData tabData) {
     JSONValue json = parseJSON(readText(tabData._dataPath));
 
     if(getJsonStr(json, "type") != "spritesheet")
-        return;
+        throw new Exception("Not a spritesheet");
 
     tabData._texturePath = buildNormalizedPath(dirName(tabData._dataPath), convertPathToImport(getJsonStr(json, "texture")));
     if(!exists(tabData._texturePath))
@@ -620,7 +620,7 @@ private void _saveData(TabData tabData) {
         elementsNode ~= elementNode;
     }
     json["elements"] = elementsNode;
-    std.file.write(tabData._dataPath, toJSON(json, true));
+    std.file.write(tabData._dataPath, toJSON(json));
     tabData._isDirty = false;
 }
 

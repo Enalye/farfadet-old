@@ -202,7 +202,14 @@ final class OpenModal: GuiElement {
         }
     }
 
-    
+    override void update(float deltaTime) {
+        if(_applyBtn.isLocked && (getButtonDown(KeyButton.enter) || getButtonDown(KeyButton.enter2))) {
+            onCallback("apply");
+        }
+        else if(getButtonDown(KeyButton.escape)) {
+            onCallback("cancel");
+        }
+    }
     
     private void reloadList() {
         _fileName = "";

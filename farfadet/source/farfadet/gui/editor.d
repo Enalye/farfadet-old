@@ -269,6 +269,8 @@ final class GraphicEditorGui: GuiElement {
                 reload();
             }
         }
+        else if(getButtonDown(KeyButton.remove))
+            onCallback("remove");
 
         _saveBtn.isLocked = !hasTab();
         _saveAsBtn.isLocked = !hasTab();
@@ -645,6 +647,15 @@ private final class WarningMessageGui: GuiElement {
             break;
         default:
             break;
+        }
+    }
+
+    override void update(float deltaTime) {
+        if(getButtonDown(KeyButton.enter) || getButtonDown(KeyButton.enter2)) {
+            onCallback("apply");
+        }
+        else if(getButtonDown(KeyButton.escape)) {
+            onCallback("cancel");
         }
     }
 
